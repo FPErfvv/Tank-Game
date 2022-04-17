@@ -48,8 +48,8 @@ public class MainCharacter extends Prop {
         //uses the ratio btw the move distance and the hyp of the triangle created by the mouse and the character
         //to determine how far the character should be moved along the x and y axis
         double sideRatio = distance/mouseHyp; 
-        double yTransform = m_mouseOpp * sideRatio;
-        double xTransform = m_mouseAdjacent * sideRatio;
+        double yTransform = m_mouseAdjacent * sideRatio;
+        double xTransform = m_mouseOpp * sideRatio * -1;
         double deltax = xTransform * direction;
         double deltay = yTransform * direction;
         m_currentMap.moveMap(deltax, deltay);
