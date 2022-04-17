@@ -17,6 +17,8 @@ public class Prop {
     protected MainCharacter m_mainCharacter;
     protected boolean m_moving;
     protected Map m_currentMap;
+    protected double m_velocity;
+    protected double m_angularVelocity;
 
 
     public Prop(Point coor, String imagePath, Map map, MainCharacter mainCharacter) {
@@ -55,12 +57,10 @@ public class Prop {
         
         m_hitBox.createRectangle();
         m_hitBox.drawLines(g2d);
-        incrementTurnAngle();
     }
 
     public void move(double deltax, double deltay) {
         m_coor.setLocation(m_coor.getX() + deltax, m_coor.getY() + deltay);
-        
     }
 
     public void setMoving(boolean moving) {
@@ -76,11 +76,14 @@ public class Prop {
         return new Point((int)(m_coor.getX()), (int)(m_coor.getY()));
     }
 
-    public void incrementTurnAngle() {
-        if (Math.toDegrees(m_turnAngle) > 270) {
-            setTurnAngle(Math.toRadians(-90));
+    public void rotate() {
+        m_turnAngle += Math.toRadians(m_angularVelocity);
+        if (m_turnAngle >= 2 * Math.PI) {
+            m_turnAngle -= 2 * Math.PI;
         }
-        m_turnAngle += Math.toRadians(1);
+        if (m_turnAngle < 0) {
+            m_turnAngle += 2*Math.PI;
+        }
     }
 
     // sets the coordinates of the object
@@ -102,6 +105,22 @@ public class Prop {
 
     public double getTurnAngle() {
         return m_turnAngle;
+    }
+
+    public double getAngularVelocity() {
+        return m_angularVelocity;
+    }
+
+    public void setAngularVelocity(double rotationSpeed) {
+        m_angularVelocity = rotationSpeed;
+    }
+
+    public double getVelocity() {
+        return m_velocity;
+    }
+
+    public void setVelocity(double velocity) {
+        m_velocity = velocity;
     }
 
     public int getWidth() {

@@ -1,6 +1,7 @@
 
 package app;
 
+import javax.management.RuntimeOperationsException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.Image;
@@ -22,38 +23,30 @@ public class MainCharacter extends Prop {
         m_mainPanel = mainPanel; 
         setMoving(true);
         setMainCharacter(this);
+        m_velocity = 0;
+        m_angularVelocity = 0;
     }
 
 
-    public void moveBackForth(int distance, int direction) {
-        if (direction < 0) {
-            distance /= 2;
+    public void moveBackForth() {
+        double deltax = m_velocity * Math.cos(m_turnAngle % (Math.PI/2));
+        double deltay = m_velocity * Math.sin(m_turnAngle % (Math.PI/2));
+        System.out.println(Math.toDegrees(m_turnAngle % (Math.PI/2)));
+        if (m_turnAngle >= (Math.PI/2) && m_turnAngle < Math.PI) { // quadrant II
+            deltax = m_velocity * Math.cos((Math.PI /2) - (m_turnAngle % (Math.PI/2)));
+            deltay = m_velocity * Math.sin((Math.PI/2) - (m_turnAngle % (Math.PI/2)));
+            deltax = -deltax;
+        } else if (m_turnAngle >= (Math.PI) && m_turnAngle < (3 * Math.PI / 2)) { // quadrant III
+            deltax = -deltax;
+            deltay = -deltay;
+        } else if (m_turnAngle >= (3 * Math.PI / 2) && m_turnAngle < (2 *Math.PI)) { // quadrant IV
+            deltax = m_velocity * Math.cos((Math.PI/2)- (m_turnAngle % (Math.PI/2)));
+            deltay = m_velocity * Math.sin((Math.PI/2)- (m_turnAngle % (Math.PI/2)));
+            deltay = -deltay;
         }
-        double mouseHyp = Math.sqrt(Math.pow(m_mouseOpp, 2)+Math.pow(m_mouseAdjacent, 2));
-        //uses the ratio btw the move distance and the hyp of the triangle created by the mouse and the character
-        //to determine how far the character should be moved along the x and y axis
-        double sideRatio = distance/mouseHyp; 
-        double yTransform = m_mouseOpp * sideRatio  *-1;
-        double xTransform = m_mouseAdjacent * sideRatio;
-        double deltax = xTransform * direction;
-        double deltay = yTransform * direction;
-        m_currentMap.moveMap(-deltax, -deltay);
-        move(-deltax, -deltay);    
-    }
-
-    public void moveSideways(int distance, int direction) {
-        distance /= 3;
-
-        double mouseHyp = Math.sqrt(Math.pow(m_mouseOpp, 2)+Math.pow(m_mouseAdjacent, 2));
-        //uses the ratio btw the move distance and the hyp of the triangle created by the mouse and the character
-        //to determine how far the character should be moved along the x and y axis
-        double sideRatio = distance/mouseHyp; 
-        double yTransform = m_mouseAdjacent * sideRatio;
-        double xTransform = m_mouseOpp * sideRatio * -1;
-        double deltax = xTransform * direction;
-        double deltay = yTransform * direction;
-        m_currentMap.moveMap(deltax, deltay);
-        move(deltax, deltay);
+        
+        m_currentMap.moveMap(-deltax, deltay);
+        move(deltax, deltay);    
     }
 
 
@@ -85,23 +78,6 @@ public class MainCharacter extends Prop {
     }
 
     public void updateTurnAngle() {
-        Point pointOnScreen = MouseInfo.getPointerInfo().getLocation();
-        Point framesPoint = m_mainPanel.getLocationOnScreen();
-
-        double mouseX = pointOnScreen.getX() - framesPoint.getX();
-        double mouseY = pointOnScreen.getY() - framesPoint.getY();
-
-        m_mouseAdjacent = mouseX - getCoordinates().getX();
-        m_mouseOpp = getCoordinates().getY() - mouseY;
-
-        m_turnAngle = Math.atan(m_mouseOpp/m_mouseAdjacent);
-        if (m_mouseAdjacent <= 0 && m_mouseOpp > 0) { // if in quadrant II
-            m_turnAngle = Math.PI + m_turnAngle;
-        } else if (m_mouseAdjacent < 0 && m_mouseOpp <= 0) { // if in quadrant III
-            m_turnAngle = Math.PI + m_turnAngle;
-        } else if (m_mouseAdjacent >= 0 && m_mouseOpp < 0) { // if in quadrant IV
-            m_turnAngle = 2 * Math.PI + m_turnAngle;
-        }
         TRUE_COOR.setLocation(MainPanel.frameWidth/2, MainPanel.frameHeight/2);
     }
 

@@ -48,6 +48,7 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
         currentMap.setMainCharacter(mainCharacter);
         currentMap.populateList();
         currentMap.setBackground(new Color(0,154,23));
+        setBackground(new Color(0,154,23));
         setMap();
         add(currentMap);
         timer.start();
@@ -58,7 +59,16 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
     @Override
     public void keyReleased(KeyEvent arg0) {
         // TODO Auto-generated method stub
-
+        if (arg0.getKeyCode() == KeyEvent.VK_A) {
+            mainCharacter.setAngularVelocity(0);
+        } else if (arg0.getKeyCode() == KeyEvent.VK_D) {
+            mainCharacter.setAngularVelocity(0);
+        }
+        if (arg0.getKeyCode() == KeyEvent.VK_W) {
+            mainCharacter.setVelocity(0);
+        } else if (arg0.getKeyCode() == KeyEvent.VK_S) {
+            mainCharacter.setVelocity(0);
+        }
     }
 
     @Override
@@ -74,7 +84,8 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
         mainCharacter.updateTurnAngle();
         frameWidth = frame.getWidth();
         frameHeight = frame.getHeight();
-
+        mainCharacter.rotate();
+        mainCharacter.moveBackForth();
 
     }
     public void setMap() {
@@ -84,16 +95,14 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
     @Override
     public void keyPressed(KeyEvent arg0) {
         if (arg0.getKeyCode() == KeyEvent.VK_A) {
-            mainCharacter.moveSideways(MAIN_CHARACTER_SPEED,Constants.DIRECTION_LEFT);
-        }
-        if (arg0.getKeyCode() == KeyEvent.VK_D) {
-            mainCharacter.moveSideways(MAIN_CHARACTER_SPEED,Constants.DIRECTION_RIGHT);
+            mainCharacter.setAngularVelocity(2.5);
+        } else if (arg0.getKeyCode() == KeyEvent.VK_D) {
+            mainCharacter.setAngularVelocity(-2.5);
         }
         if (arg0.getKeyCode() == KeyEvent.VK_W) {
-            mainCharacter.moveBackForth(MAIN_CHARACTER_SPEED,Constants.DIRECTION_FORWARDS);
-        }
-        if (arg0.getKeyCode() == KeyEvent.VK_S) {
-            mainCharacter.moveBackForth(MAIN_CHARACTER_SPEED,Constants.DIRECTION_BACKWARDS);
+            mainCharacter.setVelocity(5);
+        } else if (arg0.getKeyCode() == KeyEvent.VK_S) {
+            mainCharacter.setVelocity(-5);
         }
         if (arg0.getKeyCode() == KeyEvent.VK_SPACE) {
             if (isApple) {
