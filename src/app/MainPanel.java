@@ -23,7 +23,7 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
     private MainCharacter mainCharacter;
     private boolean facingDown;
     private boolean isApple;
-    private final int MAIN_CHARACTER_SPEED = 10;
+    private final int MAIN_CHARACTER_SPEED = 3;
     private Map currentMap;
     public static int frameWidth;
     public static int frameHeight;
@@ -36,17 +36,21 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
         //this.setPreferredSize(new Dimension(frameWidth, frameHeight));
         setVisible(true);
         facingDown = false;
-        timer = new Timer(50, (ActionListener)this);
-        timer.start();
-        mainCharacter = new MainCharacter();
+        timer = new Timer(30, (ActionListener)this);
+        
+        
         addKeyListener(this);
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
         isApple = false;
-        currentMap = new Map(mainCharacter);
-        currentMap.setBackground(Color.GREEN);
+        currentMap = new Map();
+        mainCharacter = new MainCharacter(currentMap, this);
+        currentMap.setMainCharacter(mainCharacter);
+        currentMap.populateList();
+        currentMap.setBackground(new Color(0,154,23));
         setMap();
         add(currentMap);
+        timer.start();
 
     }
 
@@ -67,22 +71,7 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
         currentMap.revalidate();
         currentMap.repaint();
         currentMap.setPreferredSize(new Dimension(frameWidth, frameHeight));
-        Point pointOnScreen = MouseInfo.getPointerInfo().getLocation();
-        Point framesPoint = this.getLocationOnScreen();
-
-        double mouseX = pointOnScreen.getX() - framesPoint.getX();
-        double mouseY = pointOnScreen.getY() - framesPoint.getY();
-
-        double opposite = mouseX - mainCharacter.getCoordinates().getX();
-        double adjacent = mouseY - mainCharacter.getCoordinates().getY();
-
-        if (adjacent > 0) {
-            facingDown = true;
-        } else {
-            facingDown = false;
-        }
-        double characterAngle = Math.atan(opposite/adjacent);
-        mainCharacter.updateInfo(characterAngle,facingDown,opposite,adjacent);
+        mainCharacter.updateTurnAngle();
         frameWidth = frame.getWidth();
         frameHeight = frame.getHeight();
 
@@ -95,16 +84,16 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
     @Override
     public void keyPressed(KeyEvent arg0) {
         if (arg0.getKeyCode() == KeyEvent.VK_A) {
-            mainCharacter.moveSideways(MAIN_CHARACTER_SPEED,-1);// direction 0 is forwards
+            mainCharacter.moveSideways(MAIN_CHARACTER_SPEED,Constants.DIRECTION_LEFT);
         }
         if (arg0.getKeyCode() == KeyEvent.VK_D) {
-            mainCharacter.moveSideways(MAIN_CHARACTER_SPEED,1);// direction 0 is forwards
+            mainCharacter.moveSideways(MAIN_CHARACTER_SPEED,Constants.DIRECTION_RIGHT);
         }
         if (arg0.getKeyCode() == KeyEvent.VK_W) {
-            mainCharacter.moveBackForth(MAIN_CHARACTER_SPEED,1);// direction 0 is x
+            mainCharacter.moveBackForth(MAIN_CHARACTER_SPEED,Constants.DIRECTION_FORWARDS);
         }
         if (arg0.getKeyCode() == KeyEvent.VK_S) {
-            mainCharacter.moveBackForth(MAIN_CHARACTER_SPEED,-1);// direction 1 is backwards
+            mainCharacter.moveBackForth(MAIN_CHARACTER_SPEED,Constants.DIRECTION_BACKWARDS);
         }
         if (arg0.getKeyCode() == KeyEvent.VK_SPACE) {
             if (isApple) {

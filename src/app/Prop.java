@@ -10,91 +10,106 @@ import java.awt.geom.AffineTransform;
 import java.awt.Graphics2D;
 
 public class Prop {
-    protected Point coor;
-    protected HitBox hitBox;
-    protected double turnAngle; // radians
-    protected Image image;
-    protected MainCharacter mainCharacter;
+    protected Point m_coor;
+    protected HitBox m_hitBox;
+    protected double m_turnAngle; // radians
+    protected Image m_image;
+    protected MainCharacter m_mainCharacter;
+    protected boolean m_moving;
+    protected Map m_currentMap;
 
 
-    public Prop(Point coor, String imagePath) {
-        this.coor = coor;
-        image = new ImageIcon(imagePath).getImage();
-        hitBox = new HitBox(this, 1);
+    public Prop(Point coor, String imagePath, Map map, MainCharacter mainCharacter) {
+        m_coor = coor;
+        m_image = new ImageIcon(imagePath).getImage();
+        m_moving = false;
+        m_currentMap = map;
+        m_mainCharacter = mainCharacter;
+        m_hitBox = new HitBox(this, 1);
     }
 
-    public Prop(Point coor, String imagePath, double turnAngle) {
-        this.coor = coor;
-        this.turnAngle = turnAngle;
-        image = new ImageIcon(imagePath).getImage();
-        hitBox = new HitBox(this, 1);
-
+    public Prop(Point coor, String imagePath, double m_turnAngle, Map map, MainCharacter mainCharacter) {
+        m_coor = coor;
+        this.m_turnAngle = m_turnAngle;
+        m_image = new ImageIcon(imagePath).getImage();
+        m_moving = false;
+        m_currentMap = map;
+        m_mainCharacter = mainCharacter;
+        m_hitBox = new HitBox(this, 1);
     }
 
     public void draw(Graphics2D g2d) {
 
         AffineTransform tr = new AffineTransform();
-        // X and Y are the coordinates of the image
+        // X and Y are the coordinates of the m_image
         // the main character is used as the origin-(0,0)
         // this means that when the page is resized, all the props remain the same distance from the character
-        tr.translate(mainCharacter.getCoordinates().getX() + coor.getX()- getWidth()/2, mainCharacter.getCoordinates().getY() + coor.getY()- getHeight()/2);
-
+        tr.translate(m_mainCharacter.getCoordinates().getX() + m_coor.getX()- getWidth()/2, m_mainCharacter.getCoordinates().getY() + m_coor.getY()- getHeight()/2);
 
         tr.rotate(
-                -turnAngle,
-                image.getWidth(null) / 2,
-                image.getHeight(null) / 2
+                -(m_turnAngle - (Math.PI/2)),
+                m_image.getWidth(null) / 2,
+                m_image.getHeight(null) / 2
         );
-        g2d.drawImage(image, tr, null);
-        hitBox.createRectangle();
-        hitBox.drawLines(g2d);
+        g2d.drawImage(m_image, tr, null);
+        
+        m_hitBox.createRectangle();
+        m_hitBox.drawLines(g2d);
         incrementTurnAngle();
     }
 
     public void move(double deltax, double deltay) {
-        coor.setLocation(coor.getX() + deltax, coor.getY() + deltay);
+        m_coor.setLocation(m_coor.getX() + deltax, m_coor.getY() + deltay);
+        
+    }
+
+    public void setMoving(boolean moving) {
+        m_moving = moving;
     }
 
     // returns the location of the object
     public Point getCoordinates() {
-        return new Point((int)(coor.getX() + mainCharacter.getCoordinates().getX()), (int)(coor.getY() + mainCharacter.getCoordinates().getY()));
+        return new Point((int)(m_coor.getX() + m_mainCharacter.getCoordinates().getX()), (int)(m_coor.getY() + m_mainCharacter.getCoordinates().getY()));
     }
 
     public Point getRelativeCoordinates() {
-        return new Point((int)(coor.getX()), (int)(coor.getY()));
+        return new Point((int)(m_coor.getX()), (int)(m_coor.getY()));
     }
 
     public void incrementTurnAngle() {
-        turnAngle += Math.toRadians(1);
+        if (Math.toDegrees(m_turnAngle) > 270) {
+            setTurnAngle(Math.toRadians(-90));
+        }
+        m_turnAngle += Math.toRadians(1);
     }
 
     // sets the coordinates of the object
     public void moveTo(Point newCoor) {
-        coor = newCoor;
+        m_coor = newCoor;
     }
-    // sets the props character to a certain image
+    // sets the props character to a certain m_image
     public void setImage(String imagePath) {
-        image = new ImageIcon(imagePath).getImage();
+        m_image = new ImageIcon(imagePath).getImage();
     }
 
-    public void setMainCharacter(MainCharacter mainCharacter) {
-        this.mainCharacter = mainCharacter;
+    public void setMainCharacter(MainCharacter m_mainCharacter) {
+        this.m_mainCharacter = m_mainCharacter;
     }
 
-    public void setTurnAngle(double turnAngle) {
-        this.turnAngle = turnAngle;
+    public void setTurnAngle(double m_turnAngle) {
+        this.m_turnAngle = m_turnAngle;
     }
 
     public double getTurnAngle() {
-        return turnAngle;
+        return m_turnAngle;
     }
 
     public int getWidth() {
-        return image.getWidth(null);
+        return m_image.getWidth(null);
     }
 
     public int getHeight() {
-        return image.getHeight(null);
+        return m_image.getHeight(null);
     }
 
 

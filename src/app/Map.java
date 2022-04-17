@@ -16,17 +16,14 @@ public class Map extends JPanel {
     private ArrayList<Prop> propList;
     private double xOffset;
     private double yOffset;
-    private MainCharacter mainCharacter;
+    private MainCharacter m_mainCharacter;
 
-    public Map(MainCharacter mainCharacter) {
+    public Map() {
         xOffset = 0;
         yOffset = 0;
-        this.mainCharacter = mainCharacter;
         setVisible(true);
         setFocusable(true);
         setPreferredSize(new Dimension(MainPanel.frameWidth -20,MainPanel.frameHeight-20));
-        //setSize(new Dimension(MainPanel.frameWidth -20,MainPanel.frameHeight-20));
-        populateList();
     }
 
 
@@ -34,8 +31,7 @@ public class Map extends JPanel {
         propList = new ArrayList<Prop>();
         for (int i = 0; i < 10; i++) {
             Point coor = new Point((int) (Math.random() * 1000), (int) (Math.random() * 1000));
-            Prop prop = new Prop(coor, "src/images/MainCowPic.png", Math.toRadians(0));
-            prop.setMainCharacter(mainCharacter);
+            Prop prop = new Prop(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, m_mainCharacter);
             propList.add(prop);
         }
                 
@@ -45,10 +41,16 @@ public class Map extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
+        
         for (Prop p: propList) {
             p.draw(g2d);
         }
-        mainCharacter.draw(g2d);
+        m_mainCharacter.draw(g2d);
+        
+    }
+
+    public void setMainCharacter(MainCharacter mainCharacter) {
+        m_mainCharacter = mainCharacter;
     }
 
     public void moveMap(double deltax, double deltay) {

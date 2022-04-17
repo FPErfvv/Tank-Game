@@ -58,10 +58,15 @@ public class HitBox {
         Point botR = collisionPoints[1];
         Point topL = collisionPoints[2];
         Point botL = collisionPoints[3];
-        double lenM = (topR.getY() - botR.getY())/(topR.getX() - botR.getX());
-        double widthM = 1/-lenM;
+        double lenM = (topR.getY() - botR.getY())/(topR.getX() - botR.getX()); // Slope of the two sides
+        double widthM = 1/-lenM; // slope of the top and bottom lines
         Point test = new Point(50,50);
-        
+        double angleInDegrees = Math.toDegrees(angle);
+        if (angleInDegrees > 0 && angleInDegrees < 90) {
+            if (test.getY() - topR.getY() > lenM * (test.getX() - topR.getX())){
+                //TODO: finish testing collision detection
+            }
+        }
         for (Point p: points) {
             
         }
@@ -71,30 +76,26 @@ public class HitBox {
     public void createRectangle() {
         width = prop.getWidth();
         height = prop.getHeight();
-        double turnAngle = prop.getTurnAngle();
-        angle = turnAngle;
+        angle = prop.getTurnAngle() - (Math.PI/2);
         // top right point *
-        // int x = (int)(prop.getCoordinates().getX() + (width/2 * Math.sin(turnAngle) - height/2 * Math.cos(turnAngle)));
-        // int y = (int)(prop.getCoordinates().getY() + (width/2 * Math.cos(turnAngle) + height/2 * Math.sin(turnAngle)));
-        int x = (int)(prop.getCoordinates().getX() + (width / 2 * Math.cos(turnAngle) - height / 2 * Math.sin(turnAngle)));
-        int y = (int) (prop.getCoordinates().getY() - (width / 2 * Math.sin(turnAngle) + height / 2 * Math.cos(turnAngle)));
+        int x = (int)(prop.getCoordinates().getX() + (width / 2 * Math.cos(angle) - height / 2 * Math.sin(angle)));
+        int y = (int) (prop.getCoordinates().getY() - (width / 2 * Math.sin(angle) + height / 2 * Math.cos(angle)));
         collisionPoints[0] = new Point(x, y);
 
         // bottom right point
-        x = (int) (prop.getCoordinates().getX() + (width / 2 * Math.cos(turnAngle) + height /2 * Math.sin(turnAngle)));
-        y = (int) (prop.getCoordinates().getY() - (width / 2 * Math.sin(turnAngle) - height /2 * Math.cos(turnAngle)));
+        x = (int) (prop.getCoordinates().getX() + (width / 2 * Math.cos(angle) + height /2 * Math.sin(angle)));
+        y = (int) (prop.getCoordinates().getY() - (width / 2 * Math.sin(angle) - height /2 * Math.cos(angle)));
         collisionPoints[1] = new Point(x, y);
 
         // bottom left *
-        x = (int) (prop.getCoordinates().getX() - (width / 2 * Math.cos(turnAngle) - height / 2 * Math.sin(turnAngle)));
-        y = (int) (prop.getCoordinates().getY() + (width / 2 * Math.sin(turnAngle) + height / 2 * Math.cos(turnAngle)));
+        x = (int) (prop.getCoordinates().getX() - (width / 2 * Math.cos(angle) - height / 2 * Math.sin(angle)));
+        y = (int) (prop.getCoordinates().getY() + (width / 2 * Math.sin(angle) + height / 2 * Math.cos(angle)));
         collisionPoints[3] = new Point(x, y);
 
         // top left
-        x = (int) (prop.getCoordinates().getX() - (width / 2 * Math.cos(turnAngle) + height / 2 * Math.sin(turnAngle)));
-        y = (int) (prop.getCoordinates().getY() + (width / 2 * Math.sin(turnAngle) - height / 2 * Math.cos(turnAngle)));
+        x = (int) (prop.getCoordinates().getX() - (width / 2 * Math.cos(angle) + height / 2 * Math.sin(angle)));
+        y = (int) (prop.getCoordinates().getY() + (width / 2 * Math.sin(angle) - height / 2 * Math.cos(angle)));
         collisionPoints[2] = new Point(x,y);
-
     }
 
     public void drawLines(Graphics2D g2d) {
@@ -110,6 +111,7 @@ public class HitBox {
         for (Point p: point) {
             g2d.fillOval((int)p.getX(), (int)p.getY(), 5, 5);
         }
+        g2d.fillOval(200, 200, 10, 10);
     }
 
     public Point[] getContactPoints() {
