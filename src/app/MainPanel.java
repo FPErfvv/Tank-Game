@@ -14,7 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.MouseInfo;
-import java.awt.Point;
+import java.awt.Rectangle;
 
 
 public class MainPanel extends JPanel implements ActionListener, KeyListener  {
@@ -27,6 +27,7 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
     private Map currentMap;
     public static int frameWidth;
     public static int frameHeight;
+    private static Rectangle repaintRectangle;
 
     
     MainPanel(JFrame f) {
@@ -45,14 +46,16 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
         isApple = false;
         currentMap = new Map();
         mainCharacter = new MainCharacter(currentMap, this);
+        repaintRectangle = new Rectangle((int)mainCharacter.getTrueCoordinates().x-(frameWidth/2), (int)mainCharacter.getTrueCoordinates().y - (frameHeight/2),frameWidth,frameHeight);
         currentMap.setMainCharacter(mainCharacter);
-        currentMap.populateList();
-        currentMap.setBackground(new Color(0,154,23));
+        currentMap.initialize();
         setBackground(new Color(0,154,23));
-        setMap();
         add(currentMap);
         timer.start();
 
+    }
+
+    public void initialize() {
     }
 
 
@@ -60,14 +63,16 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
     public void keyReleased(KeyEvent arg0) {
         // TODO Auto-generated method stub
         if (arg0.getKeyCode() == KeyEvent.VK_A) {
-            mainCharacter.setAngularVelocity(0);
+            mainCharacter.startTurning(false, Constants.TURNING_LEFT);
         } else if (arg0.getKeyCode() == KeyEvent.VK_D) {
-            mainCharacter.setAngularVelocity(0);
+            mainCharacter.startTurning(false, Constants.TURNING_RIGHT);
         }
         if (arg0.getKeyCode() == KeyEvent.VK_W) {
             mainCharacter.setVelocity(0);
         } else if (arg0.getKeyCode() == KeyEvent.VK_S) {
             mainCharacter.setVelocity(0);
+        }if (arg0.getKeyCode() == KeyEvent.VK_E) {
+            timer.start();
         }
     }
 
@@ -79,13 +84,15 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
     @Override
     public void actionPerformed(ActionEvent arg0) {
         currentMap.revalidate();
-        currentMap.repaint();
+        currentMap.repaint(repaintRectangle);
         currentMap.setPreferredSize(new Dimension(frameWidth, frameHeight));
-        mainCharacter.updateTurnAngle();
+        mainCharacter.updateTrueCoordinates();
         frameWidth = frame.getWidth();
+        repaintRectangle.setBounds((int) mainCharacter.getTrueCoordinates().x - (frameWidth/2), (int) mainCharacter.getTrueCoordinates().y - (frameHeight/2),frameWidth,frameHeight);
         frameHeight = frame.getHeight();
         mainCharacter.rotate();
         mainCharacter.moveBackForth();
+        currentMap.checkCollisions();
 
     }
     public void setMap() {
@@ -95,9 +102,9 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
     @Override
     public void keyPressed(KeyEvent arg0) {
         if (arg0.getKeyCode() == KeyEvent.VK_A) {
-            mainCharacter.setAngularVelocity(2.5);
+            mainCharacter.startTurning(true, Constants.TURNING_LEFT);
         } else if (arg0.getKeyCode() == KeyEvent.VK_D) {
-            mainCharacter.setAngularVelocity(-2.5);
+            mainCharacter.startTurning(true, Constants.TURNING_RIGHT);
         }
         if (arg0.getKeyCode() == KeyEvent.VK_W) {
             mainCharacter.setVelocity(5);
@@ -113,6 +120,9 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
                 isApple = true;
             }
             
+        }
+        if (arg0.getKeyCode() == KeyEvent.VK_E) {
+            timer.stop();
         }
     }
 }

@@ -3,11 +3,12 @@ package app;
 
 import javax.management.RuntimeOperationsException;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.Image;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class MainCharacter extends Prop {
     private boolean facingDown;
@@ -15,23 +16,24 @@ public class MainCharacter extends Prop {
     private double m_mouseAdjacent;
     private MainPanel m_mainPanel;
     public static final Point TRUE_COOR = new Point(MainPanel.frameWidth/2,MainPanel.frameHeight/2);
+    private ArrayList<Byte> turningBuffer; 
     
     public MainCharacter(Map map, MainPanel mainPanel) {
-
-        super(new Point(200,200),"src/images/MainCowPic.png", map, null);
+        super(new Point(0,0),"src/images/MainCowPic.png", map, null, true);
         //image = new ImageIcon("src/images/MainCowPic.png").getImage();
+        turningBuffer = new ArrayList<Byte>();
         m_mainPanel = mainPanel; 
         setMoving(true);
         setMainCharacter(this);
         m_velocity = 0;
-        m_angularVelocity = 0;
+        m_hitBox.createRectangle();
+        m_hitBox.getContactPoints();
     }
 
 
     public void moveBackForth() {
         double deltax = m_velocity * Math.cos(m_turnAngle % (Math.PI/2));
         double deltay = m_velocity * Math.sin(m_turnAngle % (Math.PI/2));
-        System.out.println(Math.toDegrees(m_turnAngle % (Math.PI/2)));
         if (m_turnAngle >= (Math.PI/2) && m_turnAngle < Math.PI) { // quadrant II
             deltax = m_velocity * Math.cos((Math.PI /2) - (m_turnAngle % (Math.PI/2)));
             deltay = m_velocity * Math.sin((Math.PI/2) - (m_turnAngle % (Math.PI/2)));
@@ -64,9 +66,9 @@ public class MainCharacter extends Prop {
         );
         g2d.drawImage(m_image, tr, null);
         m_hitBox.createRectangle();
-        m_hitBox.drawLines(g2d);
         m_hitBox.getContactPoints();
-        m_hitBox.checkCollision(new Point[] {new Point()});
+        m_hitBox.drawLines(g2d);
+        
     }
 
     public int getWidth() {
@@ -77,15 +79,15 @@ public class MainCharacter extends Prop {
         return m_image.getHeight(null);
     }
 
-    public void updateTurnAngle() {
+    public void updateTrueCoordinates() {
         TRUE_COOR.setLocation(MainPanel.frameWidth/2, MainPanel.frameHeight/2);
     }
 
     public void setCurrentMap(Map map) {
         m_currentMap = map;
     }
-
-    public Point getCoordinates() {
+    @Override
+    public Point getTrueCoordinates() {
         return TRUE_COOR;
     }
 

@@ -2,8 +2,8 @@ package app;
 
 import java.util.ArrayList;
 
-import java.awt.Point;
 import java.awt.Graphics2D;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
@@ -26,12 +26,19 @@ public class Map extends JPanel {
         setPreferredSize(new Dimension(MainPanel.frameWidth -20,MainPanel.frameHeight-20));
     }
 
+    public void initialize() {
+        populateList();
+        setBackground(new Color(0,154,23));
+    }
+
 
     public void populateList() {
         propList = new ArrayList<Prop>();
-        for (int i = 0; i < 10; i++) {
-            Point coor = new Point((int) (Math.random() * 1000), (int) (Math.random() * 1000));
-            Prop prop = new Prop(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, m_mainCharacter);
+        for (int i = 0; i < 1; i++) {
+            //Point coor = new Point((int) (Math.random() * 1000), (int) (Math.random() * 1000));
+            Point coor = new Point(0,0);
+            Prop prop = new Prop(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, m_mainCharacter, false);
+            prop.initialize();
             propList.add(prop);
         }
                 
@@ -57,8 +64,12 @@ public class Map extends JPanel {
         xOffset += deltax;
         yOffset += deltay;
         for (Prop p: propList) {
-            p.move(deltax, deltay);
+            p.moveWithMap(deltax, deltay);
         }
+    }
+
+    public void checkCollisions() {
+        m_mainCharacter.getHitBox().SAT(propList.get(0).getHitBox().getCollisionPoints(), propList.get(0).getRelativeCoordinates());
     }
 
     public double[] getOffset() {
