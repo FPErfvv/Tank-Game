@@ -123,8 +123,6 @@ public class HitBox {
         double p1max = p1min;
         double p2min = 0;
         double p2max = p2min;   
-        //System.out.println(m_axes[0].getX() + ", " + m_axes[0].getY() + ") (" + m_axes[1].getX() + ", " + m_axes[1].getY());
-        int counter = 0;
         for (Point point: m_collisionPoints) {
             point.setLocation(m_prop.getRelativeCoordinates().getX() - point.getX(), m_prop.getRelativeCoordinates().getY() - point.getY());
         }
@@ -132,7 +130,6 @@ public class HitBox {
             point.setLocation(targetsCoor.getX() - point.getX(), targetsCoor.getY() - point.getY());
         }
         for (Point axis: m_axes) {
-            counter++;
             // get an initial min/max value for this hitbox
             p1min = vectorDotProduct(axis, m_collisionPoints[0]);
             p1max = p1min;
@@ -164,33 +161,8 @@ public class HitBox {
             // TODO: error in SAT stems from whether offset is added to p2 or p1
             p2min += sOffset;
             p2max += sOffset;
-            System.out.println(Math.round(m_prop.getRelativeCoordinates().getX()) + " | " + Math.round(targetsCoor.getX()) + ", " + Math.round(m_prop.getRelativeCoordinates().getY()) + " | " + Math.round(targetsCoor.getY()));
 
-            if (counter == 2) {
-                pts[0] = p1min;
-                pts[1] = p1max;
-                pts[2] = p2min;
-                pts[3] = p2max;
-            } else {
-                pts[4] = p1min;
-                pts[5] = p1max;
-                pts[6] = p2min;
-                pts[7] = p2max;
-            }
-
-
-
-            //System.out.println(counter);
-            //System.out.println("P1Min: " + p1min + ", P1Max: " + p1max + ",     P2Min: " + p2min + ", P2Max: " + p2max + ",   " + sOffset);
-            
-            if ( (p1min - p2max > 0) || (p2min - p1max > 0))
-            {
-            // there is a gap - bail
-            //System.out.println("there is a gap!");
-            // if (counter == 2)
-            //     System.out.println("Counter 2: P1Min: " + Math.round(p1min) + ", P1Max: " + Math.round(p1max) + ",     P2Min: " + Math.round(p2min) + ", P2Max: " + Math.round(p2max) + ",   " + Math.round(sOffset));
-            // else
-            //     System.out.println("Counter 1: P1Min: " + Math.round(p1min) + ", P1Max: " + Math.round(p1max) + ",     P2Min: " + Math.round(p2min) + ", P2Max: " + Math.round(p2max) + ",   " + Math.round(sOffset));
+            if ( (p1min - p2max > 0) || (p2min - p1max > 0)) {
                 return false;
             }
             
