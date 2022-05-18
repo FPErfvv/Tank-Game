@@ -3,7 +3,7 @@ import javax.swing.JFrame;
 
 
 public class Main  {
-    static JFrame f = new JFrame("TTopia");
+    static JFrame f = new JFrame("Tank Game");
 
     public static void main(String[] args) throws Exception {
         MainPanel mainPanel = new MainPanel(f);

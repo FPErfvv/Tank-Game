@@ -17,6 +17,7 @@ public class Map extends JPanel {
     private double xOffset;
     private double yOffset;
     private MainCharacter m_mainCharacter;
+    private Graphics2D m_g2d;
 
     public Map() {
         xOffset = 0;
@@ -25,6 +26,7 @@ public class Map extends JPanel {
         setFocusable(true);
         setPreferredSize(new Dimension(MainPanel.frameWidth -20,MainPanel.frameHeight-20));
     }
+    
 
     public void initialize() {
         populateList();
@@ -37,7 +39,7 @@ public class Map extends JPanel {
         for (int i = 0; i < 1; i++) {
             //Point coor = new Point((int) (Math.random() * 1000), (int) (Math.random() * 1000));
             Point coor = new Point(0,0);
-            Prop prop = new Prop(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, m_mainCharacter, false);
+            Prop prop = new Prop(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, m_mainCharacter, false);        
             prop.initialize();
             propList.add(prop);
         }
@@ -47,12 +49,13 @@ public class Map extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        Graphics2D g2d = (Graphics2D) g;
-        
+        m_g2d = (Graphics2D) g;
+        m_g2d.translate(getWidth()/2, getHeight()/2);
+        m_g2d.fillRect(10, -10, 20, 20);
         for (Prop p: propList) {
-            p.draw(g2d);
+            p.draw(m_g2d);
         }
-        m_mainCharacter.draw(g2d);
+        m_mainCharacter.draw(m_g2d);
         
     }
 
@@ -66,6 +69,11 @@ public class Map extends JPanel {
         for (Prop p: propList) {
             p.moveWithMap(deltax, deltay);
         }
+    }
+
+    public void translateOrigin() {
+        m_g2d.translate(getWidth()/2, -getHeight()/2);
+        System.out.println(getWidth() + " " + getHeight());
     }
 
     public void checkCollisions() {

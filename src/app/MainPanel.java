@@ -12,12 +12,14 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
-
-public class MainPanel extends JPanel implements ActionListener, KeyListener  {
+public class MainPanel extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
     private JFrame frame;
     private MainCharacter mainCharacter;
@@ -29,30 +31,29 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
     public static int frameHeight;
     private static Rectangle repaintRectangle;
 
-    
     MainPanel(JFrame f) {
+
         frame = f;
         frameWidth = 500;
         frameHeight = 500;
-        //this.setPreferredSize(new Dimension(frameWidth, frameHeight));
+        // this.setPreferredSize(new Dimension(frameWidth, frameHeight));
         setVisible(true);
         facingDown = false;
-        timer = new Timer(30, (ActionListener)this);
-        
-        
+        timer = new Timer(30, (ActionListener) this);
+
         addKeyListener(this);
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
         isApple = false;
         currentMap = new Map();
         mainCharacter = new MainCharacter(currentMap, this);
-        repaintRectangle = new Rectangle((int)mainCharacter.getTrueCoordinates().x-(frameWidth/2), (int)mainCharacter.getTrueCoordinates().y - (frameHeight/2),frameWidth,frameHeight);
+        repaintRectangle = new Rectangle((int) mainCharacter.getTrueCoordinates().x - (frameWidth / 2),
+                (int) mainCharacter.getTrueCoordinates().y - (frameHeight / 2), frameWidth, frameHeight);
         currentMap.setMainCharacter(mainCharacter);
         currentMap.initialize();
-        setBackground(new Color(0,154,23));
+        setBackground(new Color(0, 154, 23));
         add(currentMap);
         timer.start();
-
     }
 
     public void initialize() {
@@ -86,14 +87,12 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener  {
         currentMap.revalidate();
         currentMap.repaint(repaintRectangle);
         currentMap.setPreferredSize(new Dimension(frameWidth, frameHeight));
-        mainCharacter.updateTrueCoordinates();
         frameWidth = frame.getWidth();
-        repaintRectangle.setBounds((int) mainCharacter.getTrueCoordinates().x - (frameWidth/2), (int) mainCharacter.getTrueCoordinates().y - (frameHeight/2),frameWidth,frameHeight);
+        repaintRectangle.setBounds( 0, 0,frameWidth,frameHeight);
         frameHeight = frame.getHeight();
         mainCharacter.rotate();
         mainCharacter.moveBackForth();
         currentMap.checkCollisions();
-
     }
     public void setMap() {
         mainCharacter.setCurrentMap(currentMap);

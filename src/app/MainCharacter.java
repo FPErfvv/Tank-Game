@@ -15,11 +15,11 @@ public class MainCharacter extends Prop {
     private double m_mouseOpp;
     private double m_mouseAdjacent;
     private MainPanel m_mainPanel;
-    public static final Point TRUE_COOR = new Point(MainPanel.frameWidth/2,MainPanel.frameHeight/2);
+    public static final Point TRUE_COOR = new Point(0,0);
     private ArrayList<Byte> turningBuffer; 
     
     public MainCharacter(Map map, MainPanel mainPanel) {
-        super(new Point(0,0),"src/images/MainCowPic.png", map, null, true);
+        super(new Point(0, 0),"src/images/MainCowPic.png", map, null, true);
         //image = new ImageIcon("src/images/MainCowPic.png").getImage();
         turningBuffer = new ArrayList<Byte>();
         m_mainPanel = mainPanel; 
@@ -27,7 +27,6 @@ public class MainCharacter extends Prop {
         setMainCharacter(this);
         m_velocity = 0;
         m_hitBox.createRectangle();
-        m_hitBox.getContactPoints();
     }
 
 
@@ -66,7 +65,6 @@ public class MainCharacter extends Prop {
         );
         g2d.drawImage(m_image, tr, null);
         m_hitBox.createRectangle();
-        m_hitBox.getContactPoints();
         m_hitBox.drawLines(g2d);
         
     }
@@ -80,7 +78,7 @@ public class MainCharacter extends Prop {
     }
 
     public void updateTrueCoordinates() {
-        TRUE_COOR.setLocation(MainPanel.frameWidth/2, MainPanel.frameHeight/2);
+        //TRUE_COOR.setLocation(MainPanel.frameWidth/2, MainPanel.frameHeight/2);
     }
 
     public void setCurrentMap(Map map) {

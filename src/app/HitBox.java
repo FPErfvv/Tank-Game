@@ -29,29 +29,40 @@ public class HitBox {
     private Point[] m_collisionPoints;
     private double m_angle;
     private Point[] m_axes;
+    private Double[] pts;
 
     public HitBox(Prop m_prop, int m_width, int m_height, int type) {
         this.m_prop = m_prop;
         this.m_width = m_width;
         this.m_height = m_height;
         this.type = type;
-        m_axes = new Point[2];
+        m_axes = new Point[4];
         m_angle = 0;
         //location = m_prop.getTrueCoordinates();
         m_collisionPoints = new Point[4];
         createRectangle();
+        pts = new Double[8];
+        pts[0] = 1.0;
+        pts[1] = 1.0;
+        pts[2] = 1.0;
+        pts[3] = 1.0;
     }
 
     // creates a bounding box with the m_height and m_width the size of the m_prop's image
     public HitBox(Prop m_prop, int type) {
         this.m_prop = m_prop;
         this.type = type;
-        m_axes = new Point[2];
+        m_axes = new Point[4];
         m_angle = 0;
         m_width = m_prop.getWidth();
         m_height = m_prop.getHeight();
         //location = m_prop.getTrueCoordinates();
         m_collisionPoints = new Point[4];
+        pts = new Double[8];
+        pts[0] = 1.0;
+        pts[1] = 1.0;
+        pts[2] = 1.0;
+        pts[3] = 1.0;
     }
 
 
@@ -77,9 +88,9 @@ public class HitBox {
 
     // reference: https://www.sevenson.com.au/programming/sat/ 
     // https://dyn4j.org/2010/01/sat/#sat-proj 
+    // https://gamedevelopment.tutsplus.com/tutorials/collision-detection-using-the-separating-axis-theorem--gamedev-169 
     public boolean SAT(Point[] targetsCollisionPoints, Point targetsCoor) {
         int loopLength = 2; // will be one less than half the # of sides
-        Point[] targetsAxes = new Point[2];
         for (int i = 1; i <= loopLength; i++) {
             
             // finds the x and y of a vector perpendicular to three of the sides
@@ -105,7 +116,7 @@ public class HitBox {
                 x *= 1/magnitude;
                 y *= 1/magnitude;
             }
-            targetsAxes[i-1] = new Point(x, y);
+            m_axes[i+1] = new Point(x, y);
         }
 
         double p1min = 0;
@@ -114,6 +125,12 @@ public class HitBox {
         double p2max = p2min;   
         //System.out.println(m_axes[0].getX() + ", " + m_axes[0].getY() + ") (" + m_axes[1].getX() + ", " + m_axes[1].getY());
         int counter = 0;
+        for (Point point: m_collisionPoints) {
+            point.setLocation(m_prop.getRelativeCoordinates().getX() - point.getX(), m_prop.getRelativeCoordinates().getY() - point.getY());
+        }
+        for (Point point: targetsCollisionPoints) {
+            point.setLocation(targetsCoor.getX() - point.getX(), targetsCoor.getY() - point.getY());
+        }
         for (Point axis: m_axes) {
             counter++;
             // get an initial min/max value for this hitbox
@@ -139,24 +156,44 @@ public class HitBox {
                 p2max = Math.max(p2max, dot);
             }
             // vector offset between the two shapes
-            Point vOffset = new Point(m_prop.getRelativeCoordinates().getX() - targetsCoor.getX(), m_prop.getRelativeCoordinates().getY() - targetsCoor.getY());
             
+            Point vOffset = new Point(m_prop.getRelativeCoordinates().getX() - targetsCoor.getX(), m_prop.getRelativeCoordinates().getY() - targetsCoor.getY());
             // project that onto the same axis as just used
             double sOffset = vectorDotProduct(axis, vOffset);
             // that will give you a scaler value that you can add to the min/max of one of the polygons from earlier
             // TODO: error in SAT stems from whether offset is added to p2 or p1
-            p1min += sOffset;
-            p1max += sOffset;
-            System.out.println(counter);
-            System.out.println("P1Min: " + p1min + ", P1Max: " + p1max + ",     P2Min: " + p2min + ", P2Max: " + p2max + ",   " + sOffset);
+            p2min += sOffset;
+            p2max += sOffset;
+            System.out.println(Math.round(m_prop.getRelativeCoordinates().getX()) + " | " + Math.round(targetsCoor.getX()) + ", " + Math.round(m_prop.getRelativeCoordinates().getY()) + " | " + Math.round(targetsCoor.getY()));
+
+            if (counter == 2) {
+                pts[0] = p1min;
+                pts[1] = p1max;
+                pts[2] = p2min;
+                pts[3] = p2max;
+            } else {
+                pts[4] = p1min;
+                pts[5] = p1max;
+                pts[6] = p2min;
+                pts[7] = p2max;
+            }
+
+
+
+            //System.out.println(counter);
+            //System.out.println("P1Min: " + p1min + ", P1Max: " + p1max + ",     P2Min: " + p2min + ", P2Max: " + p2max + ",   " + sOffset);
             
             if ( (p1min - p2max > 0) || (p2min - p1max > 0))
             {
-               // there is a gap - bail
-               //System.out.println("there is a gap!");
-               
-               return false;
+            // there is a gap - bail
+            //System.out.println("there is a gap!");
+            // if (counter == 2)
+            //     System.out.println("Counter 2: P1Min: " + Math.round(p1min) + ", P1Max: " + Math.round(p1max) + ",     P2Min: " + Math.round(p2min) + ", P2Max: " + Math.round(p2max) + ",   " + Math.round(sOffset));
+            // else
+            //     System.out.println("Counter 1: P1Min: " + Math.round(p1min) + ", P1Max: " + Math.round(p1max) + ",     P2Min: " + Math.round(p2min) + ", P2Max: " + Math.round(p2max) + ",   " + Math.round(sOffset));
+                return false;
             }
+            
         }
         
         System.out.println("IT COLLIDED!!!!!!!!!!!!!!!!!!!!");
@@ -200,47 +237,6 @@ public class HitBox {
         g2d.drawLine((int)m_collisionPoints[2].getX(), (int)m_collisionPoints[2].getY(), (int)m_collisionPoints[3].getX(), (int)m_collisionPoints[3].getY());
         // top
         g2d.drawLine((int)m_collisionPoints[0].getX(), (int)m_collisionPoints[0].getY(), (int)m_collisionPoints[3].getX(), (int)m_collisionPoints[3].getY());
-        Point[] point = getContactPoints();
-        if (m_prop.m_isMainCharacter) {
-                    // right side
-        g2d.drawLine((int)m_prop.getTrueCoordinates().getX(), (int) m_prop.getTrueCoordinates().getY(),(int) (m_prop.getTrueCoordinates().getX()+ m_axes[1].getX() * 50), (int) (m_prop.getTrueCoordinates().getY() + m_axes[1].getY() * 50));
-        // bottom
-        g2d.drawLine((int)m_prop.getTrueCoordinates().getX(), (int) m_prop.getTrueCoordinates().getY(),(int) (m_prop.getTrueCoordinates().getX()+ m_axes[0].getX() * 50), (int) (m_prop.getTrueCoordinates().getY() + m_axes[0].getY() * 50));
-        }
-
-        
-        for (Point p: point) {
-            g2d.fillOval((int)p.getX(), (int)p.getY(), 5, 5);
-        }
-        g2d.fillOval(200, 200, 10, 10);
-    }
-
-    public Point[] getContactPoints() {
-        // slope of right side
-        ArrayList<Point> points = new ArrayList<Point>();
-
-        for (int i = -m_height /2; i < m_height/2; i+=20) {
-            int x = (int) (m_prop.getTrueCoordinates().getX() + (m_width / 2 * Math.cos(m_angle) - i * Math.sin(m_angle)));
-            int y = (int) (m_prop.getTrueCoordinates().getY() - (m_width / 2 * Math.sin(m_angle) + i * Math.cos(m_angle)));
-            points.add(new Point(x, y));
-            x = (int) (m_prop.getTrueCoordinates().getX() - (m_width / 2 * Math.cos(m_angle) - i * Math.sin(m_angle)));
-            y = (int) (m_prop.getTrueCoordinates().getY() + (m_width / 2 * Math.sin(m_angle) + i * Math.cos(m_angle)));
-            points.add(new Point(x,y));
-        }
-        for (int i = -m_width /2; i < m_width/2; i+=20) {
-            int x = (int) (m_prop.getTrueCoordinates().getX() - (i * Math.cos(m_angle) - m_height / 2 * Math.sin(m_angle)));
-            int y = (int) (m_prop.getTrueCoordinates().getY() + (i * Math.sin(m_angle) + m_height / 2 * Math.cos(m_angle)));
-            points.add(new Point(x, y));
-            x = (int) (m_prop.getTrueCoordinates().getX() - (i * Math.cos(m_angle) + m_height / 2 * Math.sin(m_angle)));
-            y = (int) (m_prop.getTrueCoordinates().getY() + (i * Math.sin(m_angle) - m_height / 2 * Math.cos(m_angle)));
-            points.add(new Point(x,y));
-        }
-
-        Point[] contactPoints = new Point[points.size()];
-        for (int i = 0; i < contactPoints.length;i++) {
-            contactPoints[i] = points.get(i);
-        }
-        return contactPoints;
     }
 
     public double vectorDotProduct(Point pt1, Point pt2)

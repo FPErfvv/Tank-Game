@@ -72,7 +72,7 @@ public class Prop {
         // the main character is used as the origin-(0,0)
         // this means that when the page is resized, all the props remain the same distance from the character
         
-        tr.translate(m_trueCoor.getX()- getWidth()/2, m_trueCoor.getY()- getHeight()/2);
+        tr.translate(m_mainCharacter.getTrueCoordinates().getX()+ m_trueCoor.getX()- getWidth()/2, m_mainCharacter.getTrueCoordinates().getY()+m_trueCoor.getY()- getHeight()/2);
 
         tr.rotate(
                 -(m_turnAngle - (Math.PI/2)),
@@ -97,10 +97,10 @@ public class Prop {
     public void setMoving(boolean moving) {
         m_moving = moving;
     }
-
+    
     // returns the location of the object
     public Point getTrueCoordinates() {
-        return m_trueCoor;
+        return addPoints(m_trueCoor, m_mainCharacter.getTrueCoordinates());
     }
 
     public Point getRelativeCoordinates() {
