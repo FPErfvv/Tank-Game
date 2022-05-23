@@ -62,7 +62,8 @@ public class Point {
       return false;
     }
     
-    public java.lang.String toString() {
-      return null;
+    public String toString() {
+      return "(" + Math.round(x) + ", " + Math.round(y) + ")";
     }
+
 }

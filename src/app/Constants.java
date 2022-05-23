@@ -21,4 +21,12 @@ public class Constants {
     public static final int BOTTOM_LEFT_VERT = 2;
     public static final int TOP_LEFT_VERT = 3;
 
+    // Hitbox Type
+    public static final int RECTANGLE = 0;
+    public static final int CIRCLE = 1;
+    public static final int COW = 2;
+
+    public static Point addPoints(Point pt1, Point pt2) {
+        return new Point(pt1.getX() + pt2.getX(), pt1.getY() + pt2.getY());
+    }
 }

@@ -38,7 +38,7 @@ public class Prop {
         m_currentMap = map;
         m_mainCharacter = mainCharacter;
         m_hitBox = new HitBox(this, 1);
-        m_hitBox.createRectangle();
+        m_hitBox.createRectangle(m_trueCoor, m_turnAngle);
     }
 
     public Prop(Point coor, String imagePath, double m_turnAngle, Map map, MainCharacter mainCharacter, boolean isMainCharacter) {
@@ -54,15 +54,11 @@ public class Prop {
         m_currentMap = map;
         m_mainCharacter = mainCharacter;
         m_hitBox = new HitBox(this, 1);
-        m_hitBox.createRectangle();
+        m_hitBox.createRectangle(m_trueCoor, m_turnAngle);
     }
 
     public void initialize() {
-        m_trueCoor = addPoints(m_mainCharacter.getTrueCoordinates(), m_trueCoor);
-    }
-
-    public Point addPoints(Point pt1, Point pt2) {
-        return new Point(pt1.getX() + pt2.getX(), pt1.getY() + pt2.getY());
+        m_trueCoor = Constants.addPoints(m_mainCharacter.getTrueCoordinates(), m_trueCoor);
     }
 
     public void draw(Graphics2D g2d) {
@@ -81,13 +77,32 @@ public class Prop {
         );
         g2d.drawImage(m_image, tr, null);
         
-        m_hitBox.createRectangle();
+        m_hitBox.createRectangle(m_coor, m_turnAngle);
         m_hitBox.drawLines(g2d);
     }
 
-    public void move(double deltax, double deltay) {
+    public void translate(double deltax, double deltay) {
         m_coor.setLocation(m_coor.getX() + deltax, m_coor.getY() + deltay);
         m_trueCoor.setLocation(m_trueCoor.getX() + deltax, m_trueCoor.getY() + deltay);
+    }
+
+    public void move(int distance) {
+        double deltax = distance * Math.cos(m_turnAngle % (Math.PI/2));
+        double deltay = distance * Math.sin(m_turnAngle % (Math.PI/2));
+        if (m_turnAngle >= (Math.PI/2) && m_turnAngle < Math.PI) { // quadrant II
+            deltax = distance * Math.cos((Math.PI /2) - (m_turnAngle % (Math.PI/2)));
+            deltay = distance * Math.sin((Math.PI/2) - (m_turnAngle % (Math.PI/2)));
+            deltax = -deltax;
+        } else if (m_turnAngle >= (Math.PI) && m_turnAngle < (3 * Math.PI / 2)) { // quadrant III
+            deltax = -deltax;
+            deltay = -deltay;
+        } else if (m_turnAngle >= (3 * Math.PI / 2) && m_turnAngle < (2 *Math.PI)) { // quadrant IV
+            deltax = distance * Math.cos((Math.PI/2)- (m_turnAngle % (Math.PI/2)));
+            deltay = distance * Math.sin((Math.PI/2)- (m_turnAngle % (Math.PI/2)));
+            deltay = -deltay;
+        }
+        
+        translate(deltax, deltay);    
     }
 
     public void moveWithMap(double deltax, double deltay) {
@@ -100,7 +115,8 @@ public class Prop {
     
     // returns the location of the object
     public Point getTrueCoordinates() {
-        return addPoints(m_trueCoor, m_mainCharacter.getTrueCoordinates());
+        //return addPoints(m_trueCoor, m_mainCharacter.getTrueCoordinates());
+        return m_trueCoor;
     }
 
     public Point getRelativeCoordinates() {

@@ -90,7 +90,6 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener {
         frameWidth = frame.getWidth();
         repaintRectangle.setBounds( 0, 0,frameWidth,frameHeight);
         frameHeight = frame.getHeight();
-        mainCharacter.rotate();
         mainCharacter.moveBackForth();
         currentMap.checkCollisions();
     }

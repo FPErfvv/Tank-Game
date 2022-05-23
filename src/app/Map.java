@@ -36,9 +36,9 @@ public class Map extends JPanel {
 
     public void populateList() {
         propList = new ArrayList<Prop>();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 2; i++) {
             //Point coor = new Point((int) (Math.random() * 1000), (int) (Math.random() * 1000));
-            Point coor = new Point(0,0);
+            Point coor = new Point(100,-100);
             Prop prop = new Prop(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, m_mainCharacter, false);        
             prop.initialize();
             propList.add(prop);
@@ -51,7 +51,6 @@ public class Map extends JPanel {
         super.paint(g);
         m_g2d = (Graphics2D) g;
         m_g2d.translate(getWidth()/2, getHeight()/2);
-        m_g2d.fillRect(10, -10, 20, 20);
         for (Prop p: propList) {
             p.draw(m_g2d);
         }
@@ -73,15 +72,19 @@ public class Map extends JPanel {
 
     public void translateOrigin() {
         m_g2d.translate(getWidth()/2, -getHeight()/2);
-        System.out.println(getWidth() + " " + getHeight());
     }
 
     public void checkCollisions() {
-        m_mainCharacter.getHitBox().SAT(propList.get(0).getHitBox().getCollisionPoints(), propList.get(0).getRelativeCoordinates());
+        //Point mtv = m_mainCharacter.getHitBox().SAT(propList.get(0).getHitBox().getCollisionPoints(), propList.get(0).getRelativeCoordinates());
+        //propList.get(0).translate(-mtv.getX(), -mtv.getY());
     }
 
     public double[] getOffset() {
         return new double[] {xOffset, yOffset};
+    }
+
+    public ArrayList<Prop> getPropList() {
+        return propList;
     }
 
 }
