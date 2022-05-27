@@ -20,7 +20,7 @@ public class Prop {
     protected boolean m_turning;
     protected boolean m_changingDirection;
     protected Map m_currentMap;
-    protected double m_velocity;
+    protected double m_speed;
     protected double m_angularVelocity;
     protected static final double DEFAULT_ANGULAR_VELOCITY = 5;
     public boolean m_isMainCharacter;
@@ -115,7 +115,6 @@ public class Prop {
     
     // returns the location of the object
     public Point getTrueCoordinates() {
-        //return addPoints(m_trueCoor, m_mainCharacter.getTrueCoordinates());
         return m_trueCoor;
     }
 
@@ -184,12 +183,12 @@ public class Prop {
         }
     }
 
-    public double getVelocity() {
-        return m_velocity;
+    public double getSpeed() {
+        return m_speed;
     }
 
-    public void setVelocity(double velocity) {
-        m_velocity = velocity;
+    public void setSpeed(double speed) {
+        m_speed = speed;
     }
 
     public int getWidth() {

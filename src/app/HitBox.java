@@ -3,7 +3,6 @@ package app;
 import java.util.ArrayList;
 import java.util.Vector;
 import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
 
 public class HitBox {
     // Equation for rotated elipse: https://math.stackexchange.com/questions/426150/what-is-the-general-equation-of-the-ellipse-that-is-not-in-the-origin-and-rotate
@@ -68,7 +67,7 @@ public class HitBox {
     // https://dyn4j.org/2010/01/sat/#sat-proj 
     // https://gamedevelopment.tutsplus.com/tutorials/collision-detection-using-the-separating-axis-theorem--gamedev-169 
     public Point SAT(Point[] targetsCollisionPoints, Point targetsCoor, Point propsFutureCoor) {
-        Point mtv = new Point(0,0);
+        Point mtv = new Point(Double.MAX_VALUE, Double.MAX_VALUE);
         int loopLength = 3; // will be one less than half the # of sides
         for (int i = 1; i <= loopLength; i++) {
             
@@ -76,12 +75,7 @@ public class HitBox {
             double x = -(m_collisionPoints[i].getY() - m_collisionPoints[i-1].getY());
             double y = (m_collisionPoints[i].getX() - m_collisionPoints[i-1].getX());
             // the vector needs to be normalized to make it's length 1
-            double magnitude = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-            if (magnitude != 0) {
-                x *= 1/magnitude;
-                y *= 1/magnitude;
-            }
-            m_axes[i-1] = new Point(x, y);
+            m_axes[i-1] = Constants.normalize(new Point(x,y));
         }
 
         for (int i = 1; i <= loopLength; i++) {
@@ -90,12 +84,7 @@ public class HitBox {
             double x = -(targetsCollisionPoints[i].getY() - targetsCollisionPoints[i-1].getY());
             double y = (targetsCollisionPoints[i].getX() - targetsCollisionPoints[i-1].getX());
             // the vector needs to be normalized to make it's length 1
-            double magnitude = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-            if (magnitude != 0) {
-                x *= 1/magnitude;
-                y *= 1/magnitude;
-            }
-            m_axes[i+2] = new Point(x, y);
+            m_axes[i+2] = Constants.normalize(new Point(x,y));
         }
 
         double p1min = 0;
@@ -113,24 +102,24 @@ public class HitBox {
         for (Point axis: m_axes) {
             counter++;
             // get an initial min/max value for this hitbox
-            p1min = vectorDotProduct(axis, m_collisionPoints[0]);
+            p1min = axis.vectorDotProduct(m_collisionPoints[0]);
             p1max = p1min;
 
             // loop over all the other verts to complete the range
             for (int i = 1; i < m_collisionPoints.length; i++)
             { 
-                double dot = vectorDotProduct(axis, m_collisionPoints[i]);
+                double dot = axis.vectorDotProduct(m_collisionPoints[i]);
                 p1min = Math.min(p1min , dot);
                 p1max = Math.max(p1max , dot);
             }
             // get an initial min/max value for targets hitbox
-            p2min = vectorDotProduct(axis, targetsCollisionPoints[0]);
+            p2min = axis.vectorDotProduct(targetsCollisionPoints[0]);
             p2max = p2min;
 
             // loop over all the other verts to complete the range
             for (int i = 1; i < targetsCollisionPoints.length; i++)
             { 
-                double dot = vectorDotProduct(axis, targetsCollisionPoints[i]);
+                double dot = axis.vectorDotProduct(targetsCollisionPoints[i]);
                 p2min = Math.min(p2min, dot);
                 p2max = Math.max(p2max, dot);
             }
@@ -138,18 +127,22 @@ public class HitBox {
             
             Point vOffset = new Point(propsFutureCoor.getX() - targetsCoor.getX(), propsFutureCoor.getY() - targetsCoor.getY());
             // project that onto the same axis as just used
-            double sOffset = vectorDotProduct(axis, vOffset);
+            double sOffset = axis.vectorDotProduct(vOffset);
             // that will give you a scaler value that you can add to the min/max of one of the polygons from earlier
             // TODO: error in SAT stems from whether offset is added to p2 or p1
             p2min += sOffset;
             p2max += sOffset;
+            Point tempMTV = new Point(Math.abs(axis.getX() * (p1min - p2max)),Math.abs(axis.getY() * (p1min - p2max))) ;
+            if (tempMTV.getMagnitude() < mtv.getMagnitude() && tempMTV.getMagnitude() != 0) {
+                mtv = tempMTV;
+            }
             if (counter == 3) {
                 //System.out.print(" Counter 3: " + Math.round(p1min - p2max));
             } if (counter == 4) {
                 //System.out.print(" Counter 4: " + Math.round(p1min - p2max));
             }
             if (counter == 2) {
-                mtv = new Point(axis.getX() * (int) Math.round(p1min - p2max),axis.getX() * (int) Math.round(p1min - p2max));
+                //mtv = new Point(axis.getX() * (int) Math.round(p1min - p2max),axis.getX() * (int) Math.round(p1min - p2max));
                 //System.out.println(" Counter 2: " + Math.round(p1min - p2max));
                 pts[0] = p1min;
                 pts[1] = p1max;
@@ -203,24 +196,17 @@ public class HitBox {
     }
 
     public void drawLines(Graphics2D g2d) {
-        // right side
-        g2d.drawLine((int)m_collisionPoints[0].getX(), (int)m_collisionPoints[0].getY(), (int)m_collisionPoints[1].getX(), (int)m_collisionPoints[1].getY());
-        // bottom
-        g2d.drawLine((int)m_collisionPoints[1].getX(), (int)m_collisionPoints[1].getY(), (int)m_collisionPoints[2].getX(), (int)m_collisionPoints[2].getY());
-        // left side
-        g2d.drawLine((int)m_collisionPoints[2].getX(), (int)m_collisionPoints[2].getY(), (int)m_collisionPoints[3].getX(), (int)m_collisionPoints[3].getY());
-        // top
-        g2d.drawLine((int)m_collisionPoints[0].getX(), (int)m_collisionPoints[0].getY(), (int)m_collisionPoints[3].getX(), (int)m_collisionPoints[3].getY());
+        if (m_prop instanceof MainCharacter) {
+            // right side
+            g2d.drawLine((int)m_collisionPoints[0].getX(), (int)m_collisionPoints[0].getY(), (int)m_collisionPoints[1].getX(), (int)m_collisionPoints[1].getY());
+            // bottom
+            g2d.drawLine((int)m_collisionPoints[1].getX(), (int)m_collisionPoints[1].getY(), (int)m_collisionPoints[2].getX(), (int)m_collisionPoints[2].getY());
+            // left side
+            g2d.drawLine((int)m_collisionPoints[2].getX(), (int)m_collisionPoints[2].getY(), (int)m_collisionPoints[3].getX(), (int)m_collisionPoints[3].getY());
+            // top
+            g2d.drawLine((int)m_collisionPoints[0].getX(), (int)m_collisionPoints[0].getY(), (int)m_collisionPoints[3].getX(), (int)m_collisionPoints[3].getY());
+        }
 
-        g2d.drawString("p1MIN", 100, 100 + Math.round(pts[0]/3));
-        g2d.drawString("p1MAX", 100, 100 + Math.round(pts[1]/3));
-        g2d.drawString("p2MIN", 100, 100 + Math.round(pts[2]/3));
-        g2d.drawString("p2MAX", 100, 100 + Math.round(pts[3]/3));
-    }
-
-    public double vectorDotProduct(Point pt1, Point pt2)
-    {
-       return (pt1.x * pt2.x) + (pt1.y * pt2.y);
     }
 
     public Point[] getCollisionPoints() {

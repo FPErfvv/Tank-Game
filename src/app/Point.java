@@ -61,9 +61,18 @@ public class Point {
     public boolean equals(java.lang.Object obj) {
       return false;
     }
+
+    public double getMagnitude() {
+      return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    }
     
     public String toString() {
-      return "(" + Math.round(x) + ", " + Math.round(y) + ")";
+      return "(" + (Math.round(x * 100.00)/100.00) + ", " + Math.round(y * 100.00) / 100.00 + ")"; // rounds it to two decimal places
+    }
+
+    public double vectorDotProduct(Point pt2)
+    {
+       return (x * pt2.x) + (y * pt2.y);
     }
 
 }

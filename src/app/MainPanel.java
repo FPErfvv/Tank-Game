@@ -69,9 +69,9 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener {
             mainCharacter.startTurning(false, Constants.TURNING_RIGHT);
         }
         if (arg0.getKeyCode() == KeyEvent.VK_W) {
-            mainCharacter.setVelocity(0);
+            mainCharacter.setSpeed(0);
         } else if (arg0.getKeyCode() == KeyEvent.VK_S) {
-            mainCharacter.setVelocity(0);
+            mainCharacter.setSpeed(0);
         }if (arg0.getKeyCode() == KeyEvent.VK_E) {
             timer.start();
         }
@@ -105,9 +105,9 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener {
             mainCharacter.startTurning(true, Constants.TURNING_RIGHT);
         }
         if (arg0.getKeyCode() == KeyEvent.VK_W) {
-            mainCharacter.setVelocity(5);
+            mainCharacter.setSpeed(5);
         } else if (arg0.getKeyCode() == KeyEvent.VK_S) {
-            mainCharacter.setVelocity(-5);
+            mainCharacter.setSpeed(-5);
         }
         if (arg0.getKeyCode() == KeyEvent.VK_SPACE) {
             if (isApple) {

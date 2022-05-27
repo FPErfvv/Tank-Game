@@ -25,25 +25,25 @@ public class MainCharacter extends Prop {
         m_mainPanel = mainPanel; 
         setMoving(true);
         setMainCharacter(this);
-        m_velocity = 0;
+        m_speed = 0;
     }
 
 
     public void moveBackForth() {
-        
-        double deltax = m_velocity * Math.cos(m_turnAngle % (Math.PI/2));
-        double deltay = m_velocity * Math.sin(m_turnAngle % (Math.PI/2));
+        Point velocity = new Point();
+        velocity.x = m_speed * Math.cos(m_turnAngle % (Math.PI/2));
+        velocity.y = m_speed * Math.sin(m_turnAngle % (Math.PI/2));
         if (m_turnAngle >= (Math.PI/2) && m_turnAngle < Math.PI) { // quadrant II
-            deltax = m_velocity * Math.cos((Math.PI /2) - (m_turnAngle % (Math.PI/2)));
-            deltay = m_velocity * Math.sin((Math.PI/2) - (m_turnAngle % (Math.PI/2)));
-            deltax = -deltax;
+            velocity.x = m_speed * Math.cos((Math.PI /2) - (m_turnAngle % (Math.PI/2)));
+            velocity.y = m_speed * Math.sin((Math.PI/2) - (m_turnAngle % (Math.PI/2)));
+            velocity.x = -velocity.x;
         } else if (m_turnAngle >= (Math.PI) && m_turnAngle < (3 * Math.PI / 2)) { // quadrant III
-            deltax = -deltax;
-            deltay = -deltay;
+            velocity.x = -velocity.x;
+            velocity.y = -velocity.y;
         } else if (m_turnAngle >= (3 * Math.PI / 2) && m_turnAngle < (2 *Math.PI)) { // quadrant IV
-            deltax = m_velocity * Math.cos((Math.PI/2)- (m_turnAngle % (Math.PI/2)));
-            deltay = m_velocity * Math.sin((Math.PI/2)- (m_turnAngle % (Math.PI/2)));
-            deltay = -deltay;
+            velocity.x = m_speed * Math.cos((Math.PI/2)- (m_turnAngle % (Math.PI/2)));
+            velocity.y = m_speed * Math.sin((Math.PI/2)- (m_turnAngle % (Math.PI/2)));
+            velocity.y = -velocity.y;
         }
 
         double futureAngle = m_turnAngle;
@@ -59,22 +59,48 @@ public class MainCharacter extends Prop {
             }
         }
 
-        m_hitBox.createRectangle(Constants.addPoints(m_coor, new Point(deltax, -deltay)), futureAngle);
-        Point mtv = m_mainCharacter.getHitBox().SAT(m_currentMap.getPropList().get(0).getHitBox().getCollisionPoints(), m_currentMap.getPropList().get(0).getRelativeCoordinates(), Constants.addPoints(m_coor, new Point(deltax, -deltay)));
-        if (mtv.getX() == 0) {
-            m_currentMap.moveMap(-deltax, deltay);
-            translate(deltax, -deltay); 
+        m_hitBox.createRectangle(Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)), futureAngle);
+        Point mtv = m_mainCharacter.getHitBox().SAT(m_currentMap.getPropList().get(0).getHitBox().getCollisionPoints(), m_currentMap.getPropList().get(0).getRelativeCoordinates(), Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)));
+        System.out.println(mtv);
+        if (mtv.getMagnitude() <= .1 && mtv.getMagnitude() >= -.1) {
+            m_currentMap.moveMap(-velocity.x, velocity.y);
+            translate(velocity.x, -velocity.y); 
             if (m_turning) {
                 m_turnAngle = futureAngle;
                 m_hitBox.setTurnAngle();
-            }
+            } 
+         } 
+        else {
+
+            // Point normalized = Constants.normalize(velocity);
+            // double sidleUpDistance = -1;
+            // if (mtv.getMagnitude() != 0 || velocity.getMagnitude() != 0) {
+            //     // This finds the angle between the velocity vector and the mtv vector. 
+            //     // Using that, it finds how far the cow needs to move in the direction of the velocity vector to move the magnitude of the mtv vector
+            //     // cos(α) = a · b / (|a| * |b|)
+            //     // h = adj / cos(α)
+            //     // h = adj / a · b / (|a| * |b|)
+            //     sidleUpDistance = Math.abs(mtv.getMagnitude()/(mtv.vectorDotProduct(velocity) / (mtv.getMagnitude() * velocity.getMagnitude())));
+            // }
+            // if (sidleUpDistance >= 0) {
+            //     System.out.println(sidleUpDistance + " " + mtv);
+            //     Point sidleUpVector = new Point(Math.abs(velocity.x) - Math.abs(normalized.getX() * sidleUpDistance -.1), Math.abs(velocity.y) - Math.abs(normalized.getY() * sidleUpDistance -.1));
+            //     m_currentMap.moveMap(-sidleUpVector.getX(), sidleUpVector.getY());
+            //     translate(sidleUpVector.getX(), -sidleUpVector.getY()); 
+
+            // }
+            if (m_turning) {
+                m_turnAngle = futureAngle;
+                m_hitBox.setTurnAngle();
+            } 
+
         }
            
     }
 
     @Override
-    public void translate(double deltax, double deltay) {
-        m_coor.setLocation(m_coor.getX() + deltax, m_coor.getY() + deltay);
+    public void translate(double deltaX, double deltaY) {
+        m_coor.setLocation(m_coor.getX() + deltaX, m_coor.getY() + deltaY);
     }
 
 
@@ -93,28 +119,6 @@ public class MainCharacter extends Prop {
         g2d.drawImage(m_image, tr, null);
         m_hitBox.drawLines(g2d);
         
-    }
-    @Override
-    public void rotate() {
-        
-        // if (m_turning) {
-            
-        //     //Point mtv = new Point(0,0);
-        //     double futureAngle = m_turnAngle;
-        //     futureAngle += Math.toRadians(m_angularVelocity);
-        //     if (futureAngle >= 2 * Math.PI) {
-        //         futureAngle -= 2 * Math.PI;
-        //     }
-        //     if (futureAngle < 0) {
-        //         futureAngle += 2*Math.PI;
-        //     }
-        //     m_hitBox.createRectangle(m_coor, futureAngle);
-        //     Point mtv = getHitBox().SAT(m_currentMap.getPropList().get(0).getHitBox().getCollisionPoints(), m_currentMap.getPropList().get(0).getRelativeCoordinates(), m_coor);
-        //     if (mtv.getX() == 0) {
-        //         m_turnAngle = futureAngle;
-        //         m_hitBox.setTurnAngle();
-        //     }
-        // }
     }
 
     public int getWidth() {

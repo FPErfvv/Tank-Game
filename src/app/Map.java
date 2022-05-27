@@ -87,4 +87,11 @@ public class Map extends JPanel {
         return propList;
     }
 
+    /**
+     * Links to Terrain Generation
+     * https://www.procjam.com/tutorials/en/ooze/
+     * https://gamedev.stackexchange.com/questions/186194/how-to-randomly-generate-biome-with-perlin-noise
+     * https://www.redblobgames.com/x/1721-voronoi-alternative/
+     *  */ 
+
 }

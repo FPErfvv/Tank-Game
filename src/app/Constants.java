@@ -29,4 +29,13 @@ public class Constants {
     public static Point addPoints(Point pt1, Point pt2) {
         return new Point(pt1.getX() + pt2.getX(), pt1.getY() + pt2.getY());
     }
+
+    public static Point normalize(Point pt) {
+        double magnitude = Math.sqrt(Math.pow(pt.getX(), 2) + Math.pow(pt.getY(), 2));
+        if (magnitude != 0) {
+            pt.x *= 1/magnitude;
+            pt.y *= 1/magnitude;
+        }
+        return pt;
+    }
 }
