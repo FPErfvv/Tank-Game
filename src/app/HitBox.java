@@ -91,8 +91,6 @@ public class HitBox {
         double p1max = p1min;
         double p2min = 0;
         double p2max = p2min;   
-        //System.out.println(m_axes[0].getX() + ", " + m_axes[0].getY() + ") (" + m_axes[1].getX() + ", " + m_axes[1].getY());
-        int counter = 0;
         for (Point point: m_collisionPoints) {
             point.setLocation(propsFutureCoor.getX() - point.getX(), propsFutureCoor.getY() - point.getY());
         }
@@ -100,7 +98,6 @@ public class HitBox {
             point.setLocation(targetsCoor.getX() - point.getX(), targetsCoor.getY() - point.getY());
         }
         for (Point axis: m_axes) {
-            counter++;
             // get an initial min/max value for this hitbox
             p1min = axis.vectorDotProduct(m_collisionPoints[0]);
             p1max = p1min;
@@ -123,45 +120,27 @@ public class HitBox {
                 p2min = Math.min(p2min, dot);
                 p2max = Math.max(p2max, dot);
             }
+
             // vector offset between the two shapes
-            
             Point vOffset = new Point(propsFutureCoor.getX() - targetsCoor.getX(), propsFutureCoor.getY() - targetsCoor.getY());
             // project that onto the same axis as just used
             double sOffset = axis.vectorDotProduct(vOffset);
             // that will give you a scaler value that you can add to the min/max of one of the polygons from earlier
-            // TODO: error in SAT stems from whether offset is added to p2 or p1
             p2min += sOffset;
             p2max += sOffset;
             Point tempMTV = new Point(Math.abs(axis.getX() * (p1min - p2max)),Math.abs(axis.getY() * (p1min - p2max))) ;
+            //Point tempMTV = new Point(Math.abs(axis.getX() * (p2min - p1max)),Math.abs(axis.getY() * (p2min - p1max))) ;
+
             if (tempMTV.getMagnitude() < mtv.getMagnitude() && tempMTV.getMagnitude() != 0) {
                 mtv = tempMTV;
             }
-            if (counter == 3) {
-                //System.out.print(" Counter 3: " + Math.round(p1min - p2max));
-            } if (counter == 4) {
-                //System.out.print(" Counter 4: " + Math.round(p1min - p2max));
-            }
-            if (counter == 2) {
-                //mtv = new Point(axis.getX() * (int) Math.round(p1min - p2max),axis.getX() * (int) Math.round(p1min - p2max));
-                //System.out.println(" Counter 2: " + Math.round(p1min - p2max));
-                pts[0] = p1min;
-                pts[1] = p1max;
-                pts[2] = p2min;
-                pts[3] = p2max;
-            } else {
-                //System.out.println(" Counter 1: " + Math.round(p1min - p2max));
-                pts[4] = p1min;
-                pts[5] = p1max;
-                pts[6] = p2min;
-                pts[7] = p2max;
-            }
             
+            // if a gap is found between the projections, there is no collision detected
             if ( (p1min - p2max > 0) || (p2min - p1max > 0)) {
                 return new Point(0,0);
             }
             
         }
-        System.out.print("it collided");
         return mtv;
     }
 

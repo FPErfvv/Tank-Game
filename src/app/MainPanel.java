@@ -91,8 +91,8 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener {
         repaintRectangle.setBounds( 0, 0,frameWidth,frameHeight);
         frameHeight = frame.getHeight();
         mainCharacter.moveBackForth();
-        currentMap.checkCollisions();
     }
+    
     public void setMap() {
         mainCharacter.setCurrentMap(currentMap);
     }
@@ -111,10 +111,10 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener {
         }
         if (arg0.getKeyCode() == KeyEvent.VK_SPACE) {
             if (isApple) {
-                mainCharacter.setImage("src/images/MainCowPic.png");
+                mainCharacter.setImage("src/images/MainCharacter.png");
                 isApple = false;
             } else {
-                mainCharacter.setImage("src/images/snake-apple.png");
+                mainCharacter.setImage("src/images/MainCowPic.png");
                 isApple = true;
             }
             

@@ -10,9 +10,6 @@ public class Main  {
         f.add(mainPanel);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setSize(500,500);
-        f.setVisible(true);
-        
-        //f.setResizable(false);
-        
+        f.setVisible(true);        
     }
 }

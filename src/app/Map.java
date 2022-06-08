@@ -74,11 +74,6 @@ public class Map extends JPanel {
         m_g2d.translate(getWidth()/2, -getHeight()/2);
     }
 
-    public void checkCollisions() {
-        //Point mtv = m_mainCharacter.getHitBox().SAT(propList.get(0).getHitBox().getCollisionPoints(), propList.get(0).getRelativeCoordinates());
-        //propList.get(0).translate(-mtv.getX(), -mtv.getY());
-    }
-
     public double[] getOffset() {
         return new double[] {xOffset, yOffset};
     }
@@ -92,6 +87,9 @@ public class Map extends JPanel {
      * https://www.procjam.com/tutorials/en/ooze/
      * https://gamedev.stackexchange.com/questions/186194/how-to-randomly-generate-biome-with-perlin-noise
      * https://www.redblobgames.com/x/1721-voronoi-alternative/
-     *  */ 
+     * 
+     * Link to hexagon class + hexagon grid
+     * https://github.com/javagl/Hexagon
+     **/ 
 
 }
