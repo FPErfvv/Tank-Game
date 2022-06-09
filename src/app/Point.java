@@ -75,4 +75,8 @@ public class Point {
        return (x * pt2.x) + (y * pt2.y);
     }
 
+    public static double getDistance(Point pt1, Point pt2) {
+      return (Math.sqrt(Math.pow(pt1.getX() - pt2.getX(),2) + Math.pow(pt1.getY() - pt2.getY(),2)));
+    }
+
 }

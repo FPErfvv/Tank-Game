@@ -25,7 +25,8 @@ public class HitBox {
     private Point location;
     private int m_width, m_height;
     private Prop m_prop;
-    private Point[] m_collisionPoints;
+    // An array of points used to create the shape of the bounding box.
+    private Point[] m_vert;
     private double m_angle;
     private Point[] m_axes;
     private Double[] pts;
@@ -38,12 +39,8 @@ public class HitBox {
         m_axes = new Point[6];
         m_angle = 0;
         //location = m_prop.getTrueCoordinates();
-        m_collisionPoints = new Point[4];
-        pts = new Double[8];
-        pts[0] = 1.0;
-        pts[1] = 1.0;
-        pts[2] = 1.0;
-        pts[3] = 1.0;
+        m_vert = new Point[4];
+
     }
 
     // creates a bounding box with the m_height and m_width the size of the m_prop's image
@@ -55,43 +52,61 @@ public class HitBox {
         m_width = m_prop.getWidth();
         m_height = m_prop.getHeight();
         //location = m_prop.getTrueCoordinates();
-        m_collisionPoints = new Point[4];
-        pts = new Double[8];
-        pts[0] = 1.0;
-        pts[1] = 1.0;
-        pts[2] = 1.0;
-        pts[3] = 1.0;
+        
+        m_vert = new Point[4];
+
     }
 
     // reference: https://www.sevenson.com.au/programming/sat/ 
     // https://dyn4j.org/2010/01/sat/#sat-proj 
     // https://gamedevelopment.tutsplus.com/tutorials/collision-detection-using-the-separating-axis-theorem--gamedev-169 
-    public Point SAT(Point[] targetsCollisionPoints, Point targetsCoor, Point propsFutureCoor) {
+    public Point SAT(Point[] targetsVert, Point targetsCoor, Point propsFutureCoor) {
         Point mtv = new Point(Double.MAX_VALUE, Double.MAX_VALUE);
-        int loopLength = 3; // will be one less than half the # of sides
-        for (int i = 1; i <= loopLength; i++) {
-            
+        int loopLength = m_vert.length; // will be one less than half the # of sides
+        double x = 0;
+        double y = 0;
+        for (int i = 1; i < loopLength; i++) {
+
             // finds the x and y of a vector perpendicular to three of the sides
-            double x = -(m_collisionPoints[i].getY() - m_collisionPoints[i-1].getY());
-            double y = (m_collisionPoints[i].getX() - m_collisionPoints[i-1].getX());
+            x = -(m_vert[i].getY() - m_vert[i-1].getY());
+            y = (m_vert[i].getX() - m_vert[i-1].getX());
             // the vector needs to be normalized to make it's length 1
             m_axes[i-1] = Constants.normalize(new Point(x,y));
         }
-
-        for (int i = 1; i <= loopLength; i++) {
+        // finds the x and y of a vector perpendicular to three of the sides
+        x = -(m_vert[loopLength-1].getY() - m_vert[0].getY());
+        y = (m_vert[loopLength-1].getX() - m_vert[0].getX());
+        // the vector needs to be normalized to make it's length 1
+        m_axes[loopLength-1] = Constants.normalize(new Point(x,y));
+        m_axes[1] = new Point(-m_axes[1].getX(), -m_axes[1].getY());
+        loopLength = targetsVert.length;
+        for (int i = 1; i < loopLength; i++) {
             
             // finds the x and y of a vector perpendicular to three of the sides
-            double x = -(targetsCollisionPoints[i].getY() - targetsCollisionPoints[i-1].getY());
-            double y = (targetsCollisionPoints[i].getX() - targetsCollisionPoints[i-1].getX());
+            x = -(targetsVert[i].getY() - targetsVert[i-1].getY());
+            y = (targetsVert[i].getX() - targetsVert[i-1].getX());
             // the vector needs to be normalized to make it's length 1
             m_axes[i+2] = Constants.normalize(new Point(x,y));
         }
+                // finds the x and y of a vector perpendicular to three of the sides
+        x = -(m_vert[loopLength-1].getY() - m_vert[0].getY());
+        y = (m_vert[loopLength-1].getX() - m_vert[0].getX());
+        // the vector needs to be normalized to make it's length 1
+        m_axes[loopLength-1] = Constants.normalize(new Point(x,y));
 
         double p1min = 0;
         double p1max = p1min;
         double p2min = 0;
         double p2max = p2min;   
-        for (Point point: m_collisionPoints) {
+        Point[] collisionPoints = new Point[m_vert.length];
+        for (int i = 0; i < collisionPoints.length; i++) {
+            collisionPoints[i] = new Point(m_vert[i].getX(),m_vert[i].getY());
+        }
+        Point[] targetsCollisionPoints = new Point[targetsVert.length];
+        for (int i = 0; i < targetsCollisionPoints.length; i++) {
+            targetsCollisionPoints[i] = new Point(targetsVert[i].getX(),targetsVert[i].getY());
+        }
+        for (Point point: collisionPoints) {
             point.setLocation(propsFutureCoor.getX() - point.getX(), propsFutureCoor.getY() - point.getY());
         }
         for (Point point: targetsCollisionPoints) {
@@ -99,13 +114,13 @@ public class HitBox {
         }
         for (Point axis: m_axes) {
             // get an initial min/max value for this hitbox
-            p1min = axis.vectorDotProduct(m_collisionPoints[0]);
+            p1min = axis.vectorDotProduct(collisionPoints[0]);
             p1max = p1min;
 
             // loop over all the other verts to complete the range
-            for (int i = 1; i < m_collisionPoints.length; i++)
+            for (int i = 1; i < collisionPoints.length; i++)
             { 
-                double dot = axis.vectorDotProduct(m_collisionPoints[i]);
+                double dot = axis.vectorDotProduct(collisionPoints[i]);
                 p1min = Math.min(p1min , dot);
                 p1max = Math.max(p1max , dot);
             }
@@ -129,7 +144,6 @@ public class HitBox {
             p2min += sOffset;
             p2max += sOffset;
             Point tempMTV = new Point(Math.abs(axis.getX() * (p1min - p2max)),Math.abs(axis.getY() * (p1min - p2max))) ;
-            //Point tempMTV = new Point(Math.abs(axis.getX() * (p2min - p1max)),Math.abs(axis.getY() * (p2min - p1max))) ;
 
             if (tempMTV.getMagnitude() < mtv.getMagnitude() && tempMTV.getMagnitude() != 0) {
                 mtv = tempMTV;
@@ -144,51 +158,82 @@ public class HitBox {
         return mtv;
     }
 
+    /**
+     * This mothod takes the center of a target game element and returns which side
+     * of this hitbox is closest, either front or back.
+     * @param targetsCenter
+     * @return closest side (front or back) to the targetsCenter
+     */
+    public int getClosestSide(Point targetsCenter) {
+        int indexOfClosestPoint = 0;
+        double smallestDistance = Double.MAX_VALUE;
+        for (int i = 0; i < m_vert.length; i++) {
+            if (Point.getDistance(targetsCenter, m_vert[i]) < smallestDistance) {
+                smallestDistance = Point.getDistance(targetsCenter, m_vert[i]);
+                indexOfClosestPoint = i;
+            }
+        }
+        return indexOfClosestPoint < 2 ? Constants.FRONT : Constants.BACK;
+    }
+
     public void setTurnAngle() {
         m_angle = m_prop.getTurnAngle() - (Math.PI/2);
     }
 
-    public void createRectangle(Point propCoor, double futureAngle) {    
+    /**
+     * This method takes an angle and a coordinate of the prop and 
+     * updates the m_vert array with new values. The m_vert array
+     * is a list of coordinates that determine the corner points
+     * of a rectangular hitbox.
+     * @param futurePropCoor the future coordinate of the prop
+     * @param futureAngle the future angle of the prop
+     */
+    public void createRectangle(Point futurePropCoor, double futureAngle) {    
         m_width = m_prop.getWidth();
         m_height = m_prop.getHeight();
         futureAngle -= (Math.PI/2);
-        // top right point *
-        int x = (int)(propCoor.getX() + (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
-        int y = (int) (propCoor.getY() - (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
-        m_collisionPoints[0] = new Point(x, y);
-
-        // bottom right point
-        x = (int) (propCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height /2 * Math.sin(futureAngle)));
-        y = (int) (propCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height /2 * Math.cos(futureAngle)));
-        m_collisionPoints[1] = new Point(x, y);
-
-        // bottom left *
-        x = (int) (propCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
-        y = (int) (propCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
-        m_collisionPoints[2] = new Point(x, y);
-
+        
         // top left
-        x = (int) (propCoor.getX() - (m_width / 2 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
-        y = (int) (propCoor.getY() + (m_width / 2 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
-        m_collisionPoints[3] = new Point(x,y);
+        int x = (int) (futurePropCoor.getX() - (m_width / 2 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
+        int y = (int) (futurePropCoor.getY() + (m_width / 2 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
+        m_vert[0] = new Point(x,y); 
+
+        //top right
+        x = (int)(futurePropCoor.getX() + (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
+        y = (int) (futurePropCoor.getY() - (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
+        m_vert[1] = new Point(x, y);    
+
+        // bottom right
+        x = (int) (futurePropCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height /2 * Math.sin(futureAngle)));
+        y = (int) (futurePropCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height /2 * Math.cos(futureAngle)));
+        m_vert[2] = new Point(x, y);
+
+
+        
+        //bottom left
+        x = (int) (futurePropCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
+        y = (int) (futurePropCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
+        m_vert[3] = new Point(x, y); 
 
     }
 
-    public void drawLines(Graphics2D g2d) {
-        if (m_prop instanceof MainCharacter) {
+    /**
+     * Draws the hitbox
+     * @param g2d 
+     */
+    public void drawHitBox(Graphics2D g2d) {
+        //if (m_prop instanceof MainCharacter) {
             // right side
-            g2d.drawLine((int)m_collisionPoints[0].getX(), (int)m_collisionPoints[0].getY(), (int)m_collisionPoints[1].getX(), (int)m_collisionPoints[1].getY());
+            g2d.drawLine((int)m_vert[0].getX(), (int)m_vert[0].getY(), (int)m_vert[1].getX(), (int)m_vert[1].getY());
             // bottom
-            g2d.drawLine((int)m_collisionPoints[1].getX(), (int)m_collisionPoints[1].getY(), (int)m_collisionPoints[2].getX(), (int)m_collisionPoints[2].getY());
+            g2d.drawLine((int)m_vert[1].getX(), (int)m_vert[1].getY(), (int)m_vert[2].getX(), (int)m_vert[2].getY());
             // left side
-            g2d.drawLine((int)m_collisionPoints[2].getX(), (int)m_collisionPoints[2].getY(), (int)m_collisionPoints[3].getX(), (int)m_collisionPoints[3].getY());
+            g2d.drawLine((int)m_vert[2].getX(), (int)m_vert[2].getY(), (int)m_vert[3].getX(), (int)m_vert[3].getY());
             // top
-            g2d.drawLine((int)m_collisionPoints[0].getX(), (int)m_collisionPoints[0].getY(), (int)m_collisionPoints[3].getX(), (int)m_collisionPoints[3].getY());
-        }
-
+            g2d.drawLine((int)m_vert[0].getX(), (int)m_vert[0].getY(), (int)m_vert[3].getX(), (int)m_vert[3].getY());
     }
 
     public Point[] getCollisionPoints() {
-        return m_collisionPoints;
+        return m_vert;
     }
 }

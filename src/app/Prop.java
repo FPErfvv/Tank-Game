@@ -38,7 +38,7 @@ public class Prop {
         m_currentMap = map;
         m_mainCharacter = mainCharacter;
         m_hitBox = new HitBox(this, 1);
-        m_hitBox.createRectangle(m_trueCoor, m_turnAngle);
+        m_hitBox.createRectangle(m_coor, m_turnAngle);
     }
 
     public Prop(Point coor, String imagePath, double m_turnAngle, Map map, MainCharacter mainCharacter, boolean isMainCharacter) {
@@ -54,7 +54,7 @@ public class Prop {
         m_currentMap = map;
         m_mainCharacter = mainCharacter;
         m_hitBox = new HitBox(this, 1);
-        m_hitBox.createRectangle(m_trueCoor, m_turnAngle);
+        m_hitBox.createRectangle(m_coor, m_turnAngle);
     }
 
     public void initialize() {
@@ -78,7 +78,6 @@ public class Prop {
         g2d.drawImage(m_image, tr, null);
         
         m_hitBox.createRectangle(m_coor, m_turnAngle);
-        m_hitBox.drawLines(g2d);
     }
 
     public void translate(double deltax, double deltay) {

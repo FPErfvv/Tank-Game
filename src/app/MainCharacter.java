@@ -47,8 +47,6 @@ public class MainCharacter extends Prop {
 
         double futureAngle = m_turnAngle;
         if (m_turning) {
-            
-            //Point mtv = new Point(0,0);
             futureAngle += Math.toRadians(m_angularVelocity);
             if (futureAngle >= 2 * Math.PI) {
                 futureAngle -= 2 * Math.PI;
@@ -61,18 +59,20 @@ public class MainCharacter extends Prop {
         // A hitbox is created where the main character will be in the future, given the current velocity and angle
         m_hitBox.createRectangle(Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)), futureAngle);
         // This hitbox is then used to detect if the main character will collide with anything at that future position
-        Point mtv = m_mainCharacter.getHitBox().SAT(m_currentMap.getPropList().get(0).getHitBox().getCollisionPoints(), m_currentMap.getPropList().get(0).getRelativeCoordinates(), Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)));
+        Point mtv = this.getHitBox().SAT(m_currentMap.getPropList().get(0).getHitBox().getCollisionPoints(), m_currentMap.getPropList().get(0).getRelativeCoordinates(), Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)));
         if (m_turning) {
             m_turnAngle = futureAngle;
             m_hitBox.setTurnAngle();
         } 
-        // If there is no collision, the character is moved like normal\
+
+        // If there is no collision, the character is moved like normal
         if (mtv.getMagnitude() == 0) {
             m_currentMap.moveMap(-velocity.x, velocity.y);
             translate(velocity.x, -velocity.y); 
-        } else if (mtv.getMagnitude() > 2 ) { // If there is a collision, the velocity is adjusted to move the character right up next to the object
+        } 
+        else if (mtv.getMagnitude() > 2 ) { // If there is a collision, the velocity is adjusted to move the character right up next to the object
                 // This is the default value for the distance used to move right up against the target
-                double sidleUpDistance = mtv.getMagnitude() -1;
+                double sidleUpDistance = mtv.getMagnitude() -1 ;
                 // This finds the angle between the velocity vector and the mtv vector. 
                 // Using that, it finds how far the character needs to move in the direction of the velocity vector to move the magnitude of the mtv vector
                 // cos(α) = a · b / (|a| * |b|)
@@ -85,7 +85,14 @@ public class MainCharacter extends Prop {
                 if (sidleUpDistance > velocity.getMagnitude() + 2) {
                     sidleUpDistance = velocity.getMagnitude() + 2;
                 }
-                velocity = new Point(velocity.x - Math.cos(m_turnAngle) * sidleUpDistance, velocity.y - Math.sin(m_turnAngle) * sidleUpDistance);
+
+                int closestPoint = this.getHitBox().getClosestSide(m_currentMap.getPropList().get(0).getRelativeCoordinates());
+                // If the front of the MainCharacter is closest to the center of the target, the sidleUpDistance is subtracted from the velocity
+                if (closestPoint == Constants.FRONT) {
+                    velocity = new Point(velocity.x - Math.cos(m_turnAngle) * sidleUpDistance, velocity.y - Math.sin(m_turnAngle) * sidleUpDistance);
+                } else { // If the back of the MainCharacter is closest to the center of the target, the sidleUpDistance is added to the velocity
+                    velocity = new Point(velocity.x - Math.cos(m_turnAngle) * -sidleUpDistance, velocity.y - Math.sin(m_turnAngle) * -sidleUpDistance);
+                }
                 m_currentMap.moveMap(-velocity.getX(), velocity.getY());
                 translate(velocity.getX(), -velocity.getY()); 
         }
@@ -110,8 +117,6 @@ public class MainCharacter extends Prop {
                 m_image.getHeight(null) / 2
         );
         g2d.drawImage(m_image, tr, null);
-        m_hitBox.drawLines(g2d);
-        
     }
 
     public int getWidth() {
