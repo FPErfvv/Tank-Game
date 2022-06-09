@@ -1,7 +1,5 @@
 package app;
 
-import java.util.ArrayList;
-import java.util.Vector;
 import java.awt.Graphics2D;
 
 public class HitBox {
