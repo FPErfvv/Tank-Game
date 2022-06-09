@@ -1,2 +1,2 @@
 # Tank-Game
-This respository contains the code for the game Tank  Game. The player operates a tank and needs to survive waves of enemies. This game is unique in that the enemies are sentient cows with weapons on their backs. How many other games have that!
+This respository contains the code for Tank Game. The task of the player is to save the world from climate change. Because the cattle industry is a substantial contributor of greenhouse gas emmissions, the player will be tasked with killing all the cows on the map. To make it more challenging, the cows will be equiped with various weaponry. Over time, the weapons will become more advanced and the cows will become more difficult to kill.
