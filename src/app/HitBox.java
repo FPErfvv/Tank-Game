@@ -5,23 +5,10 @@ import java.util.Vector;
 import java.awt.Graphics2D;
 
 public class HitBox {
-    // Equation for rotated elipse: https://math.stackexchange.com/questions/426150/what-is-the-general-equation-of-the-ellipse-that-is-not-in-the-origin-and-rotate
-    /**
-     * ((x−h)cos(A)+(y−k)sin(A))^2/a^2+((x−h)sin(A)−(y−k)cos(A))^2/b^2=1
-     * A--> the rotation in radians (positive turns it counter-clockwise)
-     * a--> stretch along the x axis w/ A of 0
-     * b--> stretch along the y axis w/ A of 0
-     * h--> translation along x axis
-     * k--> translation along y axis
-     * 
-     * if a point is inside the circle, the equations outputs a number less than 1
-     * if a point is outside the circle, the equation outputs a number greater than 1
-     * TODO: have predetermined points (i.e. north, south, east, west, northeast, southeast, northwest, southwest, etc)
-     * when turning rotate those around and use those to check.
-     *  */ 
+
     public static final int CIRCLE = 0;
     public static final int RECTANGLE = 1;
-    private int type;
+    private int m_type;
     private Point location;
     private int m_width, m_height;
     private Prop m_prop;
@@ -35,25 +22,32 @@ public class HitBox {
         this.m_prop = m_prop;
         this.m_width = m_width;
         this.m_height = m_height;
-        this.type = type;
-        m_axes = new Point[6];
+        m_type = type;
+        m_axes = new Point[12];
         m_angle = 0;
         //location = m_prop.getTrueCoordinates();
-        m_vert = new Point[4];
-
+        if (type == Constants.RECTANGLE) {
+            m_vert = new Point[4];
+        } else if (type == Constants.COW) {
+            m_vert = new Point[6];
+        }
     }
 
     // creates a bounding box with the m_height and m_width the size of the m_prop's image
     public HitBox(Prop m_prop, int type) {
         this.m_prop = m_prop;
-        this.type = type;
-        m_axes = new Point[6];
+        m_type = type;
+        m_axes = new Point[12];
         m_angle = 0;
         m_width = m_prop.getWidth();
         m_height = m_prop.getHeight();
         //location = m_prop.getTrueCoordinates();
         
-        m_vert = new Point[4];
+        if (type == Constants.RECTANGLE) {
+            m_vert = new Point[4];
+        } else if (type == Constants.COW) {
+            m_vert = new Point[6];
+        }
 
     }
 
@@ -79,6 +73,7 @@ public class HitBox {
         // the vector needs to be normalized to make it's length 1
         m_axes[loopLength-1] = Constants.normalize(new Point(x,y));
         m_axes[1] = new Point(-m_axes[1].getX(), -m_axes[1].getY());
+        
         loopLength = targetsVert.length;
         for (int i = 1; i < loopLength; i++) {
             
@@ -86,13 +81,13 @@ public class HitBox {
             x = -(targetsVert[i].getY() - targetsVert[i-1].getY());
             y = (targetsVert[i].getX() - targetsVert[i-1].getX());
             // the vector needs to be normalized to make it's length 1
-            m_axes[i+2] = Constants.normalize(new Point(x,y));
+            m_axes[m_vert.length + i - 1] = Constants.normalize(new Point(x,y));
         }
                 // finds the x and y of a vector perpendicular to three of the sides
-        x = -(m_vert[loopLength-1].getY() - m_vert[0].getY());
-        y = (m_vert[loopLength-1].getX() - m_vert[0].getX());
+        x = -(m_vert[loopLength - 1].getY() - m_vert[0].getY());
+        y = (m_vert[loopLength- 1].getX() - m_vert[0].getX());
         // the vector needs to be normalized to make it's length 1
-        m_axes[loopLength-1] = Constants.normalize(new Point(x,y));
+        m_axes[loopLength + m_vert.length -1] = Constants.normalize(new Point(x,y));
 
         double p1min = 0;
         double p1max = p1min;
@@ -159,7 +154,7 @@ public class HitBox {
     }
 
     /**
-     * This mothod takes the center of a target game element and returns which side
+     * This method takes the center of a target game element and returns which side
      * of this hitbox is closest, either front or back.
      * @param targetsCenter
      * @return closest side (front or back) to the targetsCenter
@@ -192,28 +187,58 @@ public class HitBox {
         m_width = m_prop.getWidth();
         m_height = m_prop.getHeight();
         futureAngle -= (Math.PI/2);
-        
-        // top left
-        int x = (int) (futurePropCoor.getX() - (m_width / 2 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
-        int y = (int) (futurePropCoor.getY() + (m_width / 2 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
-        m_vert[0] = new Point(x,y); 
+        if (m_type == Constants.RECTANGLE) {
+            // top left
+            int x = (int) (futurePropCoor.getX() - (m_width / 2 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
+            int y = (int) (futurePropCoor.getY() + (m_width / 2 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
+            m_vert[0] = new Point(x,y); 
 
-        //top right
-        x = (int)(futurePropCoor.getX() + (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
-        y = (int) (futurePropCoor.getY() - (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
-        m_vert[1] = new Point(x, y);    
+            //top right
+            x = (int)(futurePropCoor.getX() + (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
+            y = (int) (futurePropCoor.getY() - (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
+            m_vert[1] = new Point(x, y);    
 
-        // bottom right
-        x = (int) (futurePropCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height /2 * Math.sin(futureAngle)));
-        y = (int) (futurePropCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height /2 * Math.cos(futureAngle)));
-        m_vert[2] = new Point(x, y);
+            // bottom right
+            x = (int) (futurePropCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height /2 * Math.sin(futureAngle)));
+            y = (int) (futurePropCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height /2 * Math.cos(futureAngle)));
+            m_vert[2] = new Point(x, y);
+  
+            //bottom left
+            x = (int) (futurePropCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
+            y = (int) (futurePropCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
+            m_vert[3] = new Point(x, y); 
 
+        } else if (m_type == Constants.COW) {
+            // top left
+            int x = (int) (futurePropCoor.getX() - (m_width / 4 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
+            int y = (int) (futurePropCoor.getY() + (m_width / 4 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
+            m_vert[0] = new Point(x,y); 
 
-        
-        //bottom left
-        x = (int) (futurePropCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
-        y = (int) (futurePropCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
-        m_vert[3] = new Point(x, y); 
+            // top right
+            x = (int)(futurePropCoor.getX() + (m_width / 4 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
+            y = (int) (futurePropCoor.getY() - (m_width / 4 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
+            m_vert[1] = new Point(x, y);  
+            
+            // middle right
+            x = (int) (futurePropCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height / 4 * Math.sin(futureAngle)));
+            y = (int) (futurePropCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height / 4 * Math.cos(futureAngle)));
+            m_vert[2] = new Point(x, y);            
+
+            // bottom right
+            x = (int) (futurePropCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
+            y = (int) (futurePropCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
+            m_vert[3] = new Point(x, y);
+            
+            // bottom left
+            x = (int) (futurePropCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
+            y = (int) (futurePropCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
+            m_vert[4] = new Point(x, y);
+
+            // middle left
+            x = (int) (futurePropCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 4 * Math.sin(futureAngle)));
+            y = (int) (futurePropCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 4 * Math.cos(futureAngle)));
+            m_vert[5] = new Point(x, y);
+        }
 
     }
 
@@ -223,14 +248,19 @@ public class HitBox {
      */
     public void drawHitBox(Graphics2D g2d) {
         //if (m_prop instanceof MainCharacter) {
-            // right side
-            g2d.drawLine((int)m_vert[0].getX(), (int)m_vert[0].getY(), (int)m_vert[1].getX(), (int)m_vert[1].getY());
-            // bottom
-            g2d.drawLine((int)m_vert[1].getX(), (int)m_vert[1].getY(), (int)m_vert[2].getX(), (int)m_vert[2].getY());
-            // left side
-            g2d.drawLine((int)m_vert[2].getX(), (int)m_vert[2].getY(), (int)m_vert[3].getX(), (int)m_vert[3].getY());
-            // top
-            g2d.drawLine((int)m_vert[0].getX(), (int)m_vert[0].getY(), (int)m_vert[3].getX(), (int)m_vert[3].getY());
+            // // right side
+            // g2d.drawLine((int)m_vert[0].getX(), (int)m_vert[0].getY(), (int)m_vert[1].getX(), (int)m_vert[1].getY());
+            // // bottom
+            // g2d.drawLine((int)m_vert[1].getX(), (int)m_vert[1].getY(), (int)m_vert[2].getX(), (int)m_vert[2].getY());
+            // // left side
+            // g2d.drawLine((int)m_vert[2].getX(), (int)m_vert[2].getY(), (int)m_vert[3].getX(), (int)m_vert[3].getY());
+            // // top
+            // g2d.drawLine((int)m_vert[0].getX(), (int)m_vert[0].getY(), (int)m_vert[3].getX(), (int)m_vert[3].getY());
+            int loopLength = m_vert.length;
+            for (int i = 1; i < loopLength; i++) {
+                g2d.drawLine((int)m_vert[i].getX(), (int)m_vert[i].getY(), (int)m_vert[i-1].getX(), (int)m_vert[i-1].getY());
+            }
+            g2d.drawLine((int)m_vert[m_vert.length-1].getX(), (int)m_vert[m_vert.length-1].getY(), (int)m_vert[0].getX(), (int)m_vert[0].getY());
     }
 
     public Point[] getCollisionPoints() {

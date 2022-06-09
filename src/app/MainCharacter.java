@@ -19,7 +19,7 @@ public class MainCharacter extends Prop {
     private ArrayList<Byte> turningBuffer; 
     
     public MainCharacter(Map map, MainPanel mainPanel) {
-        super(new Point(0, 0),"src/images/MainCharacter.png", map, null, true);
+        super(new Point(0, 0),"src/images/MainCharacter.png", map, null, true, Constants.COW);
         turningBuffer = new ArrayList<Byte>();
         m_mainPanel = mainPanel; 
         setMoving(true);
@@ -117,6 +117,7 @@ public class MainCharacter extends Prop {
                 m_image.getHeight(null) / 2
         );
         g2d.drawImage(m_image, tr, null);
+        m_hitBox.drawHitBox(g2d);
     }
 
     public int getWidth() {
