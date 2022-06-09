@@ -1,8 +1,5 @@
 package app;
 
-
-import java.awt.Rectangle;
-
 import javax.swing.ImageIcon;
 
 import java.awt.Image;
@@ -26,7 +23,7 @@ public class Prop {
     public boolean m_isMainCharacter;
 
 
-    public Prop(Point coor, String imagePath, Map map, MainCharacter mainCharacter,boolean isMainCharacter) {
+    public Prop(Point coor, String imagePath, Map map, MainCharacter mainCharacter, boolean isMainCharacter, int hitboxType) {
         m_isMainCharacter = isMainCharacter;
         m_changingDirection = false;
         m_turning = false;
@@ -37,11 +34,11 @@ public class Prop {
         m_moving = false;
         m_currentMap = map;
         m_mainCharacter = mainCharacter;
-        m_hitBox = new HitBox(this, 1);
+        m_hitBox = new HitBox(this, hitboxType);
         m_hitBox.createRectangle(m_coor, m_turnAngle);
     }
 
-    public Prop(Point coor, String imagePath, double m_turnAngle, Map map, MainCharacter mainCharacter, boolean isMainCharacter) {
+    public Prop(Point coor, String imagePath, double m_turnAngle, Map map, MainCharacter mainCharacter, boolean isMainCharacter, int hitboxType) {
         m_isMainCharacter = isMainCharacter;
         m_changingDirection = false;
         m_turning = false;
@@ -53,7 +50,7 @@ public class Prop {
         m_moving = false;
         m_currentMap = map;
         m_mainCharacter = mainCharacter;
-        m_hitBox = new HitBox(this, 1);
+        m_hitBox = new HitBox(this, hitboxType);
         m_hitBox.createRectangle(m_coor, m_turnAngle);
     }
 
@@ -78,6 +75,7 @@ public class Prop {
         g2d.drawImage(m_image, tr, null);
         
         m_hitBox.createRectangle(m_coor, m_turnAngle);
+        m_hitBox.drawHitBox(g2d);
     }
 
     public void translate(double deltax, double deltay) {
