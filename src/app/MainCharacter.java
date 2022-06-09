@@ -19,7 +19,7 @@ public class MainCharacter extends Prop {
     private ArrayList<Byte> turningBuffer; 
     
     public MainCharacter(Map map, MainPanel mainPanel) {
-        super(new Point(0, 0),"src/images/MainCharacter.png", map, null, true, Constants.COW);
+        super(new Point(0, 0),"src/images/MainCharacter.png", map, null, true, Constants.RECTANGLE);
         turningBuffer = new ArrayList<Byte>();
         m_mainPanel = mainPanel; 
         setMoving(true);

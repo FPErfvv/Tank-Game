@@ -108,9 +108,11 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener {
         if (arg0.getKeyCode() == KeyEvent.VK_SPACE) {
             if (isApple) {
                 mainCharacter.setImage("src/images/MainCharacter.png");
+                mainCharacter.getHitBox().setType(Constants.RECTANGLE);
                 isApple = false;
             } else {
                 mainCharacter.setImage("src/images/MainCowPic.png");
+                mainCharacter.getHitBox().setType(Constants.COW);
                 isApple = true;
             }
             

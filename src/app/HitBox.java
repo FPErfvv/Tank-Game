@@ -13,7 +13,6 @@ public class HitBox {
     // An array of points used to create the shape of the bounding box.
     private Point[] m_vert;
     private double m_angle;
-    private Point[] m_axes;
     private Double[] pts;
 
     public HitBox(Prop m_prop, int m_width, int m_height, int type) {
@@ -21,9 +20,7 @@ public class HitBox {
         this.m_width = m_width;
         this.m_height = m_height;
         m_type = type;
-        m_axes = new Point[12];
         m_angle = 0;
-        //location = m_prop.getTrueCoordinates();
         if (type == Constants.RECTANGLE) {
             m_vert = new Point[4];
         } else if (type == Constants.COW) {
@@ -35,11 +32,9 @@ public class HitBox {
     public HitBox(Prop m_prop, int type) {
         this.m_prop = m_prop;
         m_type = type;
-        m_axes = new Point[12];
         m_angle = 0;
         m_width = m_prop.getWidth();
         m_height = m_prop.getHeight();
-        //location = m_prop.getTrueCoordinates();
         
         if (type == Constants.RECTANGLE) {
             m_vert = new Point[4];
@@ -57,20 +52,21 @@ public class HitBox {
         int loopLength = m_vert.length; // will be one less than half the # of sides
         double x = 0;
         double y = 0;
+        Point[] axes = new Point[m_vert.length + targetsVert.length];
         for (int i = 1; i < loopLength; i++) {
 
             // finds the x and y of a vector perpendicular to three of the sides
             x = -(m_vert[i].getY() - m_vert[i-1].getY());
             y = (m_vert[i].getX() - m_vert[i-1].getX());
             // the vector needs to be normalized to make it's length 1
-            m_axes[i-1] = Constants.normalize(new Point(x,y));
+            axes[i-1] = Constants.normalize(new Point(x,y));
         }
         // finds the x and y of a vector perpendicular to three of the sides
         x = -(m_vert[loopLength-1].getY() - m_vert[0].getY());
         y = (m_vert[loopLength-1].getX() - m_vert[0].getX());
         // the vector needs to be normalized to make it's length 1
-        m_axes[loopLength-1] = Constants.normalize(new Point(x,y));
-        m_axes[1] = new Point(-m_axes[1].getX(), -m_axes[1].getY());
+        axes[loopLength-1] = Constants.normalize(new Point(x,y));
+        axes[1] = new Point(-axes[1].getX(), -axes[1].getY());
         
         loopLength = targetsVert.length;
         for (int i = 1; i < loopLength; i++) {
@@ -79,13 +75,13 @@ public class HitBox {
             x = -(targetsVert[i].getY() - targetsVert[i-1].getY());
             y = (targetsVert[i].getX() - targetsVert[i-1].getX());
             // the vector needs to be normalized to make it's length 1
-            m_axes[m_vert.length + i - 1] = Constants.normalize(new Point(x,y));
+            axes[m_vert.length + i - 1] = Constants.normalize(new Point(x,y));
         }
                 // finds the x and y of a vector perpendicular to three of the sides
-        x = -(m_vert[loopLength - 1].getY() - m_vert[0].getY());
-        y = (m_vert[loopLength- 1].getX() - m_vert[0].getX());
+        x = -(targetsVert[loopLength - 1].getY() - m_vert[0].getY());
+        y = (targetsVert[loopLength- 1].getX() - m_vert[0].getX());
         // the vector needs to be normalized to make it's length 1
-        m_axes[loopLength + m_vert.length -1] = Constants.normalize(new Point(x,y));
+        axes[loopLength + m_vert.length -1] = Constants.normalize(new Point(x,y));
 
         double p1min = 0;
         double p1max = p1min;
@@ -105,7 +101,7 @@ public class HitBox {
         for (Point point: targetsCollisionPoints) {
             point.setLocation(targetsCoor.getX() - point.getX(), targetsCoor.getY() - point.getY());
         }
-        for (Point axis: m_axes) {
+        for (Point axis: axes) {
             // get an initial min/max value for this hitbox
             p1min = axis.vectorDotProduct(collisionPoints[0]);
             p1max = p1min;
@@ -166,6 +162,7 @@ public class HitBox {
                 indexOfClosestPoint = i;
             }
         }
+        // TODO: adjust this method to allow for different hitboxes other than rect
         return indexOfClosestPoint < 2 ? Constants.FRONT : Constants.BACK;
     }
 
@@ -245,23 +242,23 @@ public class HitBox {
      * @param g2d 
      */
     public void drawHitBox(Graphics2D g2d) {
-        //if (m_prop instanceof MainCharacter) {
-            // // right side
-            // g2d.drawLine((int)m_vert[0].getX(), (int)m_vert[0].getY(), (int)m_vert[1].getX(), (int)m_vert[1].getY());
-            // // bottom
-            // g2d.drawLine((int)m_vert[1].getX(), (int)m_vert[1].getY(), (int)m_vert[2].getX(), (int)m_vert[2].getY());
-            // // left side
-            // g2d.drawLine((int)m_vert[2].getX(), (int)m_vert[2].getY(), (int)m_vert[3].getX(), (int)m_vert[3].getY());
-            // // top
-            // g2d.drawLine((int)m_vert[0].getX(), (int)m_vert[0].getY(), (int)m_vert[3].getX(), (int)m_vert[3].getY());
-            int loopLength = m_vert.length;
-            for (int i = 1; i < loopLength; i++) {
-                g2d.drawLine((int)m_vert[i].getX(), (int)m_vert[i].getY(), (int)m_vert[i-1].getX(), (int)m_vert[i-1].getY());
-            }
-            g2d.drawLine((int)m_vert[m_vert.length-1].getX(), (int)m_vert[m_vert.length-1].getY(), (int)m_vert[0].getX(), (int)m_vert[0].getY());
+        int loopLength = m_vert.length;
+        for (int i = 1; i < loopLength; i++) {
+            g2d.drawLine((int)m_vert[i].getX(), (int)m_vert[i].getY(), (int)m_vert[i-1].getX(), (int)m_vert[i-1].getY());
+        }
+        g2d.drawLine((int)m_vert[m_vert.length-1].getX(), (int)m_vert[m_vert.length-1].getY(), (int)m_vert[0].getX(), (int)m_vert[0].getY());
     }
 
     public Point[] getCollisionPoints() {
         return m_vert;
+    }
+
+    public void setType(int type) {
+        m_type = type;
+        if (type == Constants.RECTANGLE) {
+            m_vert = new Point[4];
+        } else if (type == Constants.COW) {
+            m_vert = new Point[6];
+        }
     }
 }
