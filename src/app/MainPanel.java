@@ -65,16 +65,19 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener {
         // TODO Auto-generated method stub
         if (arg0.getKeyCode() == KeyEvent.VK_A) {
             mainCharacter.startTurning(false, Constants.TURNING_LEFT);
-        } else if (arg0.getKeyCode() == KeyEvent.VK_D) {
+        } 
+        else if (arg0.getKeyCode() == KeyEvent.VK_D) {
             mainCharacter.startTurning(false, Constants.TURNING_RIGHT);
         }
         if (arg0.getKeyCode() == KeyEvent.VK_W) {
             mainCharacter.setSpeed(0);
         } else if (arg0.getKeyCode() == KeyEvent.VK_S) {
             mainCharacter.setSpeed(0);
-        }if (arg0.getKeyCode() == KeyEvent.VK_E) {
+        }
+        if (arg0.getKeyCode() == KeyEvent.VK_E) {
             timer.start();
         }
+
     }
 
     @Override
@@ -121,6 +124,10 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener {
         }
         if (arg0.getKeyCode() == KeyEvent.VK_E) {
             timer.stop();
+        }
+        if(arg0.getKeyCode() == KeyEvent.VK_C) {
+            SoundFx fx = new SoundFx();
+            fx.play50CalSound();
         }
     }
 }

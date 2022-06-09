@@ -39,9 +39,14 @@ public class Map extends JPanel {
         for (int i = 0; i < 2; i++) {
             //Point coor = new Point((int) (Math.random() * 1000), (int) (Math.random() * 1000));
             Point coor = new Point(100,-100);
-            Prop prop = new Prop(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, m_mainCharacter, false);        
+            Prop prop = new Prop(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, m_mainCharacter, false);
             prop.initialize();
             propList.add(prop);
+
+            Prop g = new Prop(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this, m_mainCharacter, false);
+            g.initialize();
+            propList.add(g);
+
         }
                 
         
