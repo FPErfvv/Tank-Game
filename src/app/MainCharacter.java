@@ -128,7 +128,7 @@ public class MainCharacter extends Prop {
                 m_image.getHeight(null) / 2
         );
         g2d.drawImage(m_image, tr, null);
-        m_hitBox.drawHitBox(g2d);
+        //m_hitBox.drawHitBox(g2d);
     }
 
     public int getWidth() {

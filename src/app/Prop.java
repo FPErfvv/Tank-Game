@@ -75,7 +75,7 @@ public class Prop {
         g2d.drawImage(m_image, tr, null);
         
         m_hitBox.createHitbox(m_coor, m_turnAngle);
-        m_hitBox.drawHitBox(g2d);
+        //m_hitBox.drawHitBox(g2d);
     }
 
     public void translate(double deltax, double deltay) {
