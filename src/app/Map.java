@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 public class Map extends JPanel {
 
-    private ArrayList<Prop> propList;
+    private ArrayList<Sprite> spriteList;
     private double xOffset;
     private double yOffset;
     private MainCharacter m_mainCharacter;
@@ -35,18 +35,18 @@ public class Map extends JPanel {
 
 
     public void populateList() {
-        propList = new ArrayList<Prop>();
+        spriteList = new ArrayList<Sprite>();
         for (int i = 0; i < 5; i++) {
             Point coor = new Point((int) (Math.random() * 1000), (int) (Math.random() * 1000));
 
-            Prop prop = new Prop(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, m_mainCharacter, false, Constants.COW);        
+            Sprite Sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, m_mainCharacter, false, Constants.COW);        
 
-            prop.initialize();
-            propList.add(prop);
+            Sprite.initialize();
+            spriteList.add(Sprite);
 
-            Prop g = new Prop(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this, m_mainCharacter, false, Constants.COW);
+            Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this, m_mainCharacter, false, Constants.COW);
             g.initialize();
-            propList.add(g);
+            spriteList.add(g);
 
         }
                 
@@ -57,7 +57,7 @@ public class Map extends JPanel {
         super.paint(g);
         m_g2d = (Graphics2D) g;
         m_g2d.translate(getWidth()/2, getHeight()/2);
-        for (Prop p: propList) {
+        for (Sprite p: spriteList) {
             p.draw(m_g2d);
         }
         m_mainCharacter.draw(m_g2d);
@@ -71,7 +71,7 @@ public class Map extends JPanel {
     public void moveMap(double deltax, double deltay) {
         xOffset += deltax;
         yOffset += deltay;
-        for (Prop p: propList) {
+        for (Sprite p: spriteList) {
             p.moveWithMap(deltax, deltay);
         }
     }
@@ -84,8 +84,8 @@ public class Map extends JPanel {
         return new double[] {xOffset, yOffset};
     }
 
-    public ArrayList<Prop> getPropList() {
-        return propList;
+    public ArrayList<Sprite> getSpriteList() {
+        return spriteList;
     }
 
     /**

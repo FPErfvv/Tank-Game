@@ -9,14 +9,14 @@ public class HitBox {
     private int m_type;
     private Point location;
     private int m_width, m_height;
-    private Prop m_prop;
+    private Sprite m_sprite;
     // An array of points used to create the shape of the bounding box.
     private Point[] m_vert;
     private double m_angle;
     private Double[] pts;
 
-    public HitBox(Prop m_prop, int m_width, int m_height, int type) {
-        this.m_prop = m_prop;
+    public HitBox(Sprite sprite, int m_width, int m_height, int type) {
+        m_sprite = sprite;
         this.m_width = m_width;
         this.m_height = m_height;
         m_type = type;
@@ -28,13 +28,13 @@ public class HitBox {
         }
     }
 
-    // creates a bounding box with the m_height and m_width the size of the m_prop's image
-    public HitBox(Prop m_prop, int type) {
-        this.m_prop = m_prop;
+    // creates a bounding box with the m_height and m_width the size of the m_sprite's image
+    public HitBox(Sprite sprite, int type) {
+        m_sprite = sprite;
         m_type = type;
         m_angle = 0;
-        m_width = m_prop.getWidth();
-        m_height = m_prop.getHeight();
+        m_width = m_sprite.getWidth();
+        m_height = m_sprite.getHeight();
         
         if (type == Constants.RECTANGLE) {
             m_vert = new Point[4];
@@ -47,7 +47,7 @@ public class HitBox {
     // reference: https://www.sevenson.com.au/programming/sat/ 
     // https://dyn4j.org/2010/01/sat/#sat-proj 
     // https://gamedevelopment.tutsplus.com/tutorials/collision-detection-using-the-separating-axis-theorem--gamedev-169 
-    public Point SAT(Point[] targetsVert, Point targetsCoor, Point propsFutureCoor) {
+    public Point SAT(Point[] targetsVert, Point targetsCoor, Point spritesFutureCoor) {
         Point mtv = new Point(Double.MAX_VALUE, Double.MAX_VALUE);
         int loopLength = m_vert.length; // will be one less than half the # of sides
         double x = 0;
@@ -96,7 +96,7 @@ public class HitBox {
             targetsCollisionPoints[i] = new Point(targetsVert[i].getX(),targetsVert[i].getY());
         }
         for (Point point: collisionPoints) {
-            point.setLocation(propsFutureCoor.getX() - point.getX(), propsFutureCoor.getY() - point.getY());
+            point.setLocation(spritesFutureCoor.getX() - point.getX(), spritesFutureCoor.getY() - point.getY());
         }
         for (Point point: targetsCollisionPoints) {
             point.setLocation(targetsCoor.getX() - point.getX(), targetsCoor.getY() - point.getY());
@@ -126,7 +126,7 @@ public class HitBox {
             }
 
             // vector offset between the two shapes
-            Point vOffset = new Point(propsFutureCoor.getX() - targetsCoor.getX(), propsFutureCoor.getY() - targetsCoor.getY());
+            Point vOffset = new Point(spritesFutureCoor.getX() - targetsCoor.getX(), spritesFutureCoor.getY() - targetsCoor.getY());
             // project that onto the same axis as just used
             double sOffset = axis.vectorDotProduct(vOffset);
             // that will give you a scaler value that you can add to the min/max of one of the polygons from earlier
@@ -167,71 +167,71 @@ public class HitBox {
     }
 
     public void setTurnAngle() {
-        m_angle = m_prop.getTurnAngle() - (Math.PI/2);
+        m_angle = m_sprite.getTurnAngle() - (Math.PI/2);
     }
 
     /**
-     * This method takes an angle and a coordinate of the prop and 
+     * This method takes an angle and a coordinate of the sprite and 
      * updates the m_vert array with new values. The m_vert array
      * is a list of coordinates that determine the corner points
      * of a rectangular hitbox.
-     * @param futurePropCoor the future coordinate of the prop
-     * @param futureAngle the future angle of the prop
+     * @param futureSpriteCoor the future coordinate of the sprite
+     * @param futureAngle the future angle of the sprite
      */
-    public void createHitbox(Point futurePropCoor, double futureAngle) {    
-        m_width = m_prop.getWidth();
-        m_height = m_prop.getHeight();
+    public void createHitbox(Point futureSpriteCoor, double futureAngle) {    
+        m_width = m_sprite.getWidth();
+        m_height = m_sprite.getHeight();
         futureAngle -= (Math.PI/2);
         if (m_type == Constants.RECTANGLE) {
             // top left
-            int x = (int) (futurePropCoor.getX() - (m_width / 2 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
-            int y = (int) (futurePropCoor.getY() + (m_width / 2 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
+            int x = (int) (futureSpriteCoor.getX() - (m_width / 2 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
+            int y = (int) (futureSpriteCoor.getY() + (m_width / 2 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
             m_vert[0] = new Point(x,y); 
 
             //top right
-            x = (int)(futurePropCoor.getX() + (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
-            y = (int) (futurePropCoor.getY() - (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
+            x = (int)(futureSpriteCoor.getX() + (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
+            y = (int) (futureSpriteCoor.getY() - (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
             m_vert[1] = new Point(x, y);    
 
             // bottom right
-            x = (int) (futurePropCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height /2 * Math.sin(futureAngle)));
-            y = (int) (futurePropCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height /2 * Math.cos(futureAngle)));
+            x = (int) (futureSpriteCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height /2 * Math.sin(futureAngle)));
+            y = (int) (futureSpriteCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height /2 * Math.cos(futureAngle)));
             m_vert[2] = new Point(x, y);
   
             //bottom left
-            x = (int) (futurePropCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
-            y = (int) (futurePropCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
+            x = (int) (futureSpriteCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
+            y = (int) (futureSpriteCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
             m_vert[3] = new Point(x, y); 
 
         } else if (m_type == Constants.COW) {
             // top left
-            int x = (int) (futurePropCoor.getX() - (m_width / 4 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
-            int y = (int) (futurePropCoor.getY() + (m_width / 4 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
+            int x = (int) (futureSpriteCoor.getX() - (m_width / 4 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
+            int y = (int) (futureSpriteCoor.getY() + (m_width / 4 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
             m_vert[0] = new Point(x,y); 
 
             // top right
-            x = (int)(futurePropCoor.getX() + (m_width / 4 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
-            y = (int) (futurePropCoor.getY() - (m_width / 4 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
+            x = (int)(futureSpriteCoor.getX() + (m_width / 4 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
+            y = (int) (futureSpriteCoor.getY() - (m_width / 4 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
             m_vert[1] = new Point(x, y);  
             
             // middle right
-            x = (int) (futurePropCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height / 4 * Math.sin(futureAngle)));
-            y = (int) (futurePropCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height / 4 * Math.cos(futureAngle)));
+            x = (int) (futureSpriteCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height / 4 * Math.sin(futureAngle)));
+            y = (int) (futureSpriteCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height / 4 * Math.cos(futureAngle)));
             m_vert[2] = new Point(x, y);            
 
             // bottom right
-            x = (int) (futurePropCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
-            y = (int) (futurePropCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
+            x = (int) (futureSpriteCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
+            y = (int) (futureSpriteCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
             m_vert[3] = new Point(x, y);
             
             // bottom left
-            x = (int) (futurePropCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
-            y = (int) (futurePropCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
+            x = (int) (futureSpriteCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
+            y = (int) (futureSpriteCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
             m_vert[4] = new Point(x, y);
 
             // middle left
-            x = (int) (futurePropCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 4 * Math.sin(futureAngle)));
-            y = (int) (futurePropCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 4 * Math.cos(futureAngle)));
+            x = (int) (futureSpriteCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 4 * Math.sin(futureAngle)));
+            y = (int) (futureSpriteCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 4 * Math.cos(futureAngle)));
             m_vert[5] = new Point(x, y);
         }
 

@@ -10,7 +10,7 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-public class MainCharacter extends Prop {
+public class MainCharacter extends Sprite {
     private boolean facingDown;
     private double m_mouseOpp;
     private double m_mouseAdjacent;
@@ -62,7 +62,7 @@ public class MainCharacter extends Prop {
         Point mtv = new Point(0,0);
 
         Point closestTargetsCoor = new Point(0,0);
-        for (Prop t: m_currentMap.getPropList()) {
+        for (Sprite t: m_currentMap.getSpriteList()) {
             Point tempMtv = this.getHitBox().SAT(t.getHitBox().getCollisionPoints(), t.getRelativeCoordinates(), Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)));
             if (tempMtv.getMagnitude() != 0) {
                 mtv = new Point(tempMtv.getX(), tempMtv.getY());
@@ -70,7 +70,7 @@ public class MainCharacter extends Prop {
             }
         }
         //Point closestTargetsCoor = getClosestCoor(targetCenters);
-        //Point mtv = this.getHitBox().SAT(m_currentMap.getPropList().get(0).getHitBox().getCollisionPoints(), m_currentMap.getPropList().get(0).getRelativeCoordinates(), Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)));
+        //Point mtv = this.getHitBox().SAT(m_currentMap.getSpriteList().get(0).getHitBox().getCollisionPoints(), m_currentMap.getSpriteList().get(0).getRelativeCoordinates(), Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)));
         if (m_turning) {
             m_turnAngle = futureAngle;
             m_hitBox.setTurnAngle();

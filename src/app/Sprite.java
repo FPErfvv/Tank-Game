@@ -6,7 +6,7 @@ import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.Graphics2D;
 
-public class Prop {
+public class Sprite {
     protected Point m_coor;
     protected Point m_trueCoor;
     protected HitBox m_hitBox;
@@ -23,7 +23,7 @@ public class Prop {
     public boolean m_isMainCharacter;
 
 
-    public Prop(Point coor, String imagePath, Map map, MainCharacter mainCharacter, boolean isMainCharacter, int hitboxType) {
+    public Sprite(Point coor, String imagePath, Map map, MainCharacter mainCharacter, boolean isMainCharacter, int hitboxType) {
         m_isMainCharacter = isMainCharacter;
         m_changingDirection = false;
         m_turning = false;
@@ -38,7 +38,7 @@ public class Prop {
         m_hitBox.createHitbox(m_coor, m_turnAngle);
     }
 
-    public Prop(Point coor, String imagePath, double m_turnAngle, Map map, MainCharacter mainCharacter, boolean isMainCharacter, int hitboxType) {
+    public Sprite(Point coor, String imagePath, double m_turnAngle, Map map, MainCharacter mainCharacter, boolean isMainCharacter, int hitboxType) {
         m_isMainCharacter = isMainCharacter;
         m_changingDirection = false;
         m_turning = false;
@@ -63,7 +63,7 @@ public class Prop {
         AffineTransform tr = new AffineTransform();
         // X and Y are the coordinates of the m_image
         // the main character is used as the origin-(0,0)
-        // this means that when the page is resized, all the props remain the same distance from the character
+        // this means that when the page is resized, all the sprites remain the same distance from the character
         
         tr.translate(m_mainCharacter.getTrueCoordinates().getX()+ m_trueCoor.getX()- getWidth()/2, m_mainCharacter.getTrueCoordinates().getY()+m_trueCoor.getY()- getHeight()/2);
 
@@ -135,7 +135,7 @@ public class Prop {
     public void moveTo(Point newCoor) {
         m_coor = newCoor;
     }
-    // sets the props character to a certain m_image
+    // sets the sprites character to a certain m_image
     public void setImage(String imagePath) {
         m_image = new ImageIcon(imagePath).getImage();
     }
@@ -162,10 +162,10 @@ public class Prop {
 
     
     /**
-     * This method takes the center of a prop and returns which coordinate
+     * This method takes the center of a sprite and returns which coordinate
      * from the list of coordinates is closest.
      * @param coors
-     * @return closest coordinate to the center of the prop
+     * @return closest coordinate to the center of the sprite
      */
     public Point getClosestCoor(Point[] coors) {
         Double smallestDistance = Double.MAX_VALUE;
