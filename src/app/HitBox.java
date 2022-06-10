@@ -178,7 +178,7 @@ public class HitBox {
      * @param futurePropCoor the future coordinate of the prop
      * @param futureAngle the future angle of the prop
      */
-    public void createRectangle(Point futurePropCoor, double futureAngle) {    
+    public void createHitbox(Point futurePropCoor, double futureAngle) {    
         m_width = m_prop.getWidth();
         m_height = m_prop.getHeight();
         futureAngle -= (Math.PI/2);

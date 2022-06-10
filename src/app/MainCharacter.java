@@ -57,7 +57,7 @@ public class MainCharacter extends Prop {
         }
 
         // A hitbox is created where the main character will be in the future, given the current velocity and angle
-        m_hitBox.createRectangle(Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)), futureAngle);
+        m_hitBox.createHitbox(Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)), futureAngle);
         // This hitbox is then used to detect if the main character will collide with anything at that future position
         Point mtv = new Point(0,0);
 
