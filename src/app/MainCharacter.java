@@ -47,7 +47,7 @@ public class MainCharacter extends Prop {
 
         double futureAngle = m_turnAngle;
         if (m_turning) {
-            futureAngle += Math.toRadians(m_angularVelocity);
+            futureAngle += Math.toRadians(m_rotationalSpeed);
             if (futureAngle >= 2 * Math.PI) {
                 futureAngle -= 2 * Math.PI;
             }
@@ -59,7 +59,18 @@ public class MainCharacter extends Prop {
         // A hitbox is created where the main character will be in the future, given the current velocity and angle
         m_hitBox.createRectangle(Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)), futureAngle);
         // This hitbox is then used to detect if the main character will collide with anything at that future position
-        Point mtv = this.getHitBox().SAT(m_currentMap.getPropList().get(0).getHitBox().getCollisionPoints(), m_currentMap.getPropList().get(0).getRelativeCoordinates(), Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)));
+        Point mtv = new Point(0,0);
+
+        Point closestTargetsCoor = new Point(0,0);
+        for (Prop t: m_currentMap.getPropList()) {
+            Point tempMtv = this.getHitBox().SAT(t.getHitBox().getCollisionPoints(), t.getRelativeCoordinates(), Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)));
+            if (tempMtv.getMagnitude() != 0) {
+                mtv = new Point(tempMtv.getX(), tempMtv.getY());
+                closestTargetsCoor = t.getRelativeCoordinates();
+            }
+        }
+        //Point closestTargetsCoor = getClosestCoor(targetCenters);
+        //Point mtv = this.getHitBox().SAT(m_currentMap.getPropList().get(0).getHitBox().getCollisionPoints(), m_currentMap.getPropList().get(0).getRelativeCoordinates(), Constants.addPoints(m_coor, new Point(velocity.x, -velocity.y)));
         if (m_turning) {
             m_turnAngle = futureAngle;
             m_hitBox.setTurnAngle();
@@ -86,7 +97,7 @@ public class MainCharacter extends Prop {
                     sidleUpDistance = velocity.getMagnitude() + 2;
                 }
 
-                int closestPoint = this.getHitBox().getClosestSide(m_currentMap.getPropList().get(0).getRelativeCoordinates());
+                int closestPoint = this.getHitBox().getClosestSide(closestTargetsCoor);
                 // If the front of the MainCharacter is closest to the center of the target, the sidleUpDistance is subtracted from the velocity
                 if (closestPoint == Constants.FRONT) {
                     velocity = new Point(velocity.x - Math.cos(m_turnAngle) * sidleUpDistance, velocity.y - Math.sin(m_turnAngle) * sidleUpDistance);

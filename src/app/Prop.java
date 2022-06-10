@@ -18,8 +18,8 @@ public class Prop {
     protected boolean m_changingDirection;
     protected Map m_currentMap;
     protected double m_speed;
-    protected double m_angularVelocity;
-    protected static final double DEFAULT_ANGULAR_VELOCITY = 5;
+    protected double m_rotationalSpeed;
+    protected static final double DEFAULT_ROTATIONAL_SPEED = 5;
     public boolean m_isMainCharacter;
 
 
@@ -27,7 +27,7 @@ public class Prop {
         m_isMainCharacter = isMainCharacter;
         m_changingDirection = false;
         m_turning = false;
-        m_angularVelocity = DEFAULT_ANGULAR_VELOCITY;
+        m_rotationalSpeed = DEFAULT_ROTATIONAL_SPEED;
         m_coor = coor;
         m_trueCoor = coor;
         m_image = new ImageIcon(imagePath).getImage();
@@ -42,7 +42,7 @@ public class Prop {
         m_isMainCharacter = isMainCharacter;
         m_changingDirection = false;
         m_turning = false;
-        m_angularVelocity = DEFAULT_ANGULAR_VELOCITY;
+        m_rotationalSpeed = DEFAULT_ROTATIONAL_SPEED;
         m_coor = coor;
         m_trueCoor = coor;
         this.m_turnAngle = m_turnAngle;
@@ -121,7 +121,7 @@ public class Prop {
 
     public void rotate() {
         if (m_turning) {
-            m_turnAngle += Math.toRadians(m_angularVelocity);
+            m_turnAngle += Math.toRadians(m_rotationalSpeed);
             if (m_turnAngle >= 2 * Math.PI) {
                 m_turnAngle -= 2 * Math.PI;
             }
@@ -152,12 +152,32 @@ public class Prop {
         return m_turnAngle;
     }
 
-    public double getAngularVelocity() {
-        return m_angularVelocity;
+    public double getRotationalSpeed() {
+        return m_rotationalSpeed;
     }
 
-    public void setAngularVelocity(double angularVelocity) {
-        m_angularVelocity = angularVelocity;
+    public void setRotationalSpeed(double rotationalSpeed) {
+        m_rotationalSpeed = rotationalSpeed;
+    }
+
+    
+    /**
+     * This method takes the center of a prop and returns which coordinate
+     * from the list of coordinates is closest.
+     * @param coors
+     * @return closest coordinate to the center of the prop
+     */
+    public Point getClosestCoor(Point[] coors) {
+        Double smallestDistance = Double.MAX_VALUE;
+        Point closestCoor = new Point(0,0);
+        for (Point pt: coors) {
+            double distance = Point.getDistance(pt, m_coor);
+            if (distance < smallestDistance) {
+                closestCoor = new Point(pt.getX(),pt.getY());
+                smallestDistance = distance;
+            }
+        }
+        return closestCoor;
     }
 
     public void startTurning(boolean turning, int direction) {
@@ -165,18 +185,18 @@ public class Prop {
         // This prevents the character from spinning for ever with out stopping. There are no limits
         // on the setting of the values of the method is the same direction as current direction.
         boolean sameDirection = false;
-        if (Math.abs(m_angularVelocity)/m_angularVelocity == direction) {
+        if (Math.abs(m_rotationalSpeed)/m_rotationalSpeed == direction) {
             sameDirection = true;
         }
         
         if (sameDirection) {
             m_turning = turning;
-            m_angularVelocity = Math.abs(m_angularVelocity) * direction;
+            m_rotationalSpeed = Math.abs(m_rotationalSpeed) * direction;
         } else if (m_turning && !turning) {
             // If the character is currently turning, and it is being asked to stop turning, then the command is ignored
         } else {
             m_turning = turning;
-            m_angularVelocity = Math.abs(m_angularVelocity) * direction;
+            m_rotationalSpeed = Math.abs(m_rotationalSpeed) * direction;
         }
     }
 
