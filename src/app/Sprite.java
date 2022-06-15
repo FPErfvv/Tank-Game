@@ -5,10 +5,12 @@ import javax.swing.ImageIcon;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
+
 
 public class Sprite {
-    protected Point m_coor;
-    protected Point m_trueCoor;
+    protected Point2D.Double m_coor;
+    protected Point2D.Double m_trueCoor;
     protected HitBox m_hitBox;
     protected double m_turnAngle; // radians
     protected Image m_image;
@@ -16,14 +18,14 @@ public class Sprite {
     protected boolean m_moving;
     protected boolean m_turning;
     protected boolean m_changingDirection;
-    protected Map m_currentMap;
+    protected GameMap m_currentMap;
     protected double m_speed;
     protected double m_rotationalSpeed;
     protected static final double DEFAULT_ROTATIONAL_SPEED = 5;
     public boolean m_isMainCharacter;
 
 
-    public Sprite(Point coor, String imagePath, Map map, MainCharacter mainCharacter, boolean isMainCharacter, int hitboxType) {
+    public Sprite(Point2D.Double coor, String imagePath, GameMap map, MainCharacter mainCharacter, boolean isMainCharacter, int hitboxType) {
         m_isMainCharacter = isMainCharacter;
         m_changingDirection = false;
         m_turning = false;
@@ -38,7 +40,7 @@ public class Sprite {
         m_hitBox.createHitbox(m_coor, m_turnAngle);
     }
 
-    public Sprite(Point coor, String imagePath, double m_turnAngle, Map map, MainCharacter mainCharacter, boolean isMainCharacter, int hitboxType) {
+    public Sprite(Point2D.Double coor, String imagePath, double m_turnAngle, GameMap map, MainCharacter mainCharacter, boolean isMainCharacter, int hitboxType) {
         m_isMainCharacter = isMainCharacter;
         m_changingDirection = false;
         m_turning = false;
@@ -55,7 +57,7 @@ public class Sprite {
     }
 
     public void initialize() {
-        m_trueCoor = Constants.addPoints(m_mainCharacter.getTrueCoordinates(), m_trueCoor);
+        m_trueCoor = Utility.addPoints(m_mainCharacter.getTrueCoordinates(), m_trueCoor);
     }
 
     public void draw(Graphics2D g2d) {
@@ -111,11 +113,11 @@ public class Sprite {
     }
     
     // returns the location of the object
-    public Point getTrueCoordinates() {
+    public Point2D.Double getTrueCoordinates() {
         return m_trueCoor;
     }
 
-    public Point getRelativeCoordinates() {
+    public Point2D.Double getRelativeCoordinates() {
         return m_coor;
     }
 
@@ -132,7 +134,7 @@ public class Sprite {
     }
 
     // sets the coordinates of the object
-    public void moveTo(Point newCoor) {
+    public void moveTo(Point2D.Double newCoor) {
         m_coor = newCoor;
     }
     // sets the sprites character to a certain m_image
@@ -165,15 +167,15 @@ public class Sprite {
      * This method takes the center of a sprite and returns which coordinate
      * from the list of coordinates is closest.
      * @param coors
-     * @return closest coordinate to the center of the sprite
+     * @return closest coordinate to the center of the sprite   
      */
-    public Point getClosestCoor(Point[] coors) {
+    public Point2D.Double getClosestCoor(Point2D.Double[] coors) {
         Double smallestDistance = Double.MAX_VALUE;
-        Point closestCoor = new Point(0,0);
-        for (Point pt: coors) {
-            double distance = Point.getDistance(pt, m_coor);
+        Point2D.Double closestCoor = new Point2D.Double(0,0);
+        for (Point2D.Double pt: coors) {
+            double distance = Utility.getDistance(pt, m_coor);
             if (distance < smallestDistance) {
-                closestCoor = new Point(pt.getX(),pt.getY());
+                closestCoor = new Point2D.Double(pt.getX(),pt.getY());
                 smallestDistance = distance;
             }
         }

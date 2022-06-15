@@ -6,12 +6,13 @@ import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.geom.Point2D;
 
 import javax.swing.JPanel;
 
 
 
-public class Map extends JPanel {
+public class GameMap extends JPanel {
 
     private ArrayList<Sprite> spriteList;
     private double xOffset;
@@ -19,12 +20,11 @@ public class Map extends JPanel {
     private MainCharacter m_mainCharacter;
     private Graphics2D m_g2d;
 
-    public Map() {
+    public GameMap() {
         xOffset = 0;
         yOffset = 0;
         setVisible(true);
         setFocusable(true);
-        setPreferredSize(new Dimension(MainPanel.frameWidth -20,MainPanel.frameHeight-20));
     }
     
 
@@ -37,7 +37,7 @@ public class Map extends JPanel {
     public void populateList() {
         spriteList = new ArrayList<Sprite>();
         for (int i = 0; i < 5; i++) {
-            Point coor = new Point((int) (Math.random() * 1000), (int) (Math.random() * 1000));
+            Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
 
             Sprite Sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, m_mainCharacter, false, Constants.COW);        
 
@@ -53,8 +53,8 @@ public class Map extends JPanel {
         
     }
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         m_g2d = (Graphics2D) g;
         m_g2d.translate(getWidth()/2, getHeight()/2);
         for (Sprite p: spriteList) {

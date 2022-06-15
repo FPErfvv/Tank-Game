@@ -12,16 +12,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.Rectangle;
 
-public class MainPanel extends JPanel implements ActionListener, KeyListener {
+
+public class MainPanel extends JPanel implements ActionListener {
     private Timer timer;
     private JFrame frame;
     private MainCharacter mainCharacter;
     private boolean facingDown;
     private boolean isApple;
     private final int MAIN_CHARACTER_SPEED = 3;
-    private Map currentMap;
-    public static int frameWidth;
-    public static int frameHeight;
+    private GameMap currentMap;
+    private int frameWidth;
+    public int frameHeight;
     private static Rectangle repaintRectangle;
 
     MainPanel(JFrame f) {
@@ -34,49 +35,24 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener {
         facingDown = false;
         timer = new Timer(30, (ActionListener) this);
 
-        addKeyListener(this);
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
         isApple = false;
-        currentMap = new Map();
-        mainCharacter = new MainCharacter(currentMap, this);
+        currentMap = new GameMap();
+        mainCharacter = new MainCharacter(currentMap);
         repaintRectangle = new Rectangle((int) mainCharacter.getTrueCoordinates().x - (frameWidth / 2),
                 (int) mainCharacter.getTrueCoordinates().y - (frameHeight / 2), frameWidth, frameHeight);
         currentMap.setMainCharacter(mainCharacter);
         currentMap.initialize();
         setBackground(new Color(0, 154, 23));
         add(currentMap);
+        addKeyListener(new PlayerControls(mainCharacter, timer));
         timer.start();
     }
 
     public void initialize() {
     }
 
-
-    @Override
-    public void keyReleased(KeyEvent arg0) {
-        // TODO Auto-generated method stub
-        if (arg0.getKeyCode() == KeyEvent.VK_A) {
-            mainCharacter.startTurning(false, Constants.TURNING_LEFT);
-        } 
-        else if (arg0.getKeyCode() == KeyEvent.VK_D) {
-            mainCharacter.startTurning(false, Constants.TURNING_RIGHT);
-        }
-        if (arg0.getKeyCode() == KeyEvent.VK_W) {
-            mainCharacter.setSpeed(0);
-        } else if (arg0.getKeyCode() == KeyEvent.VK_S) {
-            mainCharacter.setSpeed(0);
-        }
-        if (arg0.getKeyCode() == KeyEvent.VK_E) {
-            timer.start();
-        }
-
-    }
-
-    @Override
-    public void keyTyped(KeyEvent arg0) {
-        // TODO Auto-generated method stub
-    }
 
     @Override
     public void actionPerformed(ActionEvent arg0) {
@@ -93,36 +69,16 @@ public class MainPanel extends JPanel implements ActionListener, KeyListener {
         mainCharacter.setCurrentMap(currentMap);
     }
 
-    @Override
-    public void keyPressed(KeyEvent arg0) {
-        if (arg0.getKeyCode() == KeyEvent.VK_A) {
-            mainCharacter.startTurning(true, Constants.TURNING_LEFT);
-        } else if (arg0.getKeyCode() == KeyEvent.VK_D) {
-            mainCharacter.startTurning(true, Constants.TURNING_RIGHT);
-        }
-        if (arg0.getKeyCode() == KeyEvent.VK_W) {
-            mainCharacter.setSpeed(5);
-        } else if (arg0.getKeyCode() == KeyEvent.VK_S) {
-            mainCharacter.setSpeed(-5);
-        }
-        if (arg0.getKeyCode() == KeyEvent.VK_SPACE) {
-            if (isApple) {
-                mainCharacter.setImage("src/images/MainCharacter.png");
-                mainCharacter.getHitBox().setType(Constants.RECTANGLE);
-                isApple = false;
-            } else {
-                mainCharacter.setImage("src/images/MainCowPic.png");
-                mainCharacter.getHitBox().setType(Constants.COW);
-                isApple = true;
-            }
-            
-        }
-        if (arg0.getKeyCode() == KeyEvent.VK_E) {
-            timer.stop();
-        }
-        if(arg0.getKeyCode() == KeyEvent.VK_C) {
-            SoundFx fx = new SoundFx();
-            fx.play50CalSound();
-        }
+
+    public int getFrameHeight() {
+        return frameHeight;
+    }
+    public int getFrameWidth() {
+        return frameWidth;
+    }
+
+    public Timer getTimer() {
+        return timer;
+        
     }
 }
