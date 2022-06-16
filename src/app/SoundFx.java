@@ -5,7 +5,7 @@ import java.io.*;
 
 public class SoundFx {
 
-    public static boolean shouldPlaySound = true;
+    private boolean shouldPlaySound = true;
     
     public void play50CalSound()
     {

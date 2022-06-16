@@ -39,12 +39,12 @@ public class GameMap extends JPanel {
         for (int i = 0; i < 5; i++) {
             Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
 
-            Sprite Sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, m_mainCharacter, false, Constants.COW);        
+            Sprite Sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, Constants.COW);        
 
             Sprite.initialize();
             spriteList.add(Sprite);
 
-            Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this, m_mainCharacter, false, Constants.COW);
+            Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this, Constants.COW);
             g.initialize();
             spriteList.add(g);
 
@@ -68,11 +68,10 @@ public class GameMap extends JPanel {
         m_mainCharacter = mainCharacter;
     }
 
-    public void moveMap(double deltax, double deltay) {
-        xOffset += deltax;
-        yOffset += deltay;
+    public void moveMap(Point2D.Double mapVel) {
+
         for (Sprite p: spriteList) {
-            p.moveWithMap(deltax, deltay);
+            p.moveWithMap(mapVel);
         }
     }
 

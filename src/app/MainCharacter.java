@@ -1,35 +1,26 @@
 
 package app;
 
-import javax.management.RuntimeOperationsException;
-import javax.swing.*;
-import java.awt.Image;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
 import java.awt.geom.Point2D;
-
-import java.util.ArrayList;
 
 public class MainCharacter extends Sprite {
 
     public static final Point2D.Double TRUE_COOR = new Point2D.Double(0,0); 
     
     public MainCharacter(GameMap map) {
-        super(new Point2D.Double(0, 0),"src/images/MainCharacter.png", map, null, true, Constants.RECTANGLE);
-        setMoving(true);
-        setMainCharacter(this);
-        m_speed = 0;
+        super(new Point2D.Double(0, 0),"src/images/MainCharacter.png", map, Constants.RECTANGLE);
+        setSpeed(0);;
     }
 
     @Override
     public void move() {
         super.move();
 
-        double futureAngle = m_turnAngle;
-        if (m_turning) {
-            futureAngle += Math.toRadians(m_rotationalSpeed);
+        double futureAngle = getTurnAngle();
+        if (getTurningStatus()) {
+            futureAngle += Math.toRadians(getRotationalSpeed());
             if (futureAngle >= 2 * Math.PI) {
                 futureAngle -= 2 * Math.PI;
             }
@@ -37,14 +28,14 @@ public class MainCharacter extends Sprite {
                 futureAngle += 2*Math.PI;
             }
         }
-        Point2D.Double futureCoor = Utility.addPoints(m_coor, new Point2D.Double(m_velocity.x, -m_velocity.y)); 
+        Point2D.Double futureCoor = Utility.addPoints(getRelativeCoordinates(), new Point2D.Double(getVelocity().x, -getVelocity().y)); 
         // A hitbox is created where the main character will be in the future, given the current m_velocity and angle
-        m_hitBox.createHitbox(futureCoor, futureAngle);
+        getHitBox().createHitbox(futureCoor, futureAngle);
         // This hitbox is then used to detect if the main character will collide with anything at that future position
         Point2D.Double mtv = new Point2D.Double(0,0);
 
         Point2D.Double closestTargetsCoor = new Point2D.Double(0,0);
-        for (Sprite t: m_currentMap.getSpriteList()) {
+        for (Sprite t: getGameMap().getSpriteList()) {
             Point2D.Double tempMtv = this.getHitBox().SAT(t.getHitBox().getCollisionPoints(), t.getRelativeCoordinates(), futureCoor);
             if (Utility.getVectorMagnitude(tempMtv) != 0) {
                 mtv = new Point2D.Double(tempMtv.getX(), tempMtv.getY());
@@ -52,8 +43,8 @@ public class MainCharacter extends Sprite {
             }
         }
     
-        if (m_turning) {
-            m_turnAngle = futureAngle;
+        if (getTurningStatus()) {
+            setTurnAngle(futureAngle);
         } 
 
         // If there is no collision, the character is moved like normal
@@ -66,20 +57,21 @@ public class MainCharacter extends Sprite {
                 // cos(α) = a · b / (|a| * |b|)
                 // h = adj / cos(α)
                 // h = adj / a · b / (|a| * |b|)
-                if (Utility.getVectorMagnitude(m_velocity) != 0) {
-                    sidleUpDistance = Math.abs(Utility.getVectorMagnitude(mtv)/(Utility.vectorDotProduct(mtv,m_velocity) / (Utility.getVectorMagnitude(mtv) * Utility.getVectorMagnitude(m_velocity))))-1;
+                Point2D.Double vel = getVelocity();
+                if (Utility.getVectorMagnitude(vel) != 0) {
+                    sidleUpDistance = Math.abs(Utility.getVectorMagnitude(mtv)/(Utility.vectorDotProduct(mtv,vel) / (Utility.getVectorMagnitude(mtv) * Utility.getVectorMagnitude(getVelocity()))))-1;
                 }
                 // This limits the translation to five pixels so that large jumps are not experienced.
-                if (sidleUpDistance > Utility.getVectorMagnitude(m_velocity) + 2) {
-                    sidleUpDistance = Utility.getVectorMagnitude(m_velocity) + 2;
+                if (sidleUpDistance > Utility.getVectorMagnitude(vel) + 2) {
+                    sidleUpDistance = Utility.getVectorMagnitude(vel) + 2;
                 }
 
                 int closestPoint = this.getHitBox().getClosestSide(closestTargetsCoor);
                 // If the front of the MainCharacter is closest to the center of the target, the sidleUpDistance is subtracted from the m_velocity
                 if (closestPoint == Constants.FRONT) {
-                    m_velocity = new Point2D.Double(m_velocity.x - Math.cos(m_turnAngle) * sidleUpDistance, m_velocity.y - Math.sin(m_turnAngle) * sidleUpDistance);
+                    setVelocity(new Point2D.Double(vel.x - Math.cos(futureAngle) * sidleUpDistance, vel.y - Math.sin(futureAngle) * sidleUpDistance));
                 } else { // If the back of the MainCharacter is closest to the center of the target, the sidleUpDistance is added to the m_velocity
-                    m_velocity = new Point2D.Double(m_velocity.x - Math.cos(m_turnAngle) * -sidleUpDistance, m_velocity.y - Math.sin(m_turnAngle) * -sidleUpDistance);
+                    setVelocity(new Point2D.Double(vel.x - Math.cos(futureAngle) * -sidleUpDistance, vel.y - Math.sin(futureAngle) * -sidleUpDistance));
                 }
         }
 
@@ -87,13 +79,15 @@ public class MainCharacter extends Sprite {
 
     @Override
     public void translate(Point2D.Double vel) {
-        m_coor.setLocation(m_coor.getX() + vel.x, m_coor.getY() + vel.y);
+        getRelativeCoordinates().setLocation(getRelativeCoordinates().getX() + vel.x, getRelativeCoordinates().getY() + vel.y);
     }
     
     @Override
     public void periodic() {
-        m_currentMap.moveMap(-m_velocity.getX(), m_velocity.getY());
-        translate(new Point2D.Double(m_velocity.getX(), -m_velocity.getY())); 
+        move();
+        Point2D.Double vel = getVelocity();
+        getGameMap().moveMap(new Point2D.Double(-vel.getX(), vel.getY()));
+        translate(new Point2D.Double(vel.getX(), -vel.getY())); 
     }
 
 
@@ -106,23 +100,19 @@ public class MainCharacter extends Sprite {
         // X and Y are the coordinates of the image
         tr.translate(TRUE_COOR.getX() - getWidth()/2, TRUE_COOR.getY() - getHeight()/2);
         tr.rotate(
-                -(m_turnAngle - (Math.PI/2)),
-                m_image.getWidth(null) / 2,
-                m_image.getHeight(null) / 2
+                -(getTurnAngle() - (Math.PI/2)),
+                getImage().getWidth(null) / 2,
+                getImage().getHeight(null) / 2
         );
-        g2d.drawImage(m_image, tr, null);
+        g2d.drawImage(getImage(), tr, null);
     }
 
     public int getWidth() {
-        return m_image.getWidth(null);
+        return getImage().getWidth(null);
     }
 
     public int getHeight() {
-        return m_image.getHeight(null);
-    }
-
-    public void setCurrentMap(GameMap map) {
-        m_currentMap = map;
+        return getImage().getHeight(null);
     }
 
     @Override

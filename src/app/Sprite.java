@@ -9,58 +9,45 @@ import java.awt.geom.Point2D;
 
 
 public class Sprite {
-    protected Point2D.Double m_coor;
-    protected Point2D.Double m_trueCoor;
-    protected HitBox m_hitBox;
-    protected double m_turnAngle; // radians
-    protected Image m_image;
-    protected MainCharacter m_mainCharacter;
-    protected boolean m_moving;
-    protected boolean m_turning;
-    protected boolean m_changingDirection;
-    protected GameMap m_currentMap;
-    protected double m_speed;
-    protected Point2D.Double m_velocity;
-    protected double m_rotationalSpeed;
-    protected static final double DEFAULT_ROTATIONAL_SPEED = 5;
-    public boolean m_isMainCharacter;
+    private Point2D.Double m_coor;
+    private Point2D.Double m_trueCoor;
+    private HitBox m_hitBox;
+    private double m_turnAngle; // radians
+    private Image m_image;
+    private boolean m_turning;
+    private GameMap m_currentMap;
+    private double m_speed;
+    private Point2D.Double m_velocity;
+    private double m_rotationalSpeed;
+    private static final double DEFAULT_ROTATIONAL_SPEED = 5;
 
 
-    public Sprite(Point2D.Double coor, String imagePath, GameMap map, MainCharacter mainCharacter, boolean isMainCharacter, int hitboxType) {
-        m_isMainCharacter = isMainCharacter;
-        m_changingDirection = false;
+    public Sprite(Point2D.Double coor, String imagePath, GameMap map, int hitboxType) {
         m_turning = false;
         m_rotationalSpeed = DEFAULT_ROTATIONAL_SPEED;
         m_coor = coor;
         m_trueCoor = coor;
         m_image = new ImageIcon(imagePath).getImage();
-        m_moving = false;
         m_currentMap = map;
         m_velocity = new Point2D.Double(0,0);
-        m_mainCharacter = mainCharacter;
         m_hitBox = new HitBox(this, hitboxType);
         m_hitBox.createHitbox(m_coor, m_turnAngle);
     }
 
-    public Sprite(Point2D.Double coor, String imagePath, double m_turnAngle, GameMap map, MainCharacter mainCharacter, boolean isMainCharacter, int hitboxType) {
-        m_isMainCharacter = isMainCharacter;
-        m_changingDirection = false;
+    public Sprite(Point2D.Double coor, String imagePath, double m_turnAngle, GameMap map, int hitboxType) {
         m_turning = false;
         m_rotationalSpeed = DEFAULT_ROTATIONAL_SPEED;
         m_coor = coor;
-        m_trueCoor = coor;
+        m_trueCoor = new Point2D.Double(m_coor.x,m_coor.y);
         this.m_turnAngle = m_turnAngle;
         m_image = new ImageIcon(imagePath).getImage();
-        m_moving = false;
         m_currentMap = map;
         m_velocity = new Point2D.Double(0,0);
-        m_mainCharacter = mainCharacter;
         m_hitBox = new HitBox(this, hitboxType);
         m_hitBox.createHitbox(m_coor, m_turnAngle);
     }
 
     public void initialize() {
-        m_trueCoor = Utility.addPoints(m_mainCharacter.getTrueCoordinates(), m_trueCoor);
     }
 
     public void draw(Graphics2D g2d) {
@@ -70,7 +57,7 @@ public class Sprite {
         // the main character is used as the origin-(0,0)
         // this means that when the page is resized, all the sprites remain the same m_speed from the character
         
-        tr.translate(m_mainCharacter.getTrueCoordinates().getX() + m_trueCoor.getX() - getWidth()/2, m_mainCharacter.getTrueCoordinates().getY() + m_trueCoor.getY() - getHeight()/2);
+        tr.translate(m_trueCoor.getX() - getWidth()/2,m_trueCoor.getY() - getHeight()/2);
 
         tr.rotate(
                 -(m_turnAngle - (Math.PI/2)),
@@ -87,7 +74,7 @@ public class Sprite {
         m_coor.setLocation(m_coor.getX() + vel.x, m_coor.getY() + vel.y);
         m_trueCoor.setLocation(m_trueCoor.getX() + vel.x, m_trueCoor.getY() + vel.y);
     }
-    
+
     private static Point2D.Double computeMovement(double angleRad, double speed)
     {
     	double x = Math.cos(angleRad);
@@ -99,12 +86,8 @@ public class Sprite {
         m_velocity = computeMovement(m_turnAngle, m_speed);
     }
 
-    public void moveWithMap(double deltax, double deltay) {
-        m_trueCoor.setLocation(m_trueCoor.getX() + deltax, m_trueCoor.getY() + deltay);
-    }
-
-    public void setMoving(boolean moving) {
-        m_moving = moving;
+    public void moveWithMap(Point2D.Double mapVel) {
+        m_trueCoor.setLocation(m_trueCoor.getX() + mapVel.x, m_trueCoor.getY() + mapVel.y);
     }
     
     // returns the location of the object
@@ -137,15 +120,12 @@ public class Sprite {
         m_image = new ImageIcon(imagePath).getImage();
     }
 
-    public void setMainCharacter(MainCharacter m_mainCharacter) {
-        this.m_mainCharacter = m_mainCharacter;
+
+    protected void setTurnAngle(double turnAngle) {
+        m_turnAngle = turnAngle;
     }
 
-    public void setTurnAngle(double m_turnAngle) {
-        this.m_turnAngle = m_turnAngle;
-    }
-
-    public double getTurnAngle() {
+    protected double getTurnAngle() {
         return m_turnAngle;
     }
 
@@ -198,6 +178,7 @@ public class Sprite {
     }
 
     public void periodic() {
+        move();
         translate(m_velocity);  
     }
 
@@ -220,6 +201,31 @@ public class Sprite {
     public HitBox getHitBox() {
         return m_hitBox;
     }
+
+    protected GameMap getGameMap() {
+        return m_currentMap;
+    }
+
+    protected boolean getTurningStatus() {
+        return m_turning;
+    }
+
+    protected Point2D.Double getVelocity() {
+        return new Point2D.Double(m_velocity.x, m_velocity.y);
+    }
+
+    protected void setVelocity(Point2D.Double velocity) {
+        m_velocity = new Point2D.Double(velocity.x, velocity.y);;
+    }
+    
+    protected Image getImage() {
+        return m_image;
+    }
+
+    public void setCurrentMap(GameMap map) {
+        m_currentMap = map;
+    }
+
 
 
 }
