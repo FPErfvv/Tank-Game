@@ -20,6 +20,7 @@ public class Sprite {
     protected boolean m_changingDirection;
     protected GameMap m_currentMap;
     protected double m_speed;
+    protected Point2D.Double m_velocity;
     protected double m_rotationalSpeed;
     protected static final double DEFAULT_ROTATIONAL_SPEED = 5;
     public boolean m_isMainCharacter;
@@ -35,6 +36,7 @@ public class Sprite {
         m_image = new ImageIcon(imagePath).getImage();
         m_moving = false;
         m_currentMap = map;
+        m_velocity = new Point2D.Double(0,0);
         m_mainCharacter = mainCharacter;
         m_hitBox = new HitBox(this, hitboxType);
         m_hitBox.createHitbox(m_coor, m_turnAngle);
@@ -51,6 +53,7 @@ public class Sprite {
         m_image = new ImageIcon(imagePath).getImage();
         m_moving = false;
         m_currentMap = map;
+        m_velocity = new Point2D.Double(0,0);
         m_mainCharacter = mainCharacter;
         m_hitBox = new HitBox(this, hitboxType);
         m_hitBox.createHitbox(m_coor, m_turnAngle);
@@ -65,9 +68,9 @@ public class Sprite {
         AffineTransform tr = new AffineTransform();
         // X and Y are the coordinates of the m_image
         // the main character is used as the origin-(0,0)
-        // this means that when the page is resized, all the sprites remain the same distance from the character
+        // this means that when the page is resized, all the sprites remain the same m_speed from the character
         
-        tr.translate(m_mainCharacter.getTrueCoordinates().getX()+ m_trueCoor.getX()- getWidth()/2, m_mainCharacter.getTrueCoordinates().getY()+m_trueCoor.getY()- getHeight()/2);
+        tr.translate(m_mainCharacter.getTrueCoordinates().getX() + m_trueCoor.getX() - getWidth()/2, m_mainCharacter.getTrueCoordinates().getY() + m_trueCoor.getY() - getHeight()/2);
 
         tr.rotate(
                 -(m_turnAngle - (Math.PI/2)),
@@ -80,28 +83,20 @@ public class Sprite {
         //m_hitBox.drawHitBox(g2d);
     }
 
-    public void translate(double deltax, double deltay) {
-        m_coor.setLocation(m_coor.getX() + deltax, m_coor.getY() + deltay);
-        m_trueCoor.setLocation(m_trueCoor.getX() + deltax, m_trueCoor.getY() + deltay);
+    public void translate(Point2D.Double vel) {
+        m_coor.setLocation(m_coor.getX() + vel.x, m_coor.getY() + vel.y);
+        m_trueCoor.setLocation(m_trueCoor.getX() + vel.x, m_trueCoor.getY() + vel.y);
+    }
+    
+    private static Point2D.Double computeMovement(double angleRad, double speed)
+    {
+    	double x = Math.cos(angleRad);
+    	double y = Math.sin(angleRad);
+    	return new Point2D.Double(x * speed, y * speed);
     }
 
-    public void move(int distance) {
-        double deltax = distance * Math.cos(m_turnAngle % (Math.PI/2));
-        double deltay = distance * Math.sin(m_turnAngle % (Math.PI/2));
-        if (m_turnAngle >= (Math.PI/2) && m_turnAngle < Math.PI) { // quadrant II
-            deltax = distance * Math.cos((Math.PI /2) - (m_turnAngle % (Math.PI/2)));
-            deltay = distance * Math.sin((Math.PI/2) - (m_turnAngle % (Math.PI/2)));
-            deltax = -deltax;
-        } else if (m_turnAngle >= (Math.PI) && m_turnAngle < (3 * Math.PI / 2)) { // quadrant III
-            deltax = -deltax;
-            deltay = -deltay;
-        } else if (m_turnAngle >= (3 * Math.PI / 2) && m_turnAngle < (2 *Math.PI)) { // quadrant IV
-            deltax = distance * Math.cos((Math.PI/2)- (m_turnAngle % (Math.PI/2)));
-            deltay = distance * Math.sin((Math.PI/2)- (m_turnAngle % (Math.PI/2)));
-            deltay = -deltay;
-        }
-        
-        translate(deltax, deltay);    
+    public void move() {
+        m_velocity = computeMovement(m_turnAngle, m_speed);
     }
 
     public void moveWithMap(double deltax, double deltay) {
@@ -200,6 +195,10 @@ public class Sprite {
             m_turning = turning;
             m_rotationalSpeed = Math.abs(m_rotationalSpeed) * direction;
         }
+    }
+
+    public void periodic() {
+        translate(m_velocity);  
     }
 
     public double getSpeed() {

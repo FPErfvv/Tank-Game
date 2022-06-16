@@ -62,7 +62,8 @@ public class MainPanel extends JPanel implements ActionListener {
         frameWidth = frame.getWidth();
         repaintRectangle.setBounds( 0, 0,frameWidth,frameHeight);
         frameHeight = frame.getHeight();
-        mainCharacter.moveBackForth();
+        mainCharacter.move();
+        mainCharacter.periodic();
     }
     
     public void setMap() {

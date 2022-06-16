@@ -8,20 +8,16 @@ public class HitBox {
     public static final int CIRCLE = 0;
     public static final int RECTANGLE = 1;
     private int m_type;
-    private Point2D.Double location;
     private int m_width, m_height;
     private Sprite m_sprite;
     // An array of points used to create the shape of the bounding box.
     private Point2D.Double[] m_vert;
-    private double m_angle;
-    private Double[] pts;
 
     public HitBox(Sprite sprite, int m_width, int m_height, int type) {
         m_sprite = sprite;
         this.m_width = m_width;
         this.m_height = m_height;
         m_type = type;
-        m_angle = 0;
         if (type == Constants.RECTANGLE) {
             m_vert = new Point2D.Double[4];
         } else if (type == Constants.COW) {
@@ -33,7 +29,6 @@ public class HitBox {
     public HitBox(Sprite sprite, int type) {
         m_sprite = sprite;
         m_type = type;
-        m_angle = 0;
         m_width = m_sprite.getWidth();
         m_height = m_sprite.getHeight();
         
@@ -165,10 +160,6 @@ public class HitBox {
         }
         // TODO: adjust this method to allow for different hitboxes other than rect
         return indexOfClosestPoint < 2 ? Constants.FRONT : Constants.BACK;
-    }
-
-    public void setTurnAngle() {
-        m_angle = m_sprite.getTurnAngle() - (Math.PI/2);
     }
 
     /**
