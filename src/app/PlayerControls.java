@@ -8,10 +8,12 @@ import java.awt.event.KeyListener;
 class PlayerControls implements KeyListener {
     private final MainCharacter m_mainCharacter;
     private final Timer m_timer;
+    private final GameMap m_map;
 
-    PlayerControls(MainCharacter mainCharacter, Timer timer) {
+    PlayerControls(MainCharacter mainCharacter, Timer timer, GameMap map) {
         m_mainCharacter = Objects.requireNonNull(mainCharacter, "The m_mainCharacter may not be null");
         m_timer = Objects.requireNonNull(timer, "The timer may not be null");;
+        m_map = Objects.requireNonNull(map, "The map may not be null");;
     }
 
     @Override
@@ -34,6 +36,9 @@ class PlayerControls implements KeyListener {
         if(e.getKeyCode() == KeyEvent.VK_C) {
             SoundFx fx = new SoundFx();
             fx.play50CalSound();
+        }
+        if(e.getKeyCode() == KeyEvent.VK_R) {
+            m_map.addSprite();
         }
     }
 

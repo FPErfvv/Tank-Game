@@ -36,10 +36,9 @@ public class MainPanel extends JPanel implements ActionListener {
         repaintRectangle = new Rectangle((int) mainCharacter.getTrueCoordinates().x - (frameWidth / 2),
                 (int) mainCharacter.getTrueCoordinates().y - (frameHeight / 2), frameWidth, frameHeight);
         currentMap.setMainCharacter(mainCharacter);
-        currentMap.initialize();
         setBackground(new Color(0, 154, 23));
         add(currentMap);
-        addKeyListener(new PlayerControls(mainCharacter, timer));
+        addKeyListener(new PlayerControls(mainCharacter, timer, currentMap));
         timer.start();
     }
 
@@ -56,6 +55,10 @@ public class MainPanel extends JPanel implements ActionListener {
         repaintRectangle.setBounds(0, 0, frameWidth, frameHeight);
         frameHeight = frame.getHeight();
         mainCharacter.periodic();
+        System.out.println(currentMap.getSpriteList().get(0).getRelativeCoordinates() + ", " + mainCharacter.getRelativeCoordinates());
+        for (Sprite s: currentMap.getSpriteList()) {
+            s.periodic();
+        }
     }
     
     public void setMap() {

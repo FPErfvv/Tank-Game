@@ -17,7 +17,7 @@ public class Utility {
     }
 
     public static Point2D.Double addPoints(Point2D.Double pt1, Point2D.Double pt2) {
-      return new Point2D.Double(pt1.x + pt2.x, pt1.y + pt2.y);
+      return new Point2D.Double(pt1.getX() + pt2.getX(), pt1.getY() + pt2.getY());
     }
 
     public static Point2D.Double normalize(Point2D.Double pt) {

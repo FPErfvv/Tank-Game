@@ -38,16 +38,13 @@ public class Sprite {
         m_turning = false;
         m_rotationalSpeed = DEFAULT_ROTATIONAL_SPEED;
         m_coor = coor;
-        m_trueCoor = new Point2D.Double(m_coor.x,m_coor.y);
+        m_trueCoor = new Point2D.Double(m_coor.x + map.getOffset().getX(), m_coor.y + map.getOffset().getY());
         this.m_turnAngle = m_turnAngle;
         m_image = new ImageIcon(imagePath).getImage();
         m_currentMap = map;
         m_velocity = new Point2D.Double(0,0);
         m_hitBox = new HitBox(this, hitboxType);
         m_hitBox.createHitbox(m_coor, m_turnAngle);
-    }
-
-    public void initialize() {
     }
 
     public void draw(Graphics2D g2d) {
@@ -71,11 +68,11 @@ public class Sprite {
     }
 
     public void translate(Point2D.Double vel) {
-        m_coor.setLocation(m_coor.getX() + vel.x, m_coor.getY() + vel.y);
-        m_trueCoor.setLocation(m_trueCoor.getX() + vel.x, m_trueCoor.getY() + vel.y);
+        m_coor = Utility.addPoints(m_coor, vel);
+        m_trueCoor = Utility.addPoints(m_trueCoor, vel);
     }
 
-    private static Point2D.Double computeMovement(double angleRad, double speed)
+    public static Point2D.Double computeMovement(double angleRad, double speed)
     {
     	double x = Math.cos(angleRad);
     	double y = Math.sin(angleRad);
@@ -84,6 +81,7 @@ public class Sprite {
 
     public void move() {
         m_velocity = computeMovement(m_turnAngle, m_speed);
+        translate(new Point2D.Double(m_velocity.getX(), -m_velocity.getY())); 
     }
 
     public void moveWithMap(Point2D.Double mapVel) {
@@ -179,7 +177,7 @@ public class Sprite {
 
     public void periodic() {
         move();
-        translate(m_velocity);  
+        rotate();  
     }
 
     public double getSpeed() {

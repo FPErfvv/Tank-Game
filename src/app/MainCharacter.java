@@ -16,8 +16,7 @@ public class MainCharacter extends Sprite {
 
     @Override
     public void move() {
-        super.move();
-
+        setVelocity(computeMovement(getTurnAngle(), getSpeed())); 
         double futureAngle = getTurnAngle();
         if (getTurningStatus()) {
             futureAngle += Math.toRadians(getRotationalSpeed());
@@ -95,7 +94,6 @@ public class MainCharacter extends Sprite {
     @Override
     public void draw(Graphics2D g2d) {
 
-        
         AffineTransform tr = new AffineTransform();
         // X and Y are the coordinates of the image
         tr.translate(TRUE_COOR.getX() - getWidth()/2, TRUE_COOR.getY() - getHeight()/2);

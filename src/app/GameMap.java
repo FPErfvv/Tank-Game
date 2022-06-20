@@ -1,7 +1,8 @@
 package app;
 
 import java.util.ArrayList;
-
+import java.util.Collections;
+import java.util.List;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -14,44 +15,60 @@ import javax.swing.JPanel;
 
 public class GameMap extends JPanel {
 
-    private ArrayList<Sprite> spriteList;
-    private double xOffset;
-    private double yOffset;
+    private final List<Sprite> spriteList;
+    private Point2D.Double offset;
     private MainCharacter m_mainCharacter;
     private Graphics2D m_g2d;
 
     public GameMap() {
-        xOffset = 0;
-        yOffset = 0;
+        offset = new Point2D.Double(0,0);
+        setBackground(new Color(0,154,23));
         setVisible(true);
         setFocusable(true);
+        spriteList = new ArrayList<Sprite>();
+        populateList();
     }
     
 
-    public void initialize() {
-        populateList();
-        setBackground(new Color(0,154,23));
-    }
-
 
     public void populateList() {
-        spriteList = new ArrayList<Sprite>();
-        for (int i = 0; i < 5; i++) {
-            Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
-
-            Sprite Sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, Constants.COW);        
-
-            Sprite.initialize();
-            spriteList.add(Sprite);
+        
+        for (int i = 0; i < 1; i++) {
+            //Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
+            Point2D.Double coor = new Point2D.Double(100,0);
+            Sprite sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, Constants.COW);        
+            sprite.setSpeed(2);
+            sprite.setRotationalSpeed(3);
+            sprite.startTurning(true, Constants.DIRECTION_LEFT);
+            spriteList.add(sprite);
 
             Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this, Constants.COW);
-            g.initialize();
+            g.setSpeed(2);
+            g.setRotationalSpeed(3);
+            g.startTurning(true, Constants.DIRECTION_LEFT);
             spriteList.add(g);
 
         }
                 
         
     }
+
+    public void addSprite() {
+        //Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
+        Point2D.Double coor = new Point2D.Double(100,100);
+        Sprite sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, Constants.COW);        
+        sprite.setSpeed(4);
+        sprite.setRotationalSpeed(3);
+        sprite.startTurning(true, Constants.DIRECTION_LEFT);
+        spriteList.add(sprite);
+
+        Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this, Constants.COW);
+        g.setSpeed(4);
+        g.setRotationalSpeed(3);
+        g.startTurning(true, Constants.DIRECTION_LEFT);
+        spriteList.add(g);
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -69,7 +86,7 @@ public class GameMap extends JPanel {
     }
 
     public void moveMap(Point2D.Double mapVel) {
-
+        offset = Utility.addPoints(mapVel, offset);
         for (Sprite p: spriteList) {
             p.moveWithMap(mapVel);
         }
@@ -79,12 +96,12 @@ public class GameMap extends JPanel {
         m_g2d.translate(getWidth()/2, -getHeight()/2);
     }
 
-    public double[] getOffset() {
-        return new double[] {xOffset, yOffset};
+    public Point2D.Double getOffset() {
+        return new Point2D.Double(offset.getX(),offset.getY());
     }
 
-    public ArrayList<Sprite> getSpriteList() {
-        return spriteList;
+    public List<Sprite> getSpriteList() {
+        return Collections.unmodifiableList(spriteList);
     }
 
     /**
