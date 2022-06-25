@@ -8,22 +8,20 @@ import java.awt.geom.Point2D;
 public class MainCharacter extends Sprite {
 
     public static final Point2D.Double TRUE_COOR = new Point2D.Double(0,0); 
-    private boolean m_turning;
 
     
     public MainCharacter(GameMap map) {
         super(new Point2D.Double(0, 0),"src/images/MainCharacter.png", 0, map, Constants.RECTANGLE);
-        m_turning = false;
         setSpeed(0);
     }
 
     @Override
     public void move() {
         setVelocity(computeMovement(getTurnAngle(), getSpeed()));
-         
         double futureAngle = getTurnAngle();
-        if (m_turning) {
-            futureAngle += Math.toRadians(getRotationalSpeed());
+        // If the character isn't rotating, there is no need to calculate a future angle
+        if (getRotationalVel() != 0) {
+            futureAngle += Math.toRadians(getRotationalVel());
             if (futureAngle >= 2 * Math.PI) {
                 futureAngle -= 2 * Math.PI;
             }
@@ -48,7 +46,7 @@ public class MainCharacter extends Sprite {
             }
         }
 
-        if (m_turning) {
+        if (getRotationalVel() != 0) {
             setTurnAngle(futureAngle);            
         }
 
@@ -83,22 +81,29 @@ public class MainCharacter extends Sprite {
 
     }
 
-    public void startTurning(boolean turning, int direction) {
-        // This boolean determines if the direction stated by "dirction" is the same as the current direction
+    /**
+     * Changes the rotational velocity in order to negate the velocity added while turning.
+     * This is called by the {@link PlayerControls#keyReleased(java.awt.event.KeyEvent)}
+     * method when the player releases either the directional ('a' or 'd') keys. It does not 
+     * set the rotational velocity to zero in case there is an external factor that is causing
+     * the MainCharacter to turn. This is used separatedly from the 
+     * {@link Sprite#turn(int direction)} in order to prevent a glitch in the movement
+     * when the player releases one of the directional keys while holding down the other key.
+     * 
+     * @param direction direction at which the MainCharacter needs to stop turning
+     */
+    public void stopTurn(int direction) {
+        // sameDirection determines if the direction stated by "direction" is the same as the current direction
         boolean sameDirection = false;
-        if (Math.abs(getRotationalSpeed())/getRotationalSpeed() == direction) {
-            sameDirection = true;
+        if (getRotationalVel() != 0) {
+            if (Math.abs(getRotationalVel())/getRotationalVel() == direction) {
+                sameDirection = true;
+            }
         }
-        /**
-         * This piece of logic prevents a brief pause in the turning when the character releases one key while the other is held down.
-         * If the incoming direction is the same as the current direction, the direction of rotation and turning status are changed
-         * If the character is not turning, the direction of rotation and turning status are changed
-         * If the character is told to turn, the direction of rotation and turning status are changed
-         */
-        if (sameDirection || (!m_turning || turning)) {
-            m_turning = turning;
-            setRotationState(direction);
-        } 
+
+        if (sameDirection) {
+            changeRotationalVel(getTurningSpeed() * -direction);
+        }
         
     }
 
@@ -108,8 +113,13 @@ public class MainCharacter extends Sprite {
     }
     
     /**
-     * This method is called every timer cycle in the MainPanel. It creates
-     * the hitbox and then calls the move() and rotate() method.
+     * This is called by {@link MainPanel#actionPerformed(ActionEvent arg0)} 
+     * every timer cycle in the MainPanel. 
+     * 
+     * <p> It calls the {@link MainCharacter#move()} method to both turn and 
+     * calculate the velocity of the MainCharacter. Then, it moves both the map  
+     * and the MainCharacter with the {@link GameMap#moveMap(Point2D.Double mapVel)} 
+     * method and the {@link MainCharacter#translate(Point2D.Double vel)} method. 
      */
     @Override
     public void periodic() {
@@ -120,7 +130,10 @@ public class MainCharacter extends Sprite {
     }
 
 
-
+    /**
+     * 
+     * @param g2d
+     */
     @Override
     public void draw(Graphics2D g2d) {
 

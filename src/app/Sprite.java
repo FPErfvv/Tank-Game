@@ -17,13 +17,21 @@ public class Sprite {
     private GameMap m_currentMap;
     private double m_speed;
     private Point2D.Double m_velocity;
-    private double m_rotationalSpeedReference;
-    private double m_rotationalSpeed;
-    private static final double DEFAULT_ROTATIONAL_SPEED = 5;
+    // The velocity at which the sprite is rotating at
+    private double m_rotationalVel;
+    // The speed at which the sprite turns at
+    private double m_turningSpeed;
+    private static final double DEFAULT_TURNING_VEL = 5;
+    private int m_turningDirection;
+
+
+
 
     public Sprite(Point2D.Double coor, String imagePath, double m_turnAngle, GameMap map, int hitboxType) {
-        m_rotationalSpeed = DEFAULT_ROTATIONAL_SPEED;
-        m_rotationalSpeedReference = DEFAULT_ROTATIONAL_SPEED;
+
+        m_turningDirection = Constants.DIRECTION_STOP;
+        m_turningSpeed = DEFAULT_TURNING_VEL;
+        m_rotationalVel = 0;
         m_coor = coor;
         m_trueCoor = new Point2D.Double(m_coor.x + map.getOffset().getX(), m_coor.y + map.getOffset().getY());
         this.m_turnAngle = m_turnAngle;
@@ -89,11 +97,11 @@ public class Sprite {
 
     /**
      * This method changes the current angle of the character by 
-     * m_rotationalSpeed every timer cycle. It also wraps the
+     * m_rotationalVel every timer cycle. It also wraps the
      * angle around to keep it in the range of 0 to 2π radians
      */
     public void rotate() {
-        m_turnAngle += Math.toRadians(m_rotationalSpeed);
+        m_turnAngle += Math.toRadians(m_rotationalVel);
         if (m_turnAngle >= 2 * Math.PI) {
             m_turnAngle -= 2 * Math.PI;
         }
@@ -120,22 +128,19 @@ public class Sprite {
         return m_turnAngle;
     }
 
-    protected double getRotationalSpeed() {
-        return m_rotationalSpeed;
+    protected double getRotationalVel() {
+        return m_rotationalVel;
     }
 
-    protected double getRotationalSpeedReference() {
-        return m_rotationalSpeedReference;
-    }
-
-    public void setRotationalSpeedReference(double rotationalSpeed) {
-        m_rotationalSpeedReference = rotationalSpeed;
+    protected double getTurningSpeed() {
+        return m_turningSpeed;
     }
 
     
     /**
-     * This method takes the center of a sprite and returns which coordinate
+     * Takes the center of a sprite and returns which coordinate
      * from the list of coordinates is closest.
+     * 
      * @param coors
      * @return closest coordinate to the center of the sprite   
      */
@@ -151,21 +156,63 @@ public class Sprite {
         }
         return closestCoor;
     }
-    // TODO: potentially rename to setRotationState
-    public void setRotationState(int direction) {
-        m_rotationalSpeed = m_rotationalSpeedReference * direction;
-        if(this instanceof MainCharacter) {
-            System.out.println(direction);
-        }
-    }
-
-    protected void setRotationalSpeed(double rotationalSpeed) {
-        m_rotationalSpeed = rotationalSpeed;
+    // TODO: Change use of constant to use of a new variable 
+    public void changeRotationalVel(double deltaV) {
+        m_rotationalVel += deltaV;
     }
 
     /**
-     * This method is called every timer cycle in the MainPanel. It creates
-     * the hitbox and then calls the move() and rotate() method.
+     * Determines how to change the rotational velocity based off of an inputted direction.
+     * 
+     * @param direction the inputted direction
+     */
+    public void turn(int direction) {
+        
+        boolean sameDirection = false;
+        boolean alreadyMoving = false;
+        if (m_rotationalVel != 0) {
+            if (Math.abs(m_rotationalVel)/m_rotationalVel == direction) {
+                sameDirection = true;
+            }
+            alreadyMoving = true;
+        }
+
+        /**
+         * If the Sprite is already moving, and it is being told to change direction, and the
+         * inputted direction states that the Sprite should stop, the velocity is changed by
+         * the speed that the Sprite turns at, in the opposite direction that the Sprite
+         * is currently turning. 
+         * 
+         * If the Sprite is already moving, and it is being told to change direction, and the inputted 
+         * direction states that the Sprite should completely change direction, the velocity is changed 
+         * by 2x the speed that the Sprite turns at, in the opposite direction that the Sprite
+         * is currently turning.
+         * 
+         * If the Sprite is not already moving, the velocity is simply changed by the turning speed
+         * in the direction that the Sprite is being told to turn.
+         */
+        if (alreadyMoving) {
+            if (!sameDirection) {
+                if (direction == 0) {
+                    m_rotationalVel += m_turningSpeed * -m_turningDirection;
+                } else {
+                    m_rotationalVel += m_turningSpeed * direction * 2;
+                }
+            }         
+        } else {
+            m_rotationalVel += m_turningSpeed * direction;
+        }
+        m_turningDirection = direction;
+        
+    }
+
+    protected void setRotationalVel(double rotationalSpeed) {
+        m_rotationalVel = rotationalSpeed;
+    }
+
+    /**
+     * This is called by {@link MainPanel#actionPerformed(ActionEvent arg0)} every timer cycle in the MainPanel. It creates
+     * the hitbox and then calls the {@link Sprite#move()} and {@link Sprite#rotate()} methods to move and rotate the Sprite.
      */
     public void periodic() {
         m_hitBox.createHitbox(m_coor, m_turnAngle);
@@ -211,6 +258,10 @@ public class Sprite {
 
     public void setCurrentMap(GameMap map) {
         m_currentMap = map;
+    }
+
+    public int getTurningDirection() {
+        return m_turningDirection;
     }
 
 

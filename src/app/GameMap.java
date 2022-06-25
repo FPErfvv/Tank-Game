@@ -32,19 +32,13 @@ public class GameMap extends JPanel {
 
     public void populateList() {
         
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 0; i++) {
             //Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
             Point2D.Double coor = new Point2D.Double(100,0);
             Sprite sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, Constants.COW);        
-            sprite.setSpeed(0);
-            sprite.setRotationalSpeedReference(0);
-            sprite.setRotationState(Constants.DIRECTION_LEFT);
             spriteList.add(sprite);
 
             Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this, Constants.COW);
-            g.setSpeed(0);
-            g.setRotationalSpeedReference(0);
-            g.setRotationState(Constants.DIRECTION_LEFT);
             spriteList.add(g);
 
         }
@@ -54,17 +48,15 @@ public class GameMap extends JPanel {
 
     public void addSprite() {
         //Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
-        Point2D.Double coor = new Point2D.Double(100,100);
+        Point2D.Double coor = new Point2D.Double(0,50);
         Sprite sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, Constants.COW);        
-        sprite.setSpeed(4);
-        sprite.setRotationalSpeedReference(3);
-        sprite.setRotationState(Constants.DIRECTION_LEFT);
+        sprite.setSpeed(5);
+        sprite.turn(Constants.TURNING_LEFT);
         spriteList.add(sprite);
 
         Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this, Constants.COW);
-        g.setSpeed(4);
-        g.setRotationalSpeedReference(3);
-        g.setRotationState(Constants.DIRECTION_LEFT);
+        g.setSpeed(5);
+        g.turn(Constants.TURNING_LEFT);
         spriteList.add(g);
     }
 

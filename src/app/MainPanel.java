@@ -20,10 +20,12 @@ public class MainPanel extends JPanel implements ActionListener {
     public int frameHeight;
     private static Rectangle repaintRectangle;
 
+    private int debugCounter;
+
     MainPanel(JFrame f) {
+        debugCounter = 0;
 
         frame = f;
-        // this.setPreferredSize(new Dimension(frameWidth, frameHeight));
         setVisible(true);
         timer = new Timer(30, (ActionListener) this);
 
@@ -52,6 +54,16 @@ public class MainPanel extends JPanel implements ActionListener {
         frameWidth = frame.getWidth();
         repaintRectangle.setBounds(0, 0, frameWidth, frameHeight);
         frameHeight = frame.getHeight();
+        debugCounter++;
+        
+        if (debugCounter > 200) {
+            for (Sprite s: currentMap.getSpriteList()) {
+                s.turn(-s.getTurningDirection());
+            }
+            debugCounter = 0;
+        }
+        
+        System.out.println(debugCounter);
         mainCharacter.periodic();
         for (Sprite s: currentMap.getSpriteList()) {
             s.periodic();
