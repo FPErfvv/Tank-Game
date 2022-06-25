@@ -154,6 +154,9 @@ public class Sprite {
     // TODO: potentially rename to setRotationState
     public void setRotationState(int direction) {
         m_rotationalSpeed = m_rotationalSpeedReference * direction;
+        if(this instanceof MainCharacter) {
+            System.out.println(direction);
+        }
     }
 
     protected void setRotationalSpeed(double rotationalSpeed) {

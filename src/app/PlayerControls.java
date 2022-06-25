@@ -21,8 +21,11 @@ class PlayerControls implements KeyListener {
         // TODO Auto-generated method stub
         if (e.getKeyCode() == KeyEvent.VK_A) {
             m_mainCharacter.startTurning(true, Constants.TURNING_LEFT);
+            //m_mainCharacter.setRotationState(Constants.TURNING_LEFT);
         } else if (e.getKeyCode() == KeyEvent.VK_D) {
             m_mainCharacter.startTurning(true, Constants.TURNING_RIGHT);
+            //m_mainCharacter.setRotationState(Constants.TURNING_RIGHT);
+
         }
         if (e.getKeyCode() == KeyEvent.VK_W) {
             m_mainCharacter.setSpeed(5);
@@ -47,9 +50,13 @@ class PlayerControls implements KeyListener {
         // TODO Auto-generated method stub
         if (e.getKeyCode() == KeyEvent.VK_A) {
             m_mainCharacter.startTurning(false, Constants.TURNING_LEFT);
+            //m_mainCharacter.setRotationState(0);
+
         } 
         else if (e.getKeyCode() == KeyEvent.VK_D) {
             m_mainCharacter.startTurning(false, Constants.TURNING_RIGHT);
+            //m_mainCharacter.setRotationState(0);
+
         }
         if (e.getKeyCode() == KeyEvent.VK_W) {
             m_mainCharacter.setSpeed(0);
