@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.awt.Graphics2D;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 
@@ -37,15 +36,15 @@ public class GameMap extends JPanel {
             //Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
             Point2D.Double coor = new Point2D.Double(100,0);
             Sprite sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, Constants.COW);        
-            sprite.setSpeed(2);
-            sprite.setRotationalSpeed(3);
-            sprite.startTurning(true, Constants.DIRECTION_LEFT);
+            sprite.setSpeed(0);
+            sprite.setRotationalSpeedReference(0);
+            sprite.setRotationState(Constants.DIRECTION_LEFT);
             spriteList.add(sprite);
 
             Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this, Constants.COW);
-            g.setSpeed(2);
-            g.setRotationalSpeed(3);
-            g.startTurning(true, Constants.DIRECTION_LEFT);
+            g.setSpeed(0);
+            g.setRotationalSpeedReference(0);
+            g.setRotationState(Constants.DIRECTION_LEFT);
             spriteList.add(g);
 
         }
@@ -58,14 +57,14 @@ public class GameMap extends JPanel {
         Point2D.Double coor = new Point2D.Double(100,100);
         Sprite sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this, Constants.COW);        
         sprite.setSpeed(4);
-        sprite.setRotationalSpeed(3);
-        sprite.startTurning(true, Constants.DIRECTION_LEFT);
+        sprite.setRotationalSpeedReference(3);
+        sprite.setRotationState(Constants.DIRECTION_LEFT);
         spriteList.add(sprite);
 
         Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this, Constants.COW);
         g.setSpeed(4);
-        g.setRotationalSpeed(3);
-        g.startTurning(true, Constants.DIRECTION_LEFT);
+        g.setRotationalSpeedReference(3);
+        g.setRotationState(Constants.DIRECTION_LEFT);
         spriteList.add(g);
     }
 

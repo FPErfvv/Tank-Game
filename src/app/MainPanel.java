@@ -23,8 +23,6 @@ public class MainPanel extends JPanel implements ActionListener {
     MainPanel(JFrame f) {
 
         frame = f;
-        frameWidth = 500;
-        frameHeight = 500;
         // this.setPreferredSize(new Dimension(frameWidth, frameHeight));
         setVisible(true);
         timer = new Timer(30, (ActionListener) this);
@@ -55,7 +53,6 @@ public class MainPanel extends JPanel implements ActionListener {
         repaintRectangle.setBounds(0, 0, frameWidth, frameHeight);
         frameHeight = frame.getHeight();
         mainCharacter.periodic();
-        System.out.println(currentMap.getSpriteList().get(0).getRelativeCoordinates() + ", " + mainCharacter.getRelativeCoordinates());
         for (Sprite s: currentMap.getSpriteList()) {
             s.periodic();
         }

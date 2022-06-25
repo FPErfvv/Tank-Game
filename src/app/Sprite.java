@@ -14,29 +14,16 @@ public class Sprite {
     private HitBox m_hitBox;
     private double m_turnAngle; // radians
     private Image m_image;
-    private boolean m_turning;
     private GameMap m_currentMap;
     private double m_speed;
     private Point2D.Double m_velocity;
+    private double m_rotationalSpeedReference;
     private double m_rotationalSpeed;
     private static final double DEFAULT_ROTATIONAL_SPEED = 5;
 
-
-    public Sprite(Point2D.Double coor, String imagePath, GameMap map, int hitboxType) {
-        m_turning = false;
-        m_rotationalSpeed = DEFAULT_ROTATIONAL_SPEED;
-        m_coor = coor;
-        m_trueCoor = coor;
-        m_image = new ImageIcon(imagePath).getImage();
-        m_currentMap = map;
-        m_velocity = new Point2D.Double(0,0);
-        m_hitBox = new HitBox(this, hitboxType);
-        m_hitBox.createHitbox(m_coor, m_turnAngle);
-    }
-
     public Sprite(Point2D.Double coor, String imagePath, double m_turnAngle, GameMap map, int hitboxType) {
-        m_turning = false;
         m_rotationalSpeed = DEFAULT_ROTATIONAL_SPEED;
+        m_rotationalSpeedReference = DEFAULT_ROTATIONAL_SPEED;
         m_coor = coor;
         m_trueCoor = new Point2D.Double(m_coor.x + map.getOffset().getX(), m_coor.y + map.getOffset().getY());
         this.m_turnAngle = m_turnAngle;
@@ -47,6 +34,12 @@ public class Sprite {
         m_hitBox.createHitbox(m_coor, m_turnAngle);
     }
 
+    /**
+     * This method translates the sprite to it's actual coordinate and
+     * then rotates it to it's turnAngle. Then, it draws the image of
+     * the sprite.
+     * @param g2d
+     */
     public void draw(Graphics2D g2d) {
 
         AffineTransform tr = new AffineTransform();
@@ -62,9 +55,6 @@ public class Sprite {
                 m_image.getHeight(null) / 2
         );
         g2d.drawImage(m_image, tr, null);
-        
-        m_hitBox.createHitbox(m_coor, m_turnAngle);
-        //m_hitBox.drawHitBox(g2d);
     }
 
     public void translate(Point2D.Double vel) {
@@ -97,15 +87,18 @@ public class Sprite {
         return m_coor;
     }
 
+    /**
+     * This method changes the current angle of the character by 
+     * m_rotationalSpeed every timer cycle. It also wraps the
+     * angle around to keep it in the range of 0 to 2π radians
+     */
     public void rotate() {
-        if (m_turning) {
-            m_turnAngle += Math.toRadians(m_rotationalSpeed);
-            if (m_turnAngle >= 2 * Math.PI) {
-                m_turnAngle -= 2 * Math.PI;
-            }
-            if (m_turnAngle < 0) {
-                m_turnAngle += 2*Math.PI;
-            }
+        m_turnAngle += Math.toRadians(m_rotationalSpeed);
+        if (m_turnAngle >= 2 * Math.PI) {
+            m_turnAngle -= 2 * Math.PI;
+        }
+        if (m_turnAngle < 0) {
+            m_turnAngle += 2*Math.PI;
         }
     }
 
@@ -127,12 +120,16 @@ public class Sprite {
         return m_turnAngle;
     }
 
-    public double getRotationalSpeed() {
+    protected double getRotationalSpeed() {
         return m_rotationalSpeed;
     }
 
-    public void setRotationalSpeed(double rotationalSpeed) {
-        m_rotationalSpeed = rotationalSpeed;
+    protected double getRotationalSpeedReference() {
+        return m_rotationalSpeedReference;
+    }
+
+    public void setRotationalSpeedReference(double rotationalSpeed) {
+        m_rotationalSpeedReference = rotationalSpeed;
     }
 
     
@@ -154,28 +151,21 @@ public class Sprite {
         }
         return closestCoor;
     }
-
-    public void startTurning(boolean turning, int direction) {
-        // This boolean determines if the direction stated by "dirction" is the same as the current direction
-        // This prevents the character from spinning for ever with out stopping. There are no limits
-        // on the setting of the values of the method is the same direction as current direction.
-        boolean sameDirection = false;
-        if (Math.abs(m_rotationalSpeed)/m_rotationalSpeed == direction) {
-            sameDirection = true;
-        }
-        
-        if (sameDirection) {
-            m_turning = turning;
-            m_rotationalSpeed = Math.abs(m_rotationalSpeed) * direction;
-        } else if (m_turning && !turning) {
-            // If the character is currently turning, and it is being asked to stop turning, then the command is ignored
-        } else {
-            m_turning = turning;
-            m_rotationalSpeed = Math.abs(m_rotationalSpeed) * direction;
-        }
+    // TODO: potentially rename to setRotationState
+    public void setRotationState(int direction) {
+        m_rotationalSpeed = m_rotationalSpeedReference * direction;
     }
 
+    protected void setRotationalSpeed(double rotationalSpeed) {
+        m_rotationalSpeed = rotationalSpeed;
+    }
+
+    /**
+     * This method is called every timer cycle in the MainPanel. It creates
+     * the hitbox and then calls the move() and rotate() method.
+     */
     public void periodic() {
+        m_hitBox.createHitbox(m_coor, m_turnAngle);
         move();
         rotate();  
     }
@@ -202,10 +192,6 @@ public class Sprite {
 
     protected GameMap getGameMap() {
         return m_currentMap;
-    }
-
-    protected boolean getTurningStatus() {
-        return m_turning;
     }
 
     protected Point2D.Double getVelocity() {

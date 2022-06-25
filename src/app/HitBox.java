@@ -13,18 +13,6 @@ public class HitBox {
     // An array of points used to create the shape of the bounding box.
     private Point2D.Double[] m_vert;
 
-    public HitBox(Sprite sprite, int m_width, int m_height, int type) {
-        m_sprite = sprite;
-        this.m_width = m_width;
-        this.m_height = m_height;
-        m_type = type;
-        if (type == Constants.RECTANGLE) {
-            m_vert = new Point2D.Double[4];
-        } else if (type == Constants.COW) {
-            m_vert = new Point2D.Double[6];
-        }
-    }
-
     // creates a bounding box with the m_height and m_width the size of the m_sprite's image
     public HitBox(Sprite sprite, int type) {
         m_sprite = sprite;
@@ -37,7 +25,6 @@ public class HitBox {
         } else if (type == Constants.COW) {
             m_vert = new Point2D.Double[6];
         }
-
     }
 
     // reference: https://www.sevenson.com.au/programming/sat/ 
