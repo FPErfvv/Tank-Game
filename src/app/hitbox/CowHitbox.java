@@ -1,7 +1,6 @@
 package app.hitbox;
 
 import app.Constants;
-import app.Hitbox;
 import app.Sprite;
 import app.Utility;
 
@@ -60,7 +59,7 @@ public class CowHitbox extends Hitbox {
 
     
 	@Override
-	protected int getClosestSide(Point2D.Double targetsCenter) {
+	public int getClosestSide(Point2D.Double targetsCenter) {
         int indexOfClosestPoint = 0;
         double smallestDistance = Double.MAX_VALUE;
         for (int i = 0; i < getVertices().length; i++) {

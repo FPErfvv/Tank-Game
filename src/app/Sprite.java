@@ -3,6 +3,8 @@ package app;
 import javax.swing.ImageIcon;
 
 import app.hitbox.CowHitbox;
+import app.hitbox.Hitbox;
+
 
 import java.awt.Image;
 import java.awt.geom.AffineTransform;

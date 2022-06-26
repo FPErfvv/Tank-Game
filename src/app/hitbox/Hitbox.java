@@ -1,7 +1,10 @@
-package app;
+package app.hitbox;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+
+import app.Sprite;
+import app.Utility;
 
 public abstract class Hitbox {
 
@@ -125,7 +128,7 @@ public abstract class Hitbox {
      * @param targetsCenter
      * @return closest side (front or back) to the targetsCenter
      */
-    protected abstract int getClosestSide(Point2D.Double targetsCenter);
+    public abstract int getClosestSide(Point2D.Double targetsCenter);
 
     /**
      * This method takes an angle and a coordinate of the sprite and 
@@ -135,7 +138,7 @@ public abstract class Hitbox {
      * @param futureSpriteCoor the future coordinate of the sprite
      * @param futureAngle the future angle of the sprite
      */
-    protected abstract void computeCollisionPoints(Point2D.Double futureSpriteCoor, double futureAngle);
+    public abstract void computeCollisionPoints(Point2D.Double futureSpriteCoor, double futureAngle);
 
     /**
      * Draws the hitbox
