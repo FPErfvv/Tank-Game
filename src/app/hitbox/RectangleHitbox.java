@@ -1,10 +1,14 @@
 package app.hitbox;
 
-import app.HitBox;
+import app.Constants;
+import app.Hitbox;
+import app.Sprite;
+import app.Utility;
+
 import app.Sprite;
 import java.awt.geom.Point2D;
 
-public class RectangleHitbox extends HitBox {
+public class RectangleHitbox extends Hitbox {
 
     public RectangleHitbox(Sprite sprite) {
         super(sprite);
@@ -45,5 +49,20 @@ public class RectangleHitbox extends HitBox {
         getVertices()[3] = new Point2D.Double(x, y); 
 
     }
+
+
+	@Override
+	protected int getClosestSide(Point2D.Double targetsCenter) {
+        int indexOfClosestPoint = 0;
+        double smallestDistance = Double.MAX_VALUE;
+        for (int i = 0; i < getVertices().length; i++) {
+            if (Utility.getDistance(targetsCenter, getVertices()[i]) < smallestDistance) {
+                smallestDistance = Utility.getDistance(targetsCenter, getVertices()[i]);
+                indexOfClosestPoint = i;
+            }
+        }
+        // TODO: adjust this method to allow for different hitboxes other than rect
+        return indexOfClosestPoint < 2 ? Constants.FRONT : Constants.BACK;
+	}
     
 }

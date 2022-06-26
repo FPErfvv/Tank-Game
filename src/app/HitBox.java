@@ -3,7 +3,7 @@ package app;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
-public abstract class HitBox {
+public abstract class Hitbox {
 
     public static final int CIRCLE = 0;
     public static final int RECTANGLE = 1;
@@ -12,7 +12,7 @@ public abstract class HitBox {
     private Point2D.Double[] m_vert;
 
     // creates a bounding box with the m_dimensions.getY() and m_dimensions.getX() the size of the m_sprite's image
-    public HitBox(Sprite sprite) {
+    public Hitbox(Sprite sprite) {
         m_sprite = sprite;
     }
 
@@ -125,18 +125,7 @@ public abstract class HitBox {
      * @param targetsCenter
      * @return closest side (front or back) to the targetsCenter
      */
-    public int getClosestSide(Point2D.Double targetsCenter) {
-        int indexOfClosestPoint = 0;
-        double smallestDistance = Double.MAX_VALUE;
-        for (int i = 0; i < m_vert.length; i++) {
-            if (Utility.getDistance(targetsCenter, m_vert[i]) < smallestDistance) {
-                smallestDistance = Utility.getDistance(targetsCenter, m_vert[i]);
-                indexOfClosestPoint = i;
-            }
-        }
-        // TODO: adjust this method to allow for different hitboxes other than rect
-        return indexOfClosestPoint < 2 ? Constants.FRONT : Constants.BACK;
-    }
+    protected abstract int getClosestSide(Point2D.Double targetsCenter);
 
     /**
      * This method takes an angle and a coordinate of the sprite and 
@@ -152,7 +141,7 @@ public abstract class HitBox {
      * Draws the hitbox
      * @param g2d 
      */
-    public void drawHitBox(Graphics2D g2d) {
+    public void drawHitbox(Graphics2D g2d) {
         int loopLength = m_vert.length;
         for (int i = 1; i < loopLength; i++) {
             g2d.drawLine((int)m_vert[i].getX(), (int)m_vert[i].getY(), (int)m_vert[i-1].getX(), (int)m_vert[i-1].getY());

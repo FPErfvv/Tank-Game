@@ -45,7 +45,7 @@ class PlayerControls implements KeyListener {
             m_map.addSprite();
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            if (m_mainCharacter.getHitBox() instanceof CowHitbox) {
+            if (m_mainCharacter.getHitbox() instanceof CowHitbox) {
                 m_mainCharacter.setHitbox(new RectangleHitbox(m_mainCharacter));
                 m_mainCharacter.setImage("src/images/MainCharacter.png");
             } else {

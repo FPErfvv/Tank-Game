@@ -15,7 +15,7 @@ public class MainCharacter extends Sprite {
     public MainCharacter(GameMap map) {
         super(new Point2D.Double(0, 0),"src/images/MainCharacter.png", 0, map);
         setHitbox(new RectangleHitbox(this));
-        getHitBox().computeCollisionPoints(getRelativeCoordinates(), getTurnAngle());
+        getHitbox().computeCollisionPoints(getRelativeCoordinates(), getTurnAngle());
         setSpeed(0);
     }
 
@@ -37,13 +37,13 @@ public class MainCharacter extends Sprite {
         
         Point2D.Double futureCoor = Utility.addPoints(getRelativeCoordinates(), new Point2D.Double(getVelocity().x, -getVelocity().y)); 
         // A hitbox is created where the main character will be in the future, given the current m_velocity and angle
-        getHitBox().computeCollisionPoints(futureCoor, futureAngle);
+        getHitbox().computeCollisionPoints(futureCoor, futureAngle);
         // This hitbox is then used to detect if the main character will collide with anything at that future position
         Point2D.Double mtv = new Point2D.Double(0,0);
 
         Point2D.Double closestTargetsCoor = new Point2D.Double(0,0);
         for (Sprite t: getGameMap().getSpriteList()) {
-            Point2D.Double tempMtv = this.getHitBox().SAT(t.getHitBox().getVertices(), t.getRelativeCoordinates(), futureCoor);
+            Point2D.Double tempMtv = this.getHitbox().SAT(t.getHitbox().getVertices(), t.getRelativeCoordinates(), futureCoor);
             if (Utility.getVectorMagnitude(tempMtv) != 0) {
                 mtv = new Point2D.Double(tempMtv.getX(), tempMtv.getY());
                 closestTargetsCoor = t.getRelativeCoordinates();
@@ -74,7 +74,7 @@ public class MainCharacter extends Sprite {
                     sidleUpDistance = Utility.getVectorMagnitude(vel) + 2;
                 }
 
-                int closestPoint = this.getHitBox().getClosestSide(closestTargetsCoor);
+                int closestPoint = this.getHitbox().getClosestSide(closestTargetsCoor);
                 // If the front of the MainCharacter is closest to the center of the target, the sidleUpDistance is subtracted from the m_velocity
                 if (closestPoint == Constants.FRONT) {
                     setVelocity(new Point2D.Double(vel.x - Math.cos(futureAngle) * sidleUpDistance, vel.y - Math.sin(futureAngle) * sidleUpDistance));
@@ -150,7 +150,7 @@ public class MainCharacter extends Sprite {
                 getImage().getHeight(null) / 2
         );
         g2d.drawImage(getImage(), tr, null);
-        getHitBox().drawHitBox(g2d);
+        getHitbox().drawHitbox(g2d);
     }
 
     public int getWidth() {

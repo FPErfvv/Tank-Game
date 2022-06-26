@@ -13,7 +13,7 @@ import java.awt.geom.Point2D;
 public class Sprite {
     private Point2D.Double m_coor;
     private Point2D.Double m_trueCoor;
-    private HitBox m_hitBox;
+    private Hitbox m_hitbox;
     private double m_turnAngle; // radians
     private Image m_image;
     private GameMap m_currentMap;
@@ -39,8 +39,8 @@ public class Sprite {
         m_image = new ImageIcon(imagePath).getImage();
         m_currentMap = map;
         m_velocity = new Point2D.Double(0,0);
-        m_hitBox = new CowHitbox(this);
-        m_hitBox.computeCollisionPoints(m_coor, m_turnAngle);
+        m_hitbox = new CowHitbox(this);
+        m_hitbox.computeCollisionPoints(m_coor, m_turnAngle);
     }
 
     /**
@@ -64,7 +64,7 @@ public class Sprite {
                 m_image.getHeight(null) / 2
         );
         g2d.drawImage(m_image, tr, null);
-        getHitBox().drawHitBox(g2d);
+        getHitbox().drawHitbox(g2d);
     }
 
     public void translate(Point2D.Double vel) {
@@ -217,7 +217,7 @@ public class Sprite {
      * the hitbox and then calls the {@link Sprite#move()} and {@link Sprite#rotate()} methods to move and rotate the Sprite.
      */
     public void periodic() {
-        m_hitBox.computeCollisionPoints(m_coor, m_turnAngle);
+        m_hitbox.computeCollisionPoints(m_coor, m_turnAngle);
         move();
         rotate();  
     }
@@ -238,8 +238,8 @@ public class Sprite {
         return m_image.getHeight(null);
     }
 
-    public HitBox getHitBox() {
-        return m_hitBox;
+    public Hitbox getHitbox() {
+        return m_hitbox;
     }
 
     protected GameMap getGameMap() {
@@ -266,8 +266,8 @@ public class Sprite {
         return m_turningDirection;
     }
 
-    public void setHitbox(HitBox hitbox) {
-        m_hitBox = hitbox;
+    public void setHitbox(Hitbox hitbox) {
+        m_hitbox = hitbox;
     }
 
 

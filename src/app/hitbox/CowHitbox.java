@@ -1,10 +1,13 @@
 package app.hitbox;
 
-import app.HitBox;
+import app.Constants;
+import app.Hitbox;
 import app.Sprite;
+import app.Utility;
+
 import java.awt.geom.Point2D;
 
-public class CowHitbox extends HitBox {
+public class CowHitbox extends Hitbox {
 
     public CowHitbox(Sprite sprite) {
         super(sprite);
@@ -53,7 +56,27 @@ public class CowHitbox extends HitBox {
         x = (int) (futureSpriteCoor.getX() - (dimensions.getX() / 2 * Math.cos(futureAngle) - dimensions.getY() / 4 * Math.sin(futureAngle)));
         y = (int) (futureSpriteCoor.getY() + (dimensions.getX() / 2 * Math.sin(futureAngle) + dimensions.getY() / 4 * Math.cos(futureAngle)));
         getVertices()[5] = new Point2D.Double(x, y);
-
     }
+
+    
+	@Override
+	protected int getClosestSide(Point2D.Double targetsCenter) {
+        int indexOfClosestPoint = 0;
+        double smallestDistance = Double.MAX_VALUE;
+        for (int i = 0; i < getVertices().length; i++) {
+            if (Utility.getDistance(targetsCenter, getVertices()[i]) < smallestDistance) {
+                smallestDistance = Utility.getDistance(targetsCenter, getVertices()[i]);
+                indexOfClosestPoint = i;
+            }
+        }
+        // TODO: adjust this method to allow for different hitboxes other than rect
+        if (indexOfClosestPoint < 2) {
+            return Constants.FRONT;
+        } else if (indexOfClosestPoint == 3 || indexOfClosestPoint == 4) {
+            return Constants.BACK;
+        } else {
+            return 0;
+        }
+	}
     
 }
