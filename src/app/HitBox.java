@@ -3,28 +3,17 @@ package app;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
-public class HitBox {
+public abstract class HitBox {
 
     public static final int CIRCLE = 0;
     public static final int RECTANGLE = 1;
-    private int m_type;
-    private int m_width, m_height;
     private Sprite m_sprite;
     // An array of points used to create the shape of the bounding box.
     private Point2D.Double[] m_vert;
 
-    // creates a bounding box with the m_height and m_width the size of the m_sprite's image
-    public HitBox(Sprite sprite, int type) {
+    // creates a bounding box with the m_dimensions.getY() and m_dimensions.getX() the size of the m_sprite's image
+    public HitBox(Sprite sprite) {
         m_sprite = sprite;
-        m_type = type;
-        m_width = m_sprite.getWidth();
-        m_height = m_sprite.getHeight();
-        
-        if (type == Constants.RECTANGLE) {
-            m_vert = new Point2D.Double[4];
-        } else if (type == Constants.COW) {
-            m_vert = new Point2D.Double[6];
-        }
     }
 
     // reference: https://www.sevenson.com.au/programming/sat/ 
@@ -157,64 +146,7 @@ public class HitBox {
      * @param futureSpriteCoor the future coordinate of the sprite
      * @param futureAngle the future angle of the sprite
      */
-    public void createHitbox(Point2D.Double futureSpriteCoor, double futureAngle) {    
-        m_width = m_sprite.getWidth();
-        m_height = m_sprite.getHeight();
-        futureAngle -= (Math.PI/2);
-        if (m_type == Constants.RECTANGLE) {
-            // top left
-            int x = (int) (futureSpriteCoor.getX() - (m_width / 2 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
-            int y = (int) (futureSpriteCoor.getY() + (m_width / 2 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
-            m_vert[0] = new Point2D.Double(x,y); 
-
-            //top right
-            x = (int)(futureSpriteCoor.getX() + (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
-            y = (int) (futureSpriteCoor.getY() - (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
-            m_vert[1] = new Point2D.Double(x, y);    
-
-            // bottom right
-            x = (int) (futureSpriteCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height /2 * Math.sin(futureAngle)));
-            y = (int) (futureSpriteCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height /2 * Math.cos(futureAngle)));
-            m_vert[2] = new Point2D.Double(x, y);
-  
-            //bottom left
-            x = (int) (futureSpriteCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
-            y = (int) (futureSpriteCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
-            m_vert[3] = new Point2D.Double(x, y); 
-
-        } else if (m_type == Constants.COW) {
-            // top left
-            int x = (int) (futureSpriteCoor.getX() - (m_width / 4 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
-            int y = (int) (futureSpriteCoor.getY() + (m_width / 4 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
-            m_vert[0] = new Point2D.Double(x,y); 
-
-            // top right
-            x = (int)(futureSpriteCoor.getX() + (m_width / 4 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
-            y = (int) (futureSpriteCoor.getY() - (m_width / 4 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
-            m_vert[1] = new Point2D.Double(x, y);  
-            
-            // middle right
-            x = (int) (futureSpriteCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height / 4 * Math.sin(futureAngle)));
-            y = (int) (futureSpriteCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height / 4 * Math.cos(futureAngle)));
-            m_vert[2] = new Point2D.Double(x, y);            
-
-            // bottom right
-            x = (int) (futureSpriteCoor.getX() + (m_width / 2 * Math.cos(futureAngle) + m_height / 2 * Math.sin(futureAngle)));
-            y = (int) (futureSpriteCoor.getY() - (m_width / 2 * Math.sin(futureAngle) - m_height / 2 * Math.cos(futureAngle)));
-            m_vert[3] = new Point2D.Double(x, y);
-            
-            // bottom left
-            x = (int) (futureSpriteCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 2 * Math.sin(futureAngle)));
-            y = (int) (futureSpriteCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 2 * Math.cos(futureAngle)));
-            m_vert[4] = new Point2D.Double(x, y);
-
-            // middle left
-            x = (int) (futureSpriteCoor.getX() - (m_width / 2 * Math.cos(futureAngle) - m_height / 4 * Math.sin(futureAngle)));
-            y = (int) (futureSpriteCoor.getY() + (m_width / 2 * Math.sin(futureAngle) + m_height / 4 * Math.cos(futureAngle)));
-            m_vert[5] = new Point2D.Double(x, y);
-        }
-
-    }
+    protected abstract void computeCollisionPoints(Point2D.Double futureSpriteCoor, double futureAngle);
 
     /**
      * Draws the hitbox
@@ -228,16 +160,19 @@ public class HitBox {
         g2d.drawLine((int)m_vert[m_vert.length-1].getX(), (int)m_vert[m_vert.length-1].getY(), (int)m_vert[0].getX(), (int)m_vert[0].getY());
     }
 
-    public Point2D.Double[] getCollisionPoints() {
+    public Point2D.Double[] getVertices() {
         return m_vert;
     }
 
-    public void setType(int type) {
-        m_type = type;
-        if (type == Constants.RECTANGLE) {
-            m_vert = new Point2D.Double[4];
-        } else if (type == Constants.COW) {
-            m_vert = new Point2D.Double[6];
-        }
+    protected void initializeVert(Point2D.Double[] vert) {
+        m_vert = vert;
+    }
+
+    protected Sprite getSprite() {
+        return m_sprite;
+    }
+
+    protected Point2D.Double getDimensions() {
+        return new Point2D.Double(m_sprite.getWidth(), m_sprite.getHeight());
     }
 }

@@ -5,13 +5,17 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
+import app.hitbox.RectangleHitbox;
+
 public class MainCharacter extends Sprite {
 
     public static final Point2D.Double TRUE_COOR = new Point2D.Double(0,0); 
 
     
     public MainCharacter(GameMap map) {
-        super(new Point2D.Double(0, 0),"src/images/MainCharacter.png", 0, map, Constants.RECTANGLE);
+        super(new Point2D.Double(0, 0),"src/images/MainCharacter.png", 0, map);
+        setHitbox(new RectangleHitbox(this));
+        getHitBox().computeCollisionPoints(getRelativeCoordinates(), getTurnAngle());
         setSpeed(0);
     }
 
@@ -33,13 +37,13 @@ public class MainCharacter extends Sprite {
         
         Point2D.Double futureCoor = Utility.addPoints(getRelativeCoordinates(), new Point2D.Double(getVelocity().x, -getVelocity().y)); 
         // A hitbox is created where the main character will be in the future, given the current m_velocity and angle
-        getHitBox().createHitbox(futureCoor, futureAngle);
+        getHitBox().computeCollisionPoints(futureCoor, futureAngle);
         // This hitbox is then used to detect if the main character will collide with anything at that future position
         Point2D.Double mtv = new Point2D.Double(0,0);
 
         Point2D.Double closestTargetsCoor = new Point2D.Double(0,0);
         for (Sprite t: getGameMap().getSpriteList()) {
-            Point2D.Double tempMtv = this.getHitBox().SAT(t.getHitBox().getCollisionPoints(), t.getRelativeCoordinates(), futureCoor);
+            Point2D.Double tempMtv = this.getHitBox().SAT(t.getHitBox().getVertices(), t.getRelativeCoordinates(), futureCoor);
             if (Utility.getVectorMagnitude(tempMtv) != 0) {
                 mtv = new Point2D.Double(tempMtv.getX(), tempMtv.getY());
                 closestTargetsCoor = t.getRelativeCoordinates();
@@ -146,6 +150,7 @@ public class MainCharacter extends Sprite {
                 getImage().getHeight(null) / 2
         );
         g2d.drawImage(getImage(), tr, null);
+        getHitBox().drawHitBox(g2d);
     }
 
     public int getWidth() {

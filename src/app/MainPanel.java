@@ -63,11 +63,12 @@ public class MainPanel extends JPanel implements ActionListener {
             debugCounter = 0;
         }
         
-        System.out.println(debugCounter);
         mainCharacter.periodic();
         for (Sprite s: currentMap.getSpriteList()) {
             s.periodic();
         }
+
+        
     }
     
     public void setMap() {

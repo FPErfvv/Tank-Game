@@ -2,6 +2,10 @@ package app;
 
 import java.util.Objects;
 import javax.swing.Timer;
+
+import app.hitbox.CowHitbox;
+import app.hitbox.RectangleHitbox;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -39,6 +43,15 @@ class PlayerControls implements KeyListener {
         }
         if(e.getKeyCode() == KeyEvent.VK_R) {
             m_map.addSprite();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            if (m_mainCharacter.getHitBox() instanceof CowHitbox) {
+                m_mainCharacter.setHitbox(new RectangleHitbox(m_mainCharacter));
+                m_mainCharacter.setImage("src/images/MainCharacter.png");
+            } else {
+                m_mainCharacter.setImage("src/images/MainCowPic.png");
+                m_mainCharacter.setHitbox(new CowHitbox(m_mainCharacter));
+            }
         }
     }
 

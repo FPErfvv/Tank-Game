@@ -2,6 +2,8 @@ package app;
 
 import javax.swing.ImageIcon;
 
+import app.hitbox.CowHitbox;
+
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.Graphics2D;
@@ -27,9 +29,8 @@ public class Sprite {
 
 
 
-    public Sprite(Point2D.Double coor, String imagePath, double m_turnAngle, GameMap map, int hitboxType) {
-
-        m_turningDirection = Constants.DIRECTION_STOP;
+    public Sprite(Point2D.Double coor, String imagePath, double m_turnAngle, GameMap map) {
+        m_turningDirection = Constants.TURNING_STOP;
         m_turningSpeed = DEFAULT_TURNING_VEL;
         m_rotationalVel = 0;
         m_coor = coor;
@@ -38,8 +39,8 @@ public class Sprite {
         m_image = new ImageIcon(imagePath).getImage();
         m_currentMap = map;
         m_velocity = new Point2D.Double(0,0);
-        m_hitBox = new HitBox(this, hitboxType);
-        m_hitBox.createHitbox(m_coor, m_turnAngle);
+        m_hitBox = new CowHitbox(this);
+        m_hitBox.computeCollisionPoints(m_coor, m_turnAngle);
     }
 
     /**
@@ -63,6 +64,7 @@ public class Sprite {
                 m_image.getHeight(null) / 2
         );
         g2d.drawImage(m_image, tr, null);
+        getHitBox().drawHitBox(g2d);
     }
 
     public void translate(Point2D.Double vel) {
@@ -215,7 +217,7 @@ public class Sprite {
      * the hitbox and then calls the {@link Sprite#move()} and {@link Sprite#rotate()} methods to move and rotate the Sprite.
      */
     public void periodic() {
-        m_hitBox.createHitbox(m_coor, m_turnAngle);
+        m_hitBox.computeCollisionPoints(m_coor, m_turnAngle);
         move();
         rotate();  
     }
@@ -262,6 +264,10 @@ public class Sprite {
 
     public int getTurningDirection() {
         return m_turningDirection;
+    }
+
+    public void setHitbox(HitBox hitbox) {
+        m_hitBox = hitbox;
     }
 
 
