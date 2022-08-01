@@ -8,8 +8,10 @@ import app.hitbox.RectangleHitbox;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-class PlayerControls implements KeyListener {
+class PlayerControls implements KeyListener, MouseListener {
     private final MainCharacter m_mainCharacter;
     private final Timer m_timer;
     private final GameMap m_map;
@@ -37,10 +39,7 @@ class PlayerControls implements KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_E) {
             m_timer.stop();
         }
-        if(e.getKeyCode() == KeyEvent.VK_C) {
-            SoundFx fx = new SoundFx();
-            fx.play50CalSound();
-        }
+       
         if(e.getKeyCode() == KeyEvent.VK_R) {
             m_map.addSprite();
         }
@@ -78,5 +77,37 @@ class PlayerControls implements KeyListener {
     public void keyTyped(KeyEvent e) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        // TODO Auto-generated method stub
+        if(e.getButton() == MouseEvent.BUTTON1) {
+            SoundFx fx = new SoundFx();
+            fx.play50CalSound();
+        }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
     }
 }

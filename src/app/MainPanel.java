@@ -39,6 +39,7 @@ public class MainPanel extends JPanel implements ActionListener {
         setBackground(new Color(0, 154, 23));
         add(currentMap);
         addKeyListener(new PlayerControls(mainCharacter, timer, currentMap));
+        addMouseListener(new PlayerControls(mainCharacter, timer, currentMap));
         timer.start();
     }
 
@@ -75,7 +76,6 @@ public class MainPanel extends JPanel implements ActionListener {
         mainCharacter.setCurrentMap(currentMap);
     }
 
-
     public int getFrameHeight() {
         return frameHeight;
     }
@@ -85,6 +85,5 @@ public class MainPanel extends JPanel implements ActionListener {
 
     public Timer getTimer() {
         return timer;
-        
     }
 }

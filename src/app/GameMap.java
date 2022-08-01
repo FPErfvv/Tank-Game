@@ -104,5 +104,4 @@ public class GameMap extends JPanel {
      * Link to hexagon class + hexagon grid
      * https://github.com/javagl/Hexagon
      **/ 
-
 }
