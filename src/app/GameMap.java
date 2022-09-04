@@ -58,6 +58,7 @@ public class GameMap extends JPanel {
         g.setSpeed(5);
         g.turn(Constants.TURNING_LEFT);
         spriteList.add(g);
+        System.out.println(spriteList.size());
     }
 
     @Override

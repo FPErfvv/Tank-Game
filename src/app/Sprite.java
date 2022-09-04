@@ -160,7 +160,7 @@ public class Sprite {
         }
         return closestCoor;
     }
-    // TODO: Change use of constant to use of a new variable 
+
     public void changeRotationalVel(double deltaV) {
         m_rotationalVel += deltaV;
     }

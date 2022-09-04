@@ -3,8 +3,6 @@ package app;
 import javax.swing.JFrame;
 
 import java.awt.Dimension;
-import java.awt.Toolkit;
-
 
 public class Main  {
     static final JFrame f = new JFrame("Tank Game");

@@ -57,7 +57,7 @@ public class CowHitbox extends Hitbox {
         getVertices()[5] = new Point2D.Double(x, y);
     }
 
-    
+    // TODO: modify to look at verticies, not center point
 	@Override
 	public int getClosestSide(Point2D.Double targetsCenter) {
         int indexOfClosestPoint = 0;
@@ -68,7 +68,7 @@ public class CowHitbox extends Hitbox {
                 indexOfClosestPoint = i;
             }
         }
-        // TODO: adjust this method to allow for different hitboxes other than rect
+
         if (indexOfClosestPoint < 2) {
             return Constants.FRONT;
         } else if (indexOfClosestPoint == 3 || indexOfClosestPoint == 4) {

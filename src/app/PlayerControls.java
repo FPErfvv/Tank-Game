@@ -24,7 +24,6 @@ class PlayerControls implements KeyListener, MouseListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        // TODO Auto-generated method stub
         if (e.getKeyCode() == KeyEvent.VK_A) {
             m_mainCharacter.turn(Constants.TURNING_LEFT);
         } else if (e.getKeyCode() == KeyEvent.VK_D) {
@@ -56,7 +55,6 @@ class PlayerControls implements KeyListener, MouseListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        // TODO Auto-generated method stub
         if (e.getKeyCode() == KeyEvent.VK_A) {
             m_mainCharacter.stopTurn(Constants.TURNING_LEFT);
         } 
@@ -74,14 +72,10 @@ class PlayerControls implements KeyListener, MouseListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
-        // TODO Auto-generated method stub
-
-    }
+    public void keyTyped(KeyEvent e) {}
 
     @Override
     public void mousePressed(MouseEvent e) {
-        // TODO Auto-generated method stub
         if(e.getButton() == MouseEvent.BUTTON1) {
             SoundFx fx = new SoundFx();
             fx.play50CalSound();
@@ -89,25 +83,14 @@ class PlayerControls implements KeyListener, MouseListener {
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {
-        // TODO Auto-generated method stub
-    }
+    public void mouseClicked(MouseEvent e) {}
 
     @Override
-    public void mouseEntered(MouseEvent e) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void mouseEntered(MouseEvent e) {}
 
     @Override
-    public void mouseExited(MouseEvent e) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void mouseExited(MouseEvent e) {}
 
     @Override
-    public void mouseReleased(MouseEvent e) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void mouseReleased(MouseEvent e) {}
 }

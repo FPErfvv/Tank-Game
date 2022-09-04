@@ -4,7 +4,6 @@ import app.Constants;
 import app.Sprite;
 import app.Utility;
 
-import app.Sprite;
 import java.awt.geom.Point2D;
 
 public class RectangleHitbox extends Hitbox {
@@ -49,7 +48,7 @@ public class RectangleHitbox extends Hitbox {
 
     }
 
-
+    // TODO: modify to look at verticies, not center point
 	@Override
 	public int getClosestSide(Point2D.Double targetsCenter) {
         int indexOfClosestPoint = 0;
@@ -60,7 +59,7 @@ public class RectangleHitbox extends Hitbox {
                 indexOfClosestPoint = i;
             }
         }
-        // TODO: adjust this method to allow for different hitboxes other than rect
+
         return indexOfClosestPoint < 2 ? Constants.FRONT : Constants.BACK;
 	}
     
