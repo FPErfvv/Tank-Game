@@ -10,13 +10,16 @@ import app.hitbox.RectangleHitbox;
 public class MainCharacter extends Sprite {
 
     public static final Point2D.Double TRUE_COOR = new Point2D.Double(0,0); 
+    private SoundFx fx;
 
     
     public MainCharacter(GameMap map) {
         super(new Point2D.Double(0, 0),"src/images/MainCharacter.png", 0, map);
         setHitbox(new RectangleHitbox(this));
         getHitbox().computeCollisionPoints(getRelativeCoordinates(), getTurnAngle());
-        setSpeed(0);
+        setSpeed(1);
+
+        fx = new SoundFx();
     }
 
     @Override
@@ -131,6 +134,14 @@ public class MainCharacter extends Sprite {
         Point2D.Double vel = getVelocity();
         getGameMap().moveMap(new Point2D.Double(-vel.getX(), vel.getY()));
         translate(new Point2D.Double(vel.getX(), -vel.getY())); 
+
+        if(PlayerControls.fireTime == true) {
+            fx.repeat50Cal();
+        }
+        else {
+            fx.resetFireTime();
+        }
+            
     }
 
 

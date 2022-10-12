@@ -16,6 +16,8 @@ class PlayerControls implements KeyListener, MouseListener {
     private final Timer m_timer;
     private final GameMap m_map;
 
+    public static boolean fireTime;
+
     PlayerControls(MainCharacter mainCharacter, Timer timer, GameMap map) {
         m_mainCharacter = Objects.requireNonNull(mainCharacter, "The m_mainCharacter may not be null");
         m_timer = Objects.requireNonNull(timer, "The timer may not be null");;
@@ -77,8 +79,7 @@ class PlayerControls implements KeyListener, MouseListener {
     @Override
     public void mousePressed(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
-            SoundFx fx = new SoundFx();
-            fx.play50CalSound();
+            fireTime = true;
         }
     }
 
@@ -92,5 +93,7 @@ class PlayerControls implements KeyListener, MouseListener {
     public void mouseExited(MouseEvent e) {}
 
     @Override
-    public void mouseReleased(MouseEvent e) {}
+    public void mouseReleased(MouseEvent e) {
+        fireTime = false;
+    }
 }
