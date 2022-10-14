@@ -4,13 +4,21 @@ package app;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 import app.hitbox.RectangleHitbox;
 
 public class MainCharacter extends Sprite {
 
     public static final Point2D.Double TRUE_COOR = new Point2D.Double(0,0); 
+
+    public boolean weaponized = true;
+
+    private ArrayList<Projectile> projectileList;
+    private Sprite weaponSprite;
     private SoundFx fx;
+
+    private GameMap map;
 
     
     public MainCharacter(GameMap map) {
@@ -19,7 +27,15 @@ public class MainCharacter extends Sprite {
         getHitbox().computeCollisionPoints(getRelativeCoordinates(), getTurnAngle());
         setSpeed(1);
 
+        weaponSprite = new Sprite(new Point2D.Double(0, 0),"src/images/50Cal.png", 0, map);
+        weaponSprite.setHitbox(new RectangleHitbox(weaponSprite));
+        weaponSprite.getHitbox().computeCollisionPoints(weaponSprite.getRelativeCoordinates(), weaponSprite.getTurnAngle());
+        weaponSprite.setSpeed(1);
+
         fx = new SoundFx();
+        projectileList = new ArrayList<Projectile>();
+
+        this.map = map;
     }
 
     @Override
@@ -135,8 +151,13 @@ public class MainCharacter extends Sprite {
         getGameMap().moveMap(new Point2D.Double(-vel.getX(), vel.getY()));
         translate(new Point2D.Double(vel.getX(), -vel.getY())); 
 
-        if(PlayerControls.fireTime == true) {
+        if(PlayerControls.fireTime == true && weaponized == true) {
             fx.repeat50Cal();
+            if(fx.timeToRepeat >= 3) {
+                Projectile p = new Projectile(map, getRelativeCoordinates());
+                projectileList.add(p);
+            }
+            
         }
         else {
             fx.resetFireTime();
@@ -162,6 +183,21 @@ public class MainCharacter extends Sprite {
         );
         g2d.drawImage(getImage(), tr, null);
         getHitbox().drawHitbox(g2d);
+
+        if(weaponized == true) {
+            tr.translate(TRUE_COOR.getX() + 10, TRUE_COOR.getY() - getHeight()/2);
+
+            g2d.drawImage(weaponSprite.getImage(), tr, null);
+            weaponSprite.getHitbox().drawHitbox(g2d);
+        }
+        for(Projectile p: projectileList) {
+            p.draw(g2d);
+            p.setVelocity(new Point2D.Double(1,1));
+            if(p.getTurnAngle() == 0)
+                p.setTurnAngle(this.getTurnAngle());
+            p.move();
+        }
+        
     }
 
     public int getWidth() {

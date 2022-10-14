@@ -6,7 +6,7 @@ import java.io.*;
 public class SoundFx {
 
     private boolean shouldPlaySound = true;
-    private int timeToRepeat;
+    public int timeToRepeat;
     
     public void play50CalSound()
     {
@@ -39,10 +39,13 @@ public class SoundFx {
         }
     }
     public void repeat50Cal() {
-        timeToRepeat++;
+        
         if(timeToRepeat >= 3) {
             play50CalSound();
             timeToRepeat = 0;
+        }
+        else {
+            timeToRepeat++;
         }
     }
     public void resetFireTime() {

@@ -48,9 +48,11 @@ class PlayerControls implements KeyListener, MouseListener {
             if (m_mainCharacter.getHitbox() instanceof CowHitbox) {
                 m_mainCharacter.setHitbox(new RectangleHitbox(m_mainCharacter));
                 m_mainCharacter.setImage("src/images/MainCharacter.png");
+                m_mainCharacter.weaponized = true;
             } else {
                 m_mainCharacter.setImage("src/images/MainCowPic.png");
                 m_mainCharacter.setHitbox(new CowHitbox(m_mainCharacter));
+                m_mainCharacter.weaponized = false;
             }
         }
     }
