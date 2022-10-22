@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 class PlayerControls implements KeyListener, MouseListener {
+	
     private final MainCharacter m_mainCharacter;
     private final Timer m_timer;
     private final GameMap m_map;
@@ -46,12 +47,12 @@ class PlayerControls implements KeyListener, MouseListener {
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             if (m_mainCharacter.getHitbox() instanceof CowHitbox) {
-                m_mainCharacter.setHitbox(new RectangleHitbox(m_mainCharacter));
                 m_mainCharacter.setImage("src/images/MainCharacter.png");
+                m_mainCharacter.setHitbox(new RectangleHitbox(m_mainCharacter.getWidth(),m_mainCharacter.getHeight()));
                 m_mainCharacter.weaponized = true;
             } else {
                 m_mainCharacter.setImage("src/images/MainCowPic.png");
-                m_mainCharacter.setHitbox(new CowHitbox(m_mainCharacter));
+                m_mainCharacter.setHitbox(new CowHitbox(m_mainCharacter.getWidth(),m_mainCharacter.getHeight()));
                 m_mainCharacter.weaponized = false;
             }
         }

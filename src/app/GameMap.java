@@ -6,14 +6,14 @@ import java.util.List;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 import javax.swing.JPanel;
 
-
-
 public class GameMap extends JPanel {
 
+	int unitSize = 44;
     private final List<Sprite> spriteList;
     private Point2D.Double offset;
     private MainCharacter m_mainCharacter;
@@ -28,22 +28,50 @@ public class GameMap extends JPanel {
         populateList();
     }
     
-
-
-    public void populateList() {
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        m_g2d = (Graphics2D) g;
         
+        AffineTransform tr = new AffineTransform();
+        
+        m_g2d.translate(getWidth()*0.5d, getHeight()*0.5d);
+        
+        for (Sprite s: spriteList) {
+        	s.draw(m_g2d, tr, m_mainCharacter.getMapCoodinate());
+        }
+        
+        m_mainCharacter.draw(m_g2d, tr, m_mainCharacter.getMapCoodinate());
+        
+        m_g2d.translate(-getWidth()*0.5d, -getHeight()*0.5d);
+        
+        int angle=(int)(m_mainCharacter.getAngle()*180.0d/Math.PI);
+        m_g2d.drawString("Angle: "+angle+" degrees",10,10);
+        
+        double xPos=m_mainCharacter.getMapCoodinate().getX();
+        double yPos=m_mainCharacter.getMapCoodinate().getY();
+        m_g2d.drawString(String.format("Rectangular Map Coodinate: (%04.2f, %04.2f)",xPos,yPos),10, 30);
+        
+        Point2D.Double vel=m_mainCharacter.getVelocity();
+        double vX=vel.getX();
+        double vY=vel.getY();
+        m_g2d.drawString(String.format("Velocity: %04.2fi "+"%04.2fj",vX,vY),10, 50);
+        
+        double rotationalVel=m_mainCharacter.getRotationalVel();
+        m_g2d.drawString(String.format("Rotational Velocity: %04.2f degrees/s",rotationalVel),10, 70);
+    }
+    
+    public void populateList() {
         for (int i = 0; i < 1; i++) {
             //Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
             Point2D.Double coor = new Point2D.Double(100,0);
             Sprite sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this);        
             spriteList.add(sprite);
-
+            
             Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this);
             spriteList.add(g);
 
         }
-                
-        
     }
 
     public void addSprite() {
@@ -58,19 +86,7 @@ public class GameMap extends JPanel {
         g.setSpeed(5);
         g.turn(Constants.TURNING_LEFT);
         spriteList.add(g);
-        System.out.println(spriteList.size());
-    }
-
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        m_g2d = (Graphics2D) g;
-        m_g2d.translate(getWidth()/2, getHeight()/2);
-        for (Sprite p: spriteList) {
-            p.draw(m_g2d);
-        }
-        m_mainCharacter.draw(m_g2d);
-        
+        //System.out.println(spriteList.size());
     }
 
     public void setMainCharacter(MainCharacter mainCharacter) {
@@ -79,9 +95,10 @@ public class GameMap extends JPanel {
 
     public void moveMap(Point2D.Double mapVel) {
         offset = Utility.addPoints(mapVel, offset);
-        for (Sprite p: spriteList) {
-            p.moveWithMap(mapVel);
+        for (Sprite s: spriteList) {
+            s.moveWithMap(mapVel);
         }
+        m_mainCharacter.moveWithMap(mapVel);
     }
 
     public void translateOrigin() {

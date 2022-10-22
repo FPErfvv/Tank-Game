@@ -11,7 +11,7 @@ public class Main  {
         MainPanel mainPanel = new MainPanel(f);
         f.add(mainPanel);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.setExtendedState (JFrame.MAXIMIZED_BOTH);
+        f.setExtendedState(JFrame.MAXIMIZED_BOTH);
         f.setMinimumSize(new Dimension(250,250));
         f.setVisible(true);        
     }
