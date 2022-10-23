@@ -6,8 +6,8 @@ public class Constants {
     public static final int DIRECTION_FORWARDS = 1;
     public static final int DIRECTION_BACKWARDS = -1;
 
-    public static final int TURNING_LEFT = 1;
-    public static final int TURNING_RIGHT = -1;
+    public static final int TURNING_LEFT = -1;
+    public static final int TURNING_RIGHT = 1;
     public static final int TURNING_STOP = 0;
 
     // Hitbox

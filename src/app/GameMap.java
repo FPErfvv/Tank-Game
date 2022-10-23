@@ -13,14 +13,14 @@ import javax.swing.JPanel;
 
 public class GameMap extends JPanel {
 
-	int unitSize = 44;
+	private int unitSize = 44;
     private final List<Sprite> spriteList;
-    private Point2D.Double offset;
+    //private Point2D.Double offset;
     private MainCharacter m_mainCharacter;
     private Graphics2D m_g2d;
 
     public GameMap() {
-        offset = new Point2D.Double(0,0);
+        //offset = new Point2D.Double(0,0);
         setBackground(new Color(0,154,23));
         setVisible(true);
         setFocusable(true);
@@ -37,6 +37,8 @@ public class GameMap extends JPanel {
         
         m_g2d.translate(getWidth()*0.5d, getHeight()*0.5d);
         
+        // when map gets added, it will be drawn here
+        
         for (Sprite s: spriteList) {
         	s.draw(m_g2d, tr, m_mainCharacter.getMapCoodinate());
         }
@@ -45,20 +47,21 @@ public class GameMap extends JPanel {
         
         m_g2d.translate(-getWidth()*0.5d, -getHeight()*0.5d);
         
+        // convert the angle to degrees
         int angle=(int)(m_mainCharacter.getAngle()*180.0d/Math.PI);
         m_g2d.drawString("Angle: "+angle+" degrees",10,10);
         
         double xPos=m_mainCharacter.getMapCoodinate().getX();
         double yPos=m_mainCharacter.getMapCoodinate().getY();
-        m_g2d.drawString(String.format("Rectangular Map Coodinate: (%04.2f, %04.2f)",xPos,yPos),10, 30);
+        m_g2d.drawString(String.format("Rectangular Map Coodinate: (%04.2fpx, %04.2fpx)",xPos,yPos),10, 30);
         
         Point2D.Double vel=m_mainCharacter.getVelocity();
         double vX=vel.getX();
         double vY=vel.getY();
-        m_g2d.drawString(String.format("Velocity: %04.2fi "+"%04.2fj",vX,vY),10, 50);
+        m_g2d.drawString(String.format("Velocity: %04.2fpx/t i "+((vY>0)?"+":"")+"%04.2fpx/t j",vX,vY),10, 50);
         
         double rotationalVel=m_mainCharacter.getRotationalVel();
-        m_g2d.drawString(String.format("Rotational Velocity: %04.2f degrees/s",rotationalVel),10, 70);
+        m_g2d.drawString(String.format("Rotational Velocity: %04.2f degrees/t",rotationalVel),10, 70);
     }
     
     public void populateList() {
@@ -93,6 +96,7 @@ public class GameMap extends JPanel {
         m_mainCharacter = mainCharacter;
     }
 
+    /*
     public void moveMap(Point2D.Double mapVel) {
         offset = Utility.addPoints(mapVel, offset);
         for (Sprite s: spriteList) {
@@ -100,14 +104,19 @@ public class GameMap extends JPanel {
         }
         m_mainCharacter.moveWithMap(mapVel);
     }
+    */
 
+    /*
     public void translateOrigin() {
         m_g2d.translate(getWidth()/2, -getHeight()/2);
     }
+    */
 
+    /*
     public Point2D.Double getOffset() {
         return new Point2D.Double(offset.getX(),offset.getY());
     }
+    */
 
     public List<Sprite> getSpriteList() {
         return Collections.unmodifiableList(spriteList);

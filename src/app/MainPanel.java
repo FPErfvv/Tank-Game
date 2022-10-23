@@ -20,14 +20,14 @@ public class MainPanel extends JPanel implements ActionListener {
     private GameMap currentMap;
     private int frameWidth;
     private int frameHeight;
-    private static Rectangle repaintRectangle;
+    private Rectangle repaintRectangle;
 
     private int debugCounter;
 
     MainPanel(JFrame f) {
         debugCounter = 0;
 
-        int delay = 30;
+        int delay = 1;
         
         frame = f;
         setVisible(true);
@@ -37,8 +37,9 @@ public class MainPanel extends JPanel implements ActionListener {
         setFocusTraversalKeysEnabled(false);
         currentMap = new GameMap();
         mainCharacter = new MainCharacter(currentMap);
-        repaintRectangle = new Rectangle((int) mainCharacter.getScreenCoodinate().x - (frameWidth / 2),
-                (int) mainCharacter.getScreenCoodinate().y - (frameHeight / 2), frameWidth, frameHeight);
+        //repaintRectangle = new Rectangle((int) mainCharacter.getScreenCoodinate().x - (frameWidth / 2),
+                //(int) mainCharacter.getScreenCoodinate().y - (frameHeight / 2), frameWidth, frameHeight);
+        repaintRectangle = new Rectangle(0, 0, frameWidth, frameHeight);
         currentMap.setMainCharacter(mainCharacter);
         setBackground(new Color(0, 154, 23));
         add(currentMap);
@@ -68,14 +69,14 @@ public class MainPanel extends JPanel implements ActionListener {
             debugCounter = 0;
         }
         
-        mainCharacter.periodic();
-        
         for (Sprite s: currentMap.getSpriteList()) {
             s.periodic();
         }
+        mainCharacter.periodic();
         for (Sprite s : currentMap.getSpriteList()) {
         	s.updatePrevCoordinate();
         }
+        mainCharacter.updatePrevCoordinate();
     }
     
     public void setMap() {
