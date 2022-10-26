@@ -1,6 +1,11 @@
-package app.hitbox;
+package app.gameElements.hitbox.hitboxSubClasses;
 
 import java.awt.geom.Point2D;
+
+import app.Constants;
+import app.Utility;
+import app.gameElements.Sprite;
+import app.gameElements.hitbox.Hitbox;
 
 public class CowHitbox extends Hitbox {
 	
@@ -11,5 +16,4 @@ public class CowHitbox extends Hitbox {
     public CowHitbox(double width, double height) {
         super(model, width, height);
     }
-    
 }

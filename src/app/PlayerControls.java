@@ -1,17 +1,18 @@
 package app;
 
-import java.util.Objects;
-import javax.swing.Timer;
-
-import app.hitbox.CowHitbox;
-import app.hitbox.RectangleHitbox;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Objects;
 
-class PlayerControls implements KeyListener, MouseListener {
+import javax.swing.Timer;
+
+import app.gameElements.MainCharacter;
+import app.gameElements.hitbox.hitboxSubClasses.CowHitbox;
+import app.gameElements.hitbox.hitboxSubClasses.RectangleHitbox;
+
+public class PlayerControls implements KeyListener, MouseListener {
 	
     private final MainCharacter m_mainCharacter;
     private final Timer m_timer;
@@ -69,6 +70,7 @@ class PlayerControls implements KeyListener, MouseListener {
         	//m_mainCharacter.turn(Constants.TURNING_STOP);
         }
         if (e.getKeyCode() == KeyEvent.VK_W) {
+            // TODO: instead of setting speed to zero, use this as the place to reduce velocity by the amount that was added prevously by the move method.
             m_mainCharacter.setSpeed(0);
         } else if (e.getKeyCode() == KeyEvent.VK_S) {
             m_mainCharacter.setSpeed(0);

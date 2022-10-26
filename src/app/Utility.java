@@ -1,6 +1,7 @@
 package app;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 public class Utility {
     public static double vectorDotProduct(Point2D.Double pt1, Point2D.Double pt2)
@@ -31,5 +32,19 @@ public class Utility {
             pt.x *= 1/magnitude;
             pt.y *= 1/magnitude;
         }
+    }
+
+    public static Point2D.Double average(ArrayList<Point2D.Double> array) {
+      if (array.size() != 0) {
+        int x = 0, y = 0;
+        for (int i = 0; i < array.size(); i++) {
+          x += array.get(i).getX();
+          y += array.get(i).getY();
+        }
+        return new Point2D.Double(x / array.size(), y / array.size());
+      } else {
+        return new Point2D.Double(0,0);
+      }
+
     }
 }

@@ -1,10 +1,11 @@
-package app.hitbox;
+package app.gameElements.hitbox;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import app.Constants;
 import app.Utility;
+import app.gameElements.Sprite;
 
 public abstract class Hitbox {
 
@@ -161,24 +162,24 @@ public abstract class Hitbox {
      * @param targetsCenter
      * @return closest side (front or back) to the targetsCenter
      */
-    public int getClosestSide(Point2D.Double targetsCenter) {
-    	double x=targetsCenter.getX();
-    	double y=targetsCenter.getY();
-    	int size=m_vert.length;
-    	Point2D.Double closePt=m_model[0];
-    	double mindsquared=Double.MAX_VALUE;
-    	for(int i=0;i<size;i++) {
-    		double ptx=m_vert[i].getX();
-    		double pty=m_vert[i].getY();
-    		double dsquared=(x-ptx)*(x-ptx)+(y-pty)*(y-pty);
-    		if(dsquared<mindsquared) {
-    			closePt=m_model[i];
-    			mindsquared=dsquared;
-    		}
-    	}
+    // public int getClosestSide(Point2D.Double targetsCenter) {
+    // 	double x=targetsCenter.getX();
+    // 	double y=targetsCenter.getY();
+    // 	int size=m_vert.length;
+    // 	Point2D.Double closePt=m_model[0];
+    // 	double mindsquared=Double.MAX_VALUE;
+    // 	for(int i=0;i<size;i++) {
+    // 		double ptx=m_vert[i].getX();
+    // 		double pty=m_vert[i].getY();
+    // 		double dsquared=(x-ptx)*(x-ptx)+(y-pty)*(y-pty);
+    // 		if(dsquared<mindsquared) {
+    // 			closePt=m_model[i];
+    // 			mindsquared=dsquared;
+    // 		}
+    // 	}
     	
-    	return (closePt.getX()>=0) ? Constants.FRONT : Constants.BACK;
-    }
+    // 	return (closePt.getX()>=0) ? Constants.FRONT : Constants.BACK;
+    // }
 
     /**
      * This method takes an angle and a coordinate of the sprite and 

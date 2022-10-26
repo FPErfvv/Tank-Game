@@ -1,6 +1,11 @@
-package app.hitbox;
+package app.gameElements.hitbox.hitboxSubClasses;
 
 import java.awt.geom.Point2D;
+
+import app.Constants;
+import app.Utility;
+import app.gameElements.Sprite;
+import app.gameElements.hitbox.Hitbox;
 
 public class RectangleHitbox extends Hitbox {
 	

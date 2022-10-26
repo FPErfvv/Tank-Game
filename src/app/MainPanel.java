@@ -11,6 +11,10 @@ import java.awt.event.ActionListener;
 import java.awt.geom.Point2D.Double;
 import java.awt.Rectangle;
 
+import app.gameElements.MainCharacter;
+import app.gameElements.Sprite;
+
+
 
 public class MainPanel extends JPanel implements ActionListener {
 	

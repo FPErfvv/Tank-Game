@@ -2,7 +2,8 @@ package app;
 
 import java.awt.geom.Point2D;
 
-import app.hitbox.RectangleHitbox;
+import app.gameElements.Sprite;
+import app.gameElements.hitbox.hitboxSubClasses.RectangleHitbox;
 
 public class Projectile extends Sprite {
     

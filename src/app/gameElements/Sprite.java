@@ -1,20 +1,25 @@
-package app;
+package app.gameElements;
+
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
 import javax.swing.ImageIcon;
 
-import app.hitbox.CowHitbox;
-import app.hitbox.Hitbox;
-
-import java.awt.Image;
-import java.awt.geom.AffineTransform;
-import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
+import app.Constants;
+import app.GameMap;
+import app.MainPanel;
+import app.Utility;
+import app.gameElements.hitbox.Hitbox;
+import app.gameElements.hitbox.hitboxSubClasses.CowHitbox;
 
 public class Sprite {
 	
-	private Image m_image;
+    private Image m_image;
 	
-	private GameMap m_currentMap;
+    private GameMap m_currentMap;
+    private int m_mass; // tons
     private Point2D.Double m_coor;
     private Point2D.Double m_prevCoor;
     //private Point2D.Double m_screenCoor;
@@ -29,8 +34,6 @@ public class Sprite {
     private double m_rotationalVel; // the direction and magnitude this sprite is moving in per frame
     private static final double DEFAULT_TURNING_VEL = 5; // speed in degrees per frame
     
-    private double k;
-
     public Sprite(Point2D.Double coor, String imagePath, double angle, GameMap map) {
     	m_image = new ImageIcon(imagePath).getImage();
     	// create a new Point2D object to avoid overwriting the passed in position
@@ -145,19 +148,6 @@ public class Sprite {
             m_angle += 2*Math.PI;
         }
     }
-    
-    /*
-    public void moveWithMap(Point2D.Double mapVel) {
-        //m_screenCoor.setLocation(m_screenCoor.getX() + mapVel.x, m_screenCoor.getY() + mapVel.y);
-    }
-    */
-    
-    /*
-    public Point2D.Double getScreenCoodinate() {
-        //return m_screenCoor;
-    	return new Point2D.Double();
-    }
-    */
 
     /**
      * Returns this sprite's coordinate relative to the game map
@@ -251,21 +241,6 @@ public class Sprite {
      */
     public void turn(int direction) {
     	
-    	/*
-    	if(direction==m_turningDirection) {return;}
-    	if(direction==Constants.TURNING_LEFT) {
-    		m_rotationalVel=-m_turningSpeed;
-    	}
-    	else if(direction==Constants.TURNING_RIGHT) {
-    		m_rotationalVel=m_turningSpeed;
-    	}
-    	else if(direction==Constants.TURNING_STOP) {
-    		m_rotationalVel=0.0d;
-    	}
-    		
-    	m_turningDirection=direction;
-    	*/
-    	
         boolean sameDirection = false;
         boolean alreadyMoving = false;
         if (m_rotationalVel != 0) {
@@ -278,7 +253,7 @@ public class Sprite {
 
         /*
          * If the Sprite is already moving, and it is being told to change direction, and the
-         * Inputed direction states that the Sprite should stop, the velocity is changed by
+         * inputed direction states that the Sprite should stop, the velocity is changed by
          * the speed that the Sprite turns at, in the opposite direction that the Sprite
          * is currently turning. 
          * 
@@ -382,6 +357,10 @@ public class Sprite {
     public Hitbox getHitbox() {
         return m_hitbox;
     }
+
+    public void adjustVelocity(Point2D.Double deltaV) {
+        m_velocity = Utility.addPoints(m_velocity, deltaV);
+    }
     
     public void setHitbox(Hitbox hitbox) {
         m_hitbox = hitbox;
@@ -406,4 +385,15 @@ public class Sprite {
     public void setImage(String imagePath) {
         m_image = new ImageIcon(imagePath).getImage();
     }
+    public void setMass(int mass) {
+        m_mass = mass;
+    }
+
+    public int getMass() {
+        return m_mass;
+        
+    }
+
+
+
 }
