@@ -93,17 +93,17 @@ public class Sprite {
      * @param scroll
      */
     public void drawHitbox(Graphics2D g2d, Point2D.Double scroll) {
-    	Point2D.Double[] verts = getHitbox().getVertices();
-    	int size=verts.length;
-        for (int i=0;i<size;i++) {
-        	// the point that point i connects to
-        	int b=(i+1)%size;
-        	double x0=verts[i].getX()-scroll.getX();
-        	double x1=verts[b].getX()-scroll.getX();
-        	double y0=verts[i].getY()-scroll.getY();
-        	double y1=verts[b].getY()-scroll.getY();
-            g2d.drawLine((int)x0, (int)y0, (int)x1, (int)y1);
-        }
+    	// Point2D.Double[] verts = getHitbox().getVertices();
+    	// int size=verts.length;
+        // for (int i=0;i<size;i++) {
+        // 	// the point that point i connects to
+        // 	int b=(i+1)%size;
+        // 	double x0=verts[i].getX()-scroll.getX();
+        // 	double x1=verts[b].getX()-scroll.getX();
+        // 	double y0=verts[i].getY()-scroll.getY();
+        // 	double y1=verts[b].getY()-scroll.getY();
+        //     g2d.drawLine((int)x0, (int)y0, (int)x1, (int)y1);
+        //}
     }
     
     /**

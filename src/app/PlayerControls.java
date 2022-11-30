@@ -63,11 +63,9 @@ public class PlayerControls implements KeyListener, MouseListener {
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_A) {
             m_mainCharacter.stopTurn(Constants.TURNING_LEFT);
-        	//m_mainCharacter.turn(Constants.TURNING_STOP);
         } 
         else if (e.getKeyCode() == KeyEvent.VK_D) {
             m_mainCharacter.stopTurn(Constants.TURNING_RIGHT);
-        	//m_mainCharacter.turn(Constants.TURNING_STOP);
         }
         if (e.getKeyCode() == KeyEvent.VK_W) {
             // TODO: instead of setting speed to zero, use this as the place to reduce velocity by the amount that was added prevously by the move method.

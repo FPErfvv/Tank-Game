@@ -12,7 +12,6 @@ public class Projectile extends Sprite {
     public Projectile(Point2D.Double p, double angle, GameMap map) {
         super(p,"src/images/Bullet.png", angle, map);
         setHitbox(new RectangleHitbox(getWidth(),getHeight()));
-        //setSpeed(projectileSpeed);
     }
 
 }

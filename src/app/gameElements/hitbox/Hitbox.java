@@ -157,31 +157,6 @@ public abstract class Hitbox {
     }
 
     /**
-     * This method takes the center of a target game element and returns which side
-     * of this hitbox is closest, either front or back.
-     * @param targetsCenter
-     * @return closest side (front or back) to the targetsCenter
-     */
-    // public int getClosestSide(Point2D.Double targetsCenter) {
-    // 	double x=targetsCenter.getX();
-    // 	double y=targetsCenter.getY();
-    // 	int size=m_vert.length;
-    // 	Point2D.Double closePt=m_model[0];
-    // 	double mindsquared=Double.MAX_VALUE;
-    // 	for(int i=0;i<size;i++) {
-    // 		double ptx=m_vert[i].getX();
-    // 		double pty=m_vert[i].getY();
-    // 		double dsquared=(x-ptx)*(x-ptx)+(y-pty)*(y-pty);
-    // 		if(dsquared<mindsquared) {
-    // 			closePt=m_model[i];
-    // 			mindsquared=dsquared;
-    // 		}
-    // 	}
-    	
-    // 	return (closePt.getX()>=0) ? Constants.FRONT : Constants.BACK;
-    // }
-
-    /**
      * This method takes an angle and a coordinate of the sprite and 
      * updates the m_vert array with new values. The m_vert array
      * is a list of coordinates that determine the corner points

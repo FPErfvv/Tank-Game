@@ -81,14 +81,14 @@ public class GameMap extends JPanel {
     }
     
     public void populateList() {
-        for (int i = 0; i < 1; i++) {
-            //Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
-            Point2D.Double coor = new Point2D.Double(100,0);
-            Sprite sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this);        
+        for (int i = 0; i < 10; i++) {
+            Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
+            //Point2D.Double coor = new Point2D.Double(100,0);
+            Sprite sprite = new Sprite(coor, "src/images/top-tree-png-1.png", Math.toRadians(0), this);        
             spriteList.add(sprite);
             
-            Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this);
-            spriteList.add(g);
+            // Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this);
+            // spriteList.add(g);
 
         }
     }
@@ -110,27 +110,6 @@ public class GameMap extends JPanel {
         m_mainCharacter = mainCharacter;
     }
 
-    /*
-    public void moveMap(Point2D.Double mapVel) {
-        offset = Utility.addPoints(mapVel, offset);
-        for (Sprite s: spriteList) {
-            s.moveWithMap(mapVel);
-        }
-        m_mainCharacter.moveWithMap(mapVel);
-    }
-    */
-
-    /*
-    public void translateOrigin() {
-        m_g2d.translate(getWidth()/2, -getHeight()/2);
-    }
-    */
-
-    /*
-    public Point2D.Double getOffset() {
-        return new Point2D.Double(offset.getX(),offset.getY());
-    }
-    */
 
     public List<Sprite> getSpriteList() {
         return Collections.unmodifiableList(spriteList);
