@@ -2,6 +2,7 @@
 package app.gameElements;
 
 import java.awt.Graphics2D;
+
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -11,53 +12,70 @@ import app.GameMap;
 import app.Projectile;
 import app.SoundFx;
 import app.Utility;
+import app.gameElements.hitbox.Hitbox;
 import app.gameElements.hitbox.hitboxSubClasses.RectangleHitbox;
 import app.PlayerControls;
+
 public class MainCharacter extends Sprite {
     public boolean weaponized = true;
-    public static final Point2D.Double TRUE_COOR = new Point2D.Double(0,0); 
-    private Point2D.Double previousVel;
+    public static final Point2D.Double TRUE_COOR = new Point2D.Double(0, 0); 
+    //private Point2D.Double previousVel;
 
     private ArrayList<Projectile> projectileList;
     private Sprite weaponSprite;
     private SoundFx fx;
     
-    public MainCharacter(GameMap map) {
-        super(new Point2D.Double(0, 0),"src/images/MainCharacter.png", 0, map);
-        setHitbox(new RectangleHitbox(getWidth(),getHeight()));
-        getHitbox().computeCollisionPoints(getMapCoodinate(), getAngle());
-        setSpeed(0);
-        setMass(2);
-        previousVel = new Point2D.Double(0,0);
-
-        weaponSprite = new Sprite(getMapCoodinate(),"src/images/50Cal.png", 0, map);
-        weaponSprite.setHitbox(new RectangleHitbox(weaponSprite.getWidth(),weaponSprite.getHeight()));
-        weaponSprite.getHitbox().computeCollisionPoints(weaponSprite.getMapCoodinate(), weaponSprite.getAngle());
-        fx = new SoundFx();
-        projectileList = new ArrayList<Projectile>();
+    private static final double DEFAULT_MOVING_SPEED = 5;
+    private static final double DEFAULT_TURNING_SPEED = Math.toRadians(5);
     
+    public MainCharacter(GameMap map) {
+        super(new Point2D.Double(0, 0), "src/images/MainCharacter.png", 0, map);
+        
+        Hitbox startingHitbox = new RectangleHitbox(getWidth(), getHeight());
+        startingHitbox.computeCollisionPoints(getMapCoodinate(), getAngle());
+        
+        setHitbox(startingHitbox);
+        
+        setMovingSpeed(DEFAULT_MOVING_SPEED);
+        setInputTurningSpeed(DEFAULT_TURNING_SPEED);
+        
+        setMass(2);
+
+        weaponSprite = new Sprite(getMapCoodinate(), "src/images/50Cal.png", 0, map);
+        weaponSprite.setHitbox(new RectangleHitbox(weaponSprite.getWidth(), weaponSprite.getHeight()));
+        weaponSprite.getHitbox().computeCollisionPoints(weaponSprite.getMapCoodinate(), weaponSprite.getAngle());
+        
+        projectileList = new ArrayList<Projectile>();
+        
+        fx = new SoundFx();
     }
 
     @Override
     public void move() {
     	super.move();
     	Point2D.Double futureCoor = getMapCoodinate();
+    	
         // minimum translation vector
-        Point2D.Double mtvec = new Point2D.Double(0,0);
-
-        // The position of target closest to player
-        Point2D.Double targetsCoor = new Point2D.Double(0,0);
-        for (Sprite s: getGameMap().getSpriteList()) {
-            Point2D.Double tempMtv = this.getHitbox().SAT(s.getHitbox().getVertices(), s.getMapCoodinate(), futureCoor);
+        Point2D.Double mtvec = new Point2D.Double(0.0d, 0.0d);
+        
+        for (Sprite s : getGameMap().getSpriteList()) {
+        	Hitbox thisBox = this.getHitbox();
+        	Hitbox boxOther = s.getHitbox();
+        	
+        	// The position of target closest to player
+        	Point2D.Double targetsCoor = s.getMapCoodinate();
+        	
+        	//Point2D.Double tempMtv = thisBox.sat(boxOther, futureCoor, s.getMapCoodinate());
+        	Point2D.Double tempMtv = thisBox.SAT(boxOther.getVertices(), targetsCoor, futureCoor);
+        	
             if (Utility.getVectorMagnitude(tempMtv) != 0.0d) {
-                mtvec.setLocation(tempMtv.getX(),tempMtv.getY());
-                targetsCoor = s.getMapCoodinate();
+                mtvec.setLocation(tempMtv.x, tempMtv.y);
+                break;
             }
         }
    
         // If there is no collision, the character is moved like normal
-        
-        double mt=Utility.getVectorMagnitude(mtvec);
+        double mt = Utility.getVectorMagnitude(mtvec);
 
         // This hitbox is then used to detect if the main character will collide with anything at that future position
         if (mt > 0.0d) { // If there is a collision, the m_velocity is adjusted to move the character right up next to the object
@@ -67,16 +85,11 @@ public class MainCharacter extends Sprite {
             // h = adj / cos(α)
             // h = adj / a · b / (|a| * |b|)
             
-            Point2D.Double d = new Point2D.Double(futureCoor.getX()-targetsCoor.getX(), futureCoor.getY()-targetsCoor.getY());
+            Point2D.Double newCoor = new Point2D.Double(futureCoor.x + mtvec.x, futureCoor.y + mtvec.y);
             
-            double s=Utility.getVectorMagnitude(d);
+            moveTo(newCoor);
             
-            double dx=mt*d.getX()/s;
-            double dy=mt*d.getY()/s;
-            
-            futureCoor.setLocation(dx+futureCoor.getX(), dy+futureCoor.getY());
-            moveTo(futureCoor);
-            getHitbox().computeCollisionPoints(futureCoor, getAngle());
+            getHitbox().computeCollisionPoints(newCoor, getAngle());
         }
     }
     
@@ -91,7 +104,8 @@ public class MainCharacter extends Sprite {
      */
     @Override
     public void periodic() {
-        move();
+    	super.periodic();
+    	
         weaponSprite.moveTo(getMapCoodinate());
         weaponSprite.setAngle(getAngle());
         weaponSprite.getHitbox().computeCollisionPoints(getMapCoodinate(), getAngle());
@@ -99,9 +113,10 @@ public class MainCharacter extends Sprite {
         if(PlayerControls.fireTime == true && weaponized == true) {
             fx.repeat50Cal();
             if(fx.timeToRepeat >= 3) {
-                Projectile p = new Projectile(getMapCoodinate(), getAngle(), getGameMap());
-                p.setSpeed(20);
-                projectileList.add(p);
+            		Projectile p = new Projectile(getMapCoodinate(), getAngle(), getGameMap());
+                    p.setMovingSpeed(20);
+                    p.moveForward();
+                    projectileList.add(p);
             }
             
         }
@@ -116,16 +131,19 @@ public class MainCharacter extends Sprite {
 
 
     @Override
-    public void draw(Graphics2D g2d, AffineTransform tr, Point2D.Double scroll) {
-    	super.draw(g2d, tr, scroll);
+    public void draw(Graphics2D g2d, AffineTransform tr, Point2D.Double scroll, boolean drawHitbox) {
+    	super.draw(g2d, tr, scroll, drawHitbox);
     	
     	if (weaponized) {
-    		weaponSprite.draw(g2d, tr, scroll);
+    		weaponSprite.draw(g2d, tr, scroll, drawHitbox);
     	}
         
         for(Projectile p: projectileList) {
-            p.draw(g2d, tr, scroll);
+            p.draw(g2d, tr, scroll, drawHitbox);
         }
     }
 
+    public int getProjectileCount() {
+    	return projectileList.size();
+    }
 }

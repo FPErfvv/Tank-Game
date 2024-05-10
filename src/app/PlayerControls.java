@@ -29,18 +29,28 @@ public class PlayerControls implements KeyListener, MouseListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_A) {
-            m_mainCharacter.turn(Constants.TURNING_LEFT);
-        } else if (e.getKeyCode() == KeyEvent.VK_D) {
-            m_mainCharacter.turn(Constants.TURNING_RIGHT);
+            //m_mainCharacter.turn(Constants.TURNING_LEFT);
+        	m_mainCharacter.turnLeft();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_D) {
+            //m_mainCharacter.turn(Constants.TURNING_RIGHT);
+        	m_mainCharacter.turnRight();
         }
         if (e.getKeyCode() == KeyEvent.VK_W) {
-            m_mainCharacter.setSpeed(5);
-        } else if (e.getKeyCode() == KeyEvent.VK_S) {
-            m_mainCharacter.setSpeed(-5);
+            //m_mainCharacter.setSpeed(5);
+        	m_mainCharacter.moveForward();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_S) {
+            //m_mainCharacter.setSpeed(-5);
+        	m_mainCharacter.moveBackward();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_E) {
             m_timer.stop();
+        }
+        
+        if (e.getKeyCode() == KeyEvent.VK_B) {
+        	m_map.toggleHitboxes();
         }
        
         if(e.getKeyCode() == KeyEvent.VK_R) {
@@ -49,11 +59,11 @@ public class PlayerControls implements KeyListener, MouseListener {
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             if (m_mainCharacter.getHitbox() instanceof CowHitbox) {
                 m_mainCharacter.setImage("src/images/MainCharacter.png");
-                m_mainCharacter.setHitbox(new RectangleHitbox(m_mainCharacter.getWidth(),m_mainCharacter.getHeight()));
+                m_mainCharacter.setHitbox(new RectangleHitbox(m_mainCharacter.getWidth(), m_mainCharacter.getHeight()));
                 m_mainCharacter.weaponized = true;
             } else {
                 m_mainCharacter.setImage("src/images/MainCowPic.png");
-                m_mainCharacter.setHitbox(new CowHitbox(m_mainCharacter.getWidth(),m_mainCharacter.getHeight()));
+                m_mainCharacter.setHitbox(new CowHitbox(m_mainCharacter.getWidth(), m_mainCharacter.getHeight()));
                 m_mainCharacter.weaponized = false;
             }
         }
@@ -62,16 +72,21 @@ public class PlayerControls implements KeyListener, MouseListener {
     @Override
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_A) {
-            m_mainCharacter.stopTurn(Constants.TURNING_LEFT);
+            //m_mainCharacter.stopTurn(Constants.TURNING_LEFT);
+        	m_mainCharacter.stopTurningLeft();
         } 
-        else if (e.getKeyCode() == KeyEvent.VK_D) {
-            m_mainCharacter.stopTurn(Constants.TURNING_RIGHT);
+        if (e.getKeyCode() == KeyEvent.VK_D) {
+            //m_mainCharacter.stopTurn(Constants.TURNING_RIGHT);
+        	m_mainCharacter.stopTurningRight();
         }
         if (e.getKeyCode() == KeyEvent.VK_W) {
             // TODO: instead of setting speed to zero, use this as the place to reduce velocity by the amount that was added prevously by the move method.
-            m_mainCharacter.setSpeed(0);
-        } else if (e.getKeyCode() == KeyEvent.VK_S) {
-            m_mainCharacter.setSpeed(0);
+            //m_mainCharacter.setSpeed(0);
+        	m_mainCharacter.stopMovingForward();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_S) {
+            //m_mainCharacter.setSpeed(0);
+        	m_mainCharacter.stopMovingBackward();
         }
         if (e.getKeyCode() == KeyEvent.VK_E) {
             m_timer.start();

@@ -15,39 +15,55 @@ import app.gameElements.hitbox.Hitbox;
 import app.gameElements.hitbox.hitboxSubClasses.CowHitbox;
 
 public class Sprite {
-	
     private Image m_image;
 	
     private GameMap m_currentMap;
+    
     private int m_mass; // tons
+    
     private Point2D.Double m_coor;
     private Point2D.Double m_prevCoor;
-    //private Point2D.Double m_screenCoor;
+    
     private Hitbox m_hitbox;
     
-    private double m_speed;
+    // in pixels per tick
     private Point2D.Double m_velocity;
-    private double m_angle; // radian's
+    private double m_speed;
     
-    private int m_turningDirection; // one of the turning constants
-    private double m_turningSpeed; //speed in which this sprite can rotate
-    private double m_rotationalVel; // the direction and magnitude this sprite is moving in per frame
-    private static final double DEFAULT_TURNING_VEL = 5; // speed in degrees per frame
+    private double m_angle; // radian's
+    private double m_rotationalVel; // radian's / tick
+    private double m_rotationalSpeed;
+    
+    private double m_maxInputMovingSpeed = 0.0d;
+    
+    private boolean m_movingForward = false;
+    private boolean m_movingBackward = false;
+    
+    private int m_inputTurningDirection;
+    private double m_maxInputTurningSpeed; // input speed
+    
+    private boolean m_turningRight = false;
+    private boolean m_turningLeft = false;
     
     public Sprite(Point2D.Double coor, String imagePath, double angle, GameMap map) {
     	m_image = new ImageIcon(imagePath).getImage();
+    	
+    	m_currentMap = map;
+    	
     	// create a new Point2D object to avoid overwriting the passed in position
-    	m_coor = new Point2D.Double(coor.getX(), coor.getY());
-    	m_prevCoor = new Point2D.Double(m_coor.getX(),m_coor.getY());
-        //m_screenCoor = new Point2D.Double(m_coor.x + map.getOffset().getX(), m_coor.y + map.getOffset().getY());
+    	m_coor = new Point2D.Double(coor.x, coor.y);
+    	m_prevCoor = new Point2D.Double(m_coor.x, m_coor.y);
+        
+        m_velocity = new Point2D.Double(0.0d, 0.0d);
+        m_speed = 0.0d;
+        
         m_hitbox = new CowHitbox(m_image.getWidth(null), m_image.getHeight(null));
         m_hitbox.computeCollisionPoints(m_coor, angle);
-        m_velocity = new Point2D.Double(0.0d ,0.0d );
+        
         m_angle = angle;
-        m_turningDirection = Constants.TURNING_STOP;
-        m_turningSpeed = DEFAULT_TURNING_VEL;
         m_rotationalVel = 0.0d;
-        m_currentMap = map;
+        
+        m_inputTurningDirection = Constants.TURNING_STOP;
     }
 
     /**
@@ -58,7 +74,7 @@ public class Sprite {
      * <p>
      * PRECONDITION: tr must be translated to the center of the screen
      */
-    public void draw(Graphics2D g2d, AffineTransform tr, Point2D.Double scroll) {
+    public void draw(Graphics2D g2d, AffineTransform tr, Point2D.Double scroll, boolean drawHitbox) {
         // X and Y are the coordinates of the m_image
         // the main character is used as the origin-(0,0)
         // this means that when the page is resized, all the sprites remain the same m_speed from the character
@@ -71,7 +87,7 @@ public class Sprite {
     	
     	// image is faced upwards if 0 degrees, so add 90 degrees
     	// remember: upwards is negative
-    	double rotateAngle=m_angle+Math.PI*0.5d;
+    	double rotateAngle = m_angle + Math.PI * 0.5d;
     	
     	tr.translate(dx, dy);
     	tr.rotate(rotateAngle);
@@ -79,31 +95,16 @@ public class Sprite {
     	
     	g2d.drawImage(m_image, tr, null);
     	
+    	if (drawHitbox) {
+    		m_hitbox.drawHitbox(g2d, scroll);
+    	
+    		m_hitbox.drawFacingLine(g2d, m_coor, rotateAngle, scroll);
+    	}
+    	
     	// transform tr back to its original transformation
-    	tr.translate(w*0.5d,h*0.5d);
+    	tr.translate(w * 0.5d,h * 0.5d);
     	tr.rotate(-rotateAngle);
     	tr.translate(-dx, -dy);
-    	
-    	drawHitbox(g2d, scroll);
-    	
-    }
-    /**
-     * Draws the hitbox in order of point index
-     * @param g2d 
-     * @param scroll
-     */
-    public void drawHitbox(Graphics2D g2d, Point2D.Double scroll) {
-    	// Point2D.Double[] verts = getHitbox().getVertices();
-    	// int size=verts.length;
-        // for (int i=0;i<size;i++) {
-        // 	// the point that point i connects to
-        // 	int b=(i+1)%size;
-        // 	double x0=verts[i].getX()-scroll.getX();
-        // 	double x1=verts[b].getX()-scroll.getX();
-        // 	double y0=verts[i].getY()-scroll.getY();
-        // 	double y1=verts[b].getY()-scroll.getY();
-        //     g2d.drawLine((int)x0, (int)y0, (int)x1, (int)y1);
-        //}
     }
     
     /**
@@ -114,20 +115,27 @@ public class Sprite {
      * @param speed
      */
     public static void computeVelocity(Point2D.Double vel, double angleRad, double speed) {
-    	double x = speed*Math.cos(angleRad);
-    	double y = speed*Math.sin(angleRad);
+    	double x = speed * Math.cos(angleRad);
+    	double y = speed * Math.sin(angleRad);
     	vel.setLocation(x, y);
     }
     
     /**
      * Translate and then rotates this sprite
      */
+    
     public void move() {
-        computeVelocity(m_velocity, m_angle, m_speed);
+    	double forward = m_movingForward ? 1.0d : 0.0d;
+    	double backward = m_movingBackward ? 1.0d : 0.0d;
+    	
+    	double linearVel = (forward - backward) * m_maxInputMovingSpeed;
+    	
+        computeVelocity(m_velocity, m_angle, linearVel);
         translate(m_velocity);
         rotate();
-        getHitbox().computeCollisionPoints(m_coor, m_angle);
+        m_hitbox.computeCollisionPoints(m_coor, m_angle);
     }
+    
 
     public void translate(Point2D.Double shift) {
         m_coor = Utility.addPoints(m_coor, shift);
@@ -139,7 +147,12 @@ public class Sprite {
      * angle around to keep it in the range of 0 to -2π radian's
      */
     public void rotate() {
-        m_angle += Math.toRadians(m_rotationalVel);
+    	double left = m_turningLeft ? 1.0d : 0.0d;
+    	double right = m_turningRight ? 1.0d : 0.0d;
+    	
+    	m_rotationalVel = (right - left) * m_maxInputTurningSpeed;
+    	
+        m_angle += m_rotationalVel;
         
         if (m_angle > 0) {
             m_angle -= 2 * Math.PI;
@@ -170,7 +183,7 @@ public class Sprite {
      * to the current coordinate.
      */
     public void updatePrevCoordinate() {
-    	m_prevCoor.setLocation(m_coor.getX(), m_coor.getY());
+    	m_prevCoor.setLocation(m_coor.x, m_coor.y);
     }
 
     /**
@@ -178,7 +191,7 @@ public class Sprite {
      * @param newCoor
      */
     public void moveTo(Point2D.Double newCoor) {
-        m_coor.setLocation(newCoor.getX(), newCoor.getY());
+        m_coor.setLocation(newCoor.x, newCoor.y);
     }
 
     /**
@@ -200,9 +213,53 @@ public class Sprite {
     public double getRotationalVel() {
         return m_rotationalVel;
     }
+    
+    public void setRotationalVel(double newRotationVel) {
+        m_rotationalVel = newRotationVel;
+    }
+    
+    public double getRotationalSpeed() {
+    	return m_rotationalSpeed;
+    }
 
-    public double getTurningSpeed() {
-        return m_turningSpeed;
+    public double getInputTurningSpeed() {
+        return m_maxInputTurningSpeed;
+    }
+    
+    public void setInputTurningSpeed(double turningSpeed) {
+    	m_maxInputTurningSpeed = turningSpeed;
+    }
+    
+    public void turnLeft() {
+    	m_turningLeft = true;
+    }
+    
+    public void turnRight() {
+    	m_turningRight = true;
+    }
+    
+    public void stopTurningLeft() {
+    	m_turningLeft = false;
+    }
+    
+    public void stopTurningRight() {
+    	m_turningRight = false;
+    }
+    
+    public void moveForward() {
+    	m_movingForward = true;
+    }
+    
+    public void moveBackward() {
+    	m_movingBackward = true;
+    }
+    
+    public void stopMovingForward() {
+    	m_movingForward = false;
+    }
+    
+    public void stopMovingBackward() {
+    	m_movingBackward = false;
     }
     
     /*
@@ -211,7 +268,7 @@ public class Sprite {
     }*/
 
     public int getTurningDirection() {
-        return m_turningDirection;
+        return m_inputTurningDirection;
     }
     
     /**
@@ -223,7 +280,7 @@ public class Sprite {
      */
     public Point2D.Double getClosestCoor(Point2D.Double[] coors) {
         Double smallestDistance = Double.MAX_VALUE;
-        Point2D.Double closestCoor = new Point2D.Double(0,0);
+        Point2D.Double closestCoor = new Point2D.Double(0, 0);
         for (Point2D.Double pt : coors) {
             double distance = Utility.getDistance(pt, m_coor);
             if (distance < smallestDistance) {
@@ -244,7 +301,7 @@ public class Sprite {
         boolean sameDirection = false;
         boolean alreadyMoving = false;
         if (m_rotationalVel != 0) {
-            if (m_turningDirection==direction) {
+            if (m_inputTurningDirection == direction) {
                 sameDirection = true;
             }
             alreadyMoving = true;
@@ -269,17 +326,24 @@ public class Sprite {
         if (alreadyMoving) {
             if (!sameDirection) {
                 if (direction == 0) {
-                    m_rotationalVel += m_turningSpeed * -m_turningDirection;
+                    m_rotationalVel += m_maxInputTurningSpeed * -m_inputTurningDirection;
                 } else {
-                    m_rotationalVel += m_turningSpeed * direction * 2;
+                    m_rotationalVel += m_maxInputTurningSpeed * direction * 2;
                 }
             }         
         } else {
-            m_rotationalVel += m_turningSpeed * direction;
+            m_rotationalVel += m_maxInputTurningSpeed * direction;
         }
-        m_turningDirection = direction;
+        m_inputTurningDirection = direction;
         
-        
+        if (m_inputTurningDirection == Constants.TURNING_LEFT) {
+        	m_turningLeft = true;
+        	m_turningRight = false;
+        }
+        if (m_inputTurningDirection == Constants.TURNING_RIGHT) {
+        	m_turningLeft = false;
+        	m_turningRight = true;
+        }
     }
     
     /**
@@ -303,14 +367,12 @@ public class Sprite {
         }
 
         if (sameDirection) {
-        	m_rotationalVel += m_turningSpeed*-direction;
+        	m_rotationalVel += m_maxInputTurningSpeed*-direction;
             //changeRotationalVel(getTurningSpeed() * -direction);
         }
         
-    }
-
-    public void setRotationalVel(double newRotationVel) {
-        m_rotationalVel = newRotationVel;
+        m_turningLeft = false;
+        m_turningRight = false;
     }
 
     /**
@@ -319,15 +381,16 @@ public class Sprite {
      */
     public void periodic() {
         move();
-        m_hitbox.computeCollisionPoints(m_coor, m_angle);
+        m_speed = Utility.getVectorMagnitude(m_velocity);
+        m_rotationalSpeed = Math.abs(m_rotationalVel);
     }
 
     public double getSpeed() {
         return m_speed;
     }
 
-    public void setSpeed(double speed) {
-        m_speed = speed;
+    public void setMovingSpeed(double speed) {
+        m_maxInputMovingSpeed = speed;
     }
     
     /**
@@ -335,11 +398,11 @@ public class Sprite {
      * @return velocity
      */
     public Point2D.Double getVelocity() {
-        return new Point2D.Double(m_velocity.getX(), m_velocity.getY());
+        return new Point2D.Double(m_velocity.x, m_velocity.y);
     }
 
     public void setVelocity(Point2D.Double newVel) {
-        m_velocity.setLocation(newVel.getX(),newVel.getY());;
+        m_velocity.setLocation(newVel.x, newVel.y);;
     }
     
     public int getWidth() {
@@ -393,7 +456,4 @@ public class Sprite {
         return m_mass;
         
     }
-
-
-
 }

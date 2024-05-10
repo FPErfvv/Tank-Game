@@ -66,6 +66,7 @@ public class MainPanel extends JPanel implements ActionListener {
         frameHeight = frame.getHeight();
         debugCounter++;
         
+        
         if (debugCounter > 200) {
             for (Sprite s: currentMap.getSpriteList()) {
                 s.turn(-s.getTurningDirection());
@@ -76,11 +77,8 @@ public class MainPanel extends JPanel implements ActionListener {
         for (Sprite s: currentMap.getSpriteList()) {
             s.periodic();
         }
+        
         mainCharacter.periodic();
-        for (Sprite s : currentMap.getSpriteList()) {
-        	s.updatePrevCoordinate();
-        }
-        mainCharacter.updatePrevCoordinate();
     }
     
     public void setMap() {
