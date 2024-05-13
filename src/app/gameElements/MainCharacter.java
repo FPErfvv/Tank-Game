@@ -8,6 +8,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import app.Constants;
+import app.Game;
 import app.GameMap;
 import app.Projectile;
 import app.SoundFx;
@@ -97,7 +98,7 @@ public class MainCharacter extends Sprite {
      * 
      * <p> It calls the {@link MainCharacter#move()} method to both turn and 
      * calculate the velocity of the MainCharacter. Then, it moves both the map  
-     * and the MainCharacter with the {@link GameMap#moveMap(Point2D.Double mapVel)} 
+     * and the MainCharacter with the {@link Game#moveMap(Point2D.Double mapVel)} 
      * method and the {@link MainCharacter#translate(Point2D.Double vel)} method. 
      */
     @Override

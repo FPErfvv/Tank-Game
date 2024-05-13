@@ -16,14 +16,18 @@ public class PlayerControls implements KeyListener, MouseListener {
 	
     private final MainCharacter m_mainCharacter;
     private final Timer m_timer;
+    private final Game m_game;
+    
     private final GameMap m_map;
 
     public static boolean fireTime;
 
-    PlayerControls(MainCharacter mainCharacter, Timer timer, GameMap map) {
+    PlayerControls(MainCharacter mainCharacter, Timer timer, Game game, GameMap map) {
         m_mainCharacter = Objects.requireNonNull(mainCharacter, "The m_mainCharacter may not be null");
-        m_timer = Objects.requireNonNull(timer, "The timer may not be null");;
-        m_map = Objects.requireNonNull(map, "The map may not be null");;
+        m_timer = Objects.requireNonNull(timer, "The timer may not be null");
+        m_game = Objects.requireNonNull(game, "The game may not be null");
+        
+        m_map = Objects.requireNonNull(map, "The map may not be null");
     }
 
     @Override
@@ -50,11 +54,11 @@ public class PlayerControls implements KeyListener, MouseListener {
         }
         
         if (e.getKeyCode() == KeyEvent.VK_B) {
-        	m_map.toggleHitboxes();
+        	m_game.toggleHitboxes();
         }
        
         if(e.getKeyCode() == KeyEvent.VK_R) {
-            m_map.addSprite();
+            m_map.addArmedCow();
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             if (m_mainCharacter.getHitbox() instanceof CowHitbox) {

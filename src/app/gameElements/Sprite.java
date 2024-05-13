@@ -9,6 +9,7 @@ import java.awt.geom.Point2D;
 import javax.swing.ImageIcon;
 
 import app.Constants;
+//import app.Game;
 import app.GameMap;
 import app.MainPanel;
 import app.Projectile;

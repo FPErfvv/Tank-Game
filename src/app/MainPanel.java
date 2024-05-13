@@ -25,6 +25,8 @@ public class MainPanel extends JPanel implements ActionListener {
     private MainCharacter mainCharacter;
     private GameMap currentMap;
     
+    private Game game;
+    
     private Color m_backgroundColor = new Color(0, 154, 23);
 
     private int debugCounter;
@@ -41,14 +43,16 @@ public class MainPanel extends JPanel implements ActionListener {
         
         repaintRectangle = new Rectangle(0, 0, frameWidth, frameHeight);
         
+        game = new Game();
         currentMap = new GameMap();
         mainCharacter = new MainCharacter(currentMap);
-        currentMap.setMainCharacter(mainCharacter);
+        game.setMainCharacter(mainCharacter);
+        game.setCurrentMap(currentMap);
         
-        add(currentMap);
+        add(game);
         
-        addKeyListener(new PlayerControls(mainCharacter, timer, currentMap));
-        addMouseListener(new PlayerControls(mainCharacter, timer, currentMap));
+        addKeyListener(new PlayerControls(mainCharacter, timer, game, currentMap));
+        addMouseListener(new PlayerControls(mainCharacter, timer, game, currentMap));
         
         timer.start();
         
@@ -61,13 +65,13 @@ public class MainPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent arg0) {
-        currentMap.revalidate();
-        currentMap.repaint(repaintRectangle);
+        game.revalidate();
+        game.repaint(repaintRectangle);
         
         frameWidth = frame.getWidth();
         frameHeight = frame.getHeight();
         
-        currentMap.setPreferredSize(new Dimension(frameWidth, frameHeight));
+        game.setPreferredSize(new Dimension(frameWidth, frameHeight));
         repaintRectangle.setBounds(0, 0, frameWidth, frameHeight);
         
         debugCounter++;
