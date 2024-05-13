@@ -10,6 +10,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D.Double;
 import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.Component;
 
 import app.gameElements.MainCharacter;
 import app.gameElements.Sprite;
@@ -37,6 +40,19 @@ public class MainPanel extends JPanel implements ActionListener {
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
         setBackground(m_backgroundColor);
+        
+        frame.addComponentListener(new ComponentAdapter() 
+        {  
+                public void componentResized(ComponentEvent evt) {
+                    Component c = (Component)evt.getSource();
+
+                    frameWidth = frame.getWidth();
+                    frameHeight = frame.getHeight();
+                    
+                    game.setPreferredSize(new Dimension(frameWidth, frameHeight));
+                    repaintRectangle.setBounds(0, 0, frameWidth, frameHeight);
+                }
+        });
         
         int delay = 1;
         timer = new Timer(delay, this);
@@ -68,12 +84,6 @@ public class MainPanel extends JPanel implements ActionListener {
         game.revalidate();
         game.repaint(repaintRectangle);
         
-        frameWidth = frame.getWidth();
-        frameHeight = frame.getHeight();
-        
-        game.setPreferredSize(new Dimension(frameWidth, frameHeight));
-        repaintRectangle.setBounds(0, 0, frameWidth, frameHeight);
-        
         debugCounter++;
         
         /*
@@ -95,10 +105,6 @@ public class MainPanel extends JPanel implements ActionListener {
         for(Projectile p : currentMap.getProjectileList()) {
             p.periodic(); 
         }
-    }
-    
-    public void setMap() {
-        mainCharacter.setCurrentMap(currentMap);
     }
 
     public int getFrameHeight() {

@@ -9,11 +9,13 @@ import app.gameElements.Sprite;
 
 public class GameMap {
 	private final List<Sprite> spriteList;
-    private final ArrayList<Projectile> projectileList;
+    private final List<Projectile> projectileList;
     
     public GameMap() {
     	spriteList = new ArrayList<>();
     	projectileList = new ArrayList<>();
+    	
+    	addTrees();
     }
     
     public void addSprite(Sprite s) {
@@ -40,8 +42,8 @@ public class GameMap {
     	for (int i = 0; i < 10; i++) {
             Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
             //Point2D.Double coor = new Point2D.Double(100,0);
-            //Sprite sprite = new Sprite(coor, "src/images/top-tree-png-1.png", Math.toRadians(0), this);
-            //spriteList.add(sprite);
+            Sprite sprite = new Sprite(coor, "src/images/top-tree-png-1.png", Math.toRadians(0), this);
+            spriteList.add(sprite);
             
             // Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this);
             // spriteList.add(g);
