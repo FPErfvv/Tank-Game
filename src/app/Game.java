@@ -1,21 +1,19 @@
 package app;
 
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+import java.util.List;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import javax.swing.Timer;
-import java.awt.geom.AffineTransform;
 import java.awt.Rectangle;
-
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.JPanel;
 
 import app.gameElements.MainCharacter;
 import app.gameElements.Sprite;
@@ -132,23 +130,15 @@ public class Game extends JPanel implements ActionListener {
         
         /*
         if (debugCounter > 200) {
-            for (Sprite s: currentMap.getSpriteList()) {
+            for (Sprite s: m_currentMap.getSpriteList()) {
                 s.turn(-s.getTurningDirection());
             }
             debugCounter = 0;
         }
         */
         
-        for (Sprite s : m_currentMap.getSpriteList()) {
-            //s.periodic();
-        	s.moveAI(m_mainCharacter.getMapCoodinate());
-        }
-        
+        m_currentMap.tick(m_mainCharacter.getMapCoodinate());
         m_mainCharacter.periodic();
-        
-        for(Projectile p : m_currentMap.getProjectileList()) {
-            p.periodic(); 
-        }
     }
     
     public void setBounds(Dimension dim) {

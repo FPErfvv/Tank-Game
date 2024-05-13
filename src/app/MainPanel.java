@@ -6,16 +6,12 @@ import javax.swing.Timer;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.geom.Point2D.Double;
-import java.awt.Rectangle;
+import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.Component;
+import java.awt.geom.Point2D.Double;
 
 import app.gameElements.MainCharacter;
-import app.gameElements.Sprite;
 
 public class MainPanel extends JPanel {
 	private JFrame frame;

@@ -34,8 +34,15 @@ public class GameMap {
     	return Collections.unmodifiableList(projectileList);
     }
     
-    public void tick() {
+    public void tick(Point2D.Double mainCharCoor) {
+    	for (Sprite s : spriteList) {
+            //s.periodic();
+        	s.moveAI(mainCharCoor);
+        }
     	
+    	for(Projectile p : projectileList) {
+            p.periodic(); 
+        }
     }
     
     public void addTrees() {
