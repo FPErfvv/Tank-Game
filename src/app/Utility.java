@@ -27,10 +27,10 @@ public class Utility {
      * @param pt
      */
     public static void normalize(Point2D.Double pt) {
-        double magnitude = Math.sqrt(Math.pow(pt.getX(), 2) + Math.pow(pt.getY(), 2));
+    	double magnitude = getVectorMagnitude(pt);
         if (magnitude != 0) {
-            pt.x *= 1/magnitude;
-            pt.y *= 1/magnitude;
+            pt.x *= 1 / magnitude;
+            pt.y *= 1 / magnitude;
         }
     }
 

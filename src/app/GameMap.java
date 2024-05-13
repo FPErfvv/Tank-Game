@@ -17,10 +17,13 @@ import app.gameElements.Sprite;
 
 public class GameMap extends JPanel {
 	private int unitSize = 44;
-    private final List<Sprite> spriteList;
+	private Graphics2D m_g2d;
+	
     private MainCharacter m_mainCharacter;
-    private Graphics2D m_g2d;
     private static GameMap m_gameMap;
+    
+    private final List<Sprite> spriteList;
+    private ArrayList<Projectile> projectileList;
     
     private boolean showHitboxes = false;
     
@@ -32,6 +35,7 @@ public class GameMap extends JPanel {
         setFocusable(true);
         
         spriteList = new ArrayList<Sprite>();
+        projectileList = new ArrayList<>();
         populateList();
     }
 
@@ -59,6 +63,10 @@ public class GameMap extends JPanel {
         }
         
         m_mainCharacter.draw(m_g2d, tr, m_mainCharacter.getMapCoodinate(), showHitboxes);
+        
+        for(Projectile p: projectileList) {
+            p.draw(m_g2d, tr, m_mainCharacter.getMapCoodinate(), showHitboxes);
+        }
         
         m_g2d.translate(-getWidth() * 0.5d, -getHeight() * 0.5d);
         
@@ -90,7 +98,7 @@ public class GameMap extends JPanel {
         int entityCount = spriteList.size();
         m_g2d.drawString("Entity Count: " + entityCount, 10, 130);
         
-        int projectileCount = m_mainCharacter.getProjectileCount();
+        int projectileCount = projectileList.size();
         m_g2d.drawString("Projectile Count: " + projectileCount, 10, 150);
     }
     
@@ -111,17 +119,21 @@ public class GameMap extends JPanel {
         Point2D.Double coor = new Point2D.Double(0, 50);
         Sprite sprite = new Sprite(coor, "src/images/MainCowPic.png", Math.toRadians(0), this);        
         sprite.setMovingSpeed(5);
-        sprite.moveForward();
+        //sprite.moveForward();
         sprite.setInputTurningSpeed(Math.toRadians(5));
-        sprite.turn(Constants.TURNING_LEFT);
+        //sprite.turn(Constants.TURNING_LEFT);
         spriteList.add(sprite);
 
         Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this);
         g.setMovingSpeed(5);
-        g.moveForward();
+        //g.moveForward();
         g.setInputTurningSpeed(Math.toRadians(5));
-        g.turn(Constants.TURNING_LEFT);
+        //g.turn(Constants.TURNING_LEFT);
         spriteList.add(g);
+    }
+    
+    public void addProjectile(Projectile p) {
+    	projectileList.add(p);
     }
 
     public void setMainCharacter(MainCharacter mainCharacter) {
@@ -131,6 +143,10 @@ public class GameMap extends JPanel {
 
     public List<Sprite> getSpriteList() {
         return Collections.unmodifiableList(spriteList);
+    }
+    
+    public List<Projectile> getProjectileList() {
+    	return Collections.unmodifiableList(projectileList);
     }
     
     public void toggleHitboxes() {

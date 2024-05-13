@@ -1,6 +1,7 @@
 package app.gameElements;
 
 import java.awt.Graphics2D;
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -10,6 +11,7 @@ import javax.swing.ImageIcon;
 import app.Constants;
 import app.GameMap;
 import app.MainPanel;
+import app.Projectile;
 import app.Utility;
 import app.gameElements.hitbox.Hitbox;
 import app.gameElements.hitbox.hitboxSubClasses.CowHitbox;
@@ -44,6 +46,10 @@ public class Sprite {
     
     private boolean m_turningRight = false;
     private boolean m_turningLeft = false;
+    
+    private int cooldown = 30;
+    
+    private int timeLeft = 0;
     
     public Sprite(Point2D.Double coor, String imagePath, double angle, GameMap map) {
     	m_image = new ImageIcon(imagePath).getImage();
@@ -80,8 +86,8 @@ public class Sprite {
         // this means that when the page is resized, all the sprites remain the same m_speed from the character
     	
     	// distance this sprite is from the scroll point (likely where the main character is)
-    	double dx = m_coor.getX()-scroll.getX();
-    	double dy = m_coor.getY()-scroll.getY();
+    	double dx = m_coor.getX() - scroll.getX();
+    	double dy = m_coor.getY() - scroll.getY();
     	
     	double w = getWidth(), h = getHeight();
     	
@@ -91,7 +97,7 @@ public class Sprite {
     	
     	tr.translate(dx, dy);
     	tr.rotate(rotateAngle);
-    	tr.translate(-w*0.5d,-h*0.5d);
+    	tr.translate(-w * 0.5d, -h * 0.5d);
     	
     	g2d.drawImage(m_image, tr, null);
     	
@@ -102,7 +108,7 @@ public class Sprite {
     	}
     	
     	// transform tr back to its original transformation
-    	tr.translate(w * 0.5d,h * 0.5d);
+    	tr.translate(w * 0.5d, h * 0.5d);
     	tr.rotate(-rotateAngle);
     	tr.translate(-dx, -dy);
     }
@@ -134,6 +140,44 @@ public class Sprite {
         translate(m_velocity);
         rotate();
         m_hitbox.computeCollisionPoints(m_coor, m_angle);
+        
+        m_speed = Utility.getVectorMagnitude(m_velocity);
+        m_rotationalSpeed = Math.abs(m_rotationalVel);
+    }
+    
+    public void moveAI(Point2D.Double playerCoor) {
+    	Point2D.Double diff = new Point2D.Double(playerCoor.x - m_coor.x, playerCoor.y - m_coor.y);
+    	
+    	double len = Utility.getVectorMagnitude(diff);
+    	
+    	double angle = Math.atan(diff.y / diff.x);
+    	
+    	if (diff.x < 0.0d) {
+    		angle += Math.PI;
+    	}
+    	
+    	m_angle = angle;
+    	
+    	if (len > 300) {
+    		moveForward();
+    	}
+    	else {
+    		stopMovingForward();
+    		
+    		if (timeLeft == 0) {
+        		Projectile p = new Projectile(getMapCoodinate(), getAngle(), getGameMap());
+                p.setMovingSpeed(20);
+                p.moveForward();
+                getGameMap().addProjectile(p);
+                
+                timeLeft = cooldown;
+        	}
+    	}
+    	
+    	if (timeLeft > 0)
+    		timeLeft--;
+    	
+    	move();
     }
     
 
@@ -381,8 +425,6 @@ public class Sprite {
      */
     public void periodic() {
         move();
-        m_speed = Utility.getVectorMagnitude(m_velocity);
-        m_rotationalSpeed = Math.abs(m_rotationalVel);
     }
 
     public double getSpeed() {
@@ -420,13 +462,13 @@ public class Sprite {
     public Hitbox getHitbox() {
         return m_hitbox;
     }
-
-    public void adjustVelocity(Point2D.Double deltaV) {
-        m_velocity = Utility.addPoints(m_velocity, deltaV);
-    }
     
     public void setHitbox(Hitbox hitbox) {
         m_hitbox = hitbox;
+    }
+
+    public void adjustVelocity(Point2D.Double deltaV) {
+        m_velocity = Utility.addPoints(m_velocity, deltaV);
     }
 
     public GameMap getGameMap() {
@@ -448,12 +490,12 @@ public class Sprite {
     public void setImage(String imagePath) {
         m_image = new ImageIcon(imagePath).getImage();
     }
+    
     public void setMass(int mass) {
         m_mass = mass;
     }
 
     public int getMass() {
         return m_mass;
-        
     }
 }

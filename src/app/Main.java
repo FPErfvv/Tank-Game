@@ -12,7 +12,7 @@ public class Main  {
         f.add(mainPanel);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        f.setMinimumSize(new Dimension(250,250));
+        f.setMinimumSize(new Dimension(250, 250));
         f.setVisible(true);        
     }
 }

@@ -21,7 +21,7 @@ public class MainCharacter extends Sprite {
     public static final Point2D.Double TRUE_COOR = new Point2D.Double(0, 0); 
     //private Point2D.Double previousVel;
 
-    private ArrayList<Projectile> projectileList;
+    //private ArrayList<Projectile> projectileList;
     private Sprite weaponSprite;
     private SoundFx fx;
     
@@ -44,8 +44,6 @@ public class MainCharacter extends Sprite {
         weaponSprite = new Sprite(getMapCoodinate(), "src/images/50Cal.png", 0, map);
         weaponSprite.setHitbox(new RectangleHitbox(weaponSprite.getWidth(), weaponSprite.getHeight()));
         weaponSprite.getHitbox().computeCollisionPoints(weaponSprite.getMapCoodinate(), weaponSprite.getAngle());
-        
-        projectileList = new ArrayList<Projectile>();
         
         fx = new SoundFx();
     }
@@ -116,16 +114,12 @@ public class MainCharacter extends Sprite {
             		Projectile p = new Projectile(getMapCoodinate(), getAngle(), getGameMap());
                     p.setMovingSpeed(20);
                     p.moveForward();
-                    projectileList.add(p);
+                    getGameMap().addProjectile(p);
             }
             
         }
         else {
             fx.resetFireTime();
-        }
-        
-        for(Projectile p: projectileList) {
-            p.periodic(); 
         }
     }
 
@@ -137,13 +131,5 @@ public class MainCharacter extends Sprite {
     	if (weaponized) {
     		weaponSprite.draw(g2d, tr, scroll, drawHitbox);
     	}
-        
-        for(Projectile p: projectileList) {
-            p.draw(g2d, tr, scroll, drawHitbox);
-        }
-    }
-
-    public int getProjectileCount() {
-    	return projectileList.size();
     }
 }
