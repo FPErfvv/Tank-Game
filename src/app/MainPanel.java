@@ -17,22 +17,15 @@ import java.awt.Component;
 import app.gameElements.MainCharacter;
 import app.gameElements.Sprite;
 
-public class MainPanel extends JPanel implements ActionListener {
+public class MainPanel extends JPanel {
+	private JFrame frame;
+	
 	private int frameWidth;
     private int frameHeight;
-	
-    private Timer timer;
-    private JFrame frame;
-    private Rectangle repaintRectangle;
-    
-    private MainCharacter mainCharacter;
-    private GameMap currentMap;
     
     private Game game;
     
     private Color m_backgroundColor = new Color(0, 154, 23);
-
-    private int debugCounter;
 
     MainPanel(JFrame f) {
         frame = f;
@@ -49,62 +42,24 @@ public class MainPanel extends JPanel implements ActionListener {
                     frameWidth = frame.getWidth();
                     frameHeight = frame.getHeight();
                     
-                    game.setPreferredSize(new Dimension(frameWidth, frameHeight));
-                    repaintRectangle.setBounds(0, 0, frameWidth, frameHeight);
+                    game.setBounds(new Dimension(frameWidth, frameHeight));
                 }
         });
         
-        int delay = 1;
-        timer = new Timer(delay, this);
-        
-        repaintRectangle = new Rectangle(0, 0, frameWidth, frameHeight);
-        
-        game = new Game();
-        currentMap = new GameMap();
-        mainCharacter = new MainCharacter(currentMap);
-        game.setMainCharacter(mainCharacter);
-        game.setCurrentMap(currentMap);
+        GameMap currentMap = new GameMap();
+        MainCharacter mainCharacter = new MainCharacter(currentMap);
+        game = new Game(mainCharacter, currentMap);
         
         add(game);
         
-        addKeyListener(new PlayerControls(mainCharacter, timer, game, currentMap));
-        addMouseListener(new PlayerControls(mainCharacter, timer, game, currentMap));
-        
-        timer.start();
-        
-        debugCounter = 0;
+        /*
+         * TODO:
+         * Figure out how to have this on the Game class without the game not recognizing key input
+         */
+        addKeyListener(new PlayerControls(mainCharacter, game.getTimer(), game, currentMap));
     }
 
     public void initialize() {
-    }
-
-
-    @Override
-    public void actionPerformed(ActionEvent arg0) {
-        game.revalidate();
-        game.repaint(repaintRectangle);
-        
-        debugCounter++;
-        
-        /*
-        if (debugCounter > 200) {
-            for (Sprite s: currentMap.getSpriteList()) {
-                s.turn(-s.getTurningDirection());
-            }
-            debugCounter = 0;
-        }
-        */
-        
-        for (Sprite s : currentMap.getSpriteList()) {
-            //s.periodic();
-        	s.moveAI(mainCharacter.getMapCoodinate());
-        }
-        
-        mainCharacter.periodic();
-        
-        for(Projectile p : currentMap.getProjectileList()) {
-            p.periodic(); 
-        }
     }
 
     public int getFrameHeight() {
@@ -115,6 +70,6 @@ public class MainPanel extends JPanel implements ActionListener {
     }
 
     public Timer getTimer() {
-        return timer;
+    	return game.getTimer();
     }
 }
