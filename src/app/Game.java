@@ -32,6 +32,8 @@ public class Game extends JPanel implements ActionListener {
     
     private boolean showHitboxes = false;
     
+    private boolean showDebugMenu = false;
+    
     private Color m_floorColor = new Color(0, 154, 23);
 
     public Game(MainCharacter mainCharacter, GameMap map) {
@@ -87,6 +89,12 @@ public class Game extends JPanel implements ActionListener {
         
         m_g2d.translate(-getWidth() * 0.5d, -getHeight() * 0.5d);
         
+        if (showDebugMenu) {
+        	drawDebugMenu();
+        }
+    }
+    
+    public void drawDebugMenu() {
         m_g2d.setPaint(Color.WHITE);
         
         // mainCharacter debug info
@@ -154,6 +162,9 @@ public class Game extends JPanel implements ActionListener {
         
         // GameMap debug info
         
+        List<Sprite> spriteList = m_currentMap.getSpriteList();
+        List<Projectile> projectileList = m_currentMap.getProjectileList();
+        
         int entityCount = spriteList.size();
         m_g2d.drawString("Entity Count: " + entityCount, 10, 250);
         
@@ -185,6 +196,10 @@ public class Game extends JPanel implements ActionListener {
     
     public void toggleHitboxes() {
     	showHitboxes = !showHitboxes;
+    }
+    
+    public void toggleDebugMenu() {
+    	showDebugMenu = !showDebugMenu;
     }
     
     public Timer getTimer() {
