@@ -70,6 +70,7 @@ public class Game extends JPanel implements ActionListener {
         
         AffineTransform tr = new AffineTransform();
         
+        // translate g2d to the center of the screen
         m_g2d.translate(getWidth() * 0.5d, getHeight() * 0.5d);
         
         // when map gets added, it will be drawn here
@@ -77,52 +78,64 @@ public class Game extends JPanel implements ActionListener {
         List<Sprite> spriteList = m_currentMap.getSpriteList();
         List<Projectile> projectileList = m_currentMap.getProjectileList();
         
+        Point2D.Double scroll = m_mainCharacter.getMapCoodinate();
+        
         for (Sprite s: spriteList) {
-        	s.draw(m_g2d, tr, m_mainCharacter.getMapCoodinate(), showHitboxes);
+        	s.draw(m_g2d, tr, scroll, showHitboxes);
         }
         
-        m_mainCharacter.draw(m_g2d, tr, m_mainCharacter.getMapCoodinate(), showHitboxes);
+        m_mainCharacter.draw(m_g2d, tr, scroll, showHitboxes);
         
         for(Projectile p: projectileList) {
-            p.draw(m_g2d, tr, m_mainCharacter.getMapCoodinate(), showHitboxes);
+            p.draw(m_g2d, tr, scroll, showHitboxes);
         }
         
         m_g2d.translate(-getWidth() * 0.5d, -getHeight() * 0.5d);
         
         if (showDebugMenu) {
-        	drawDebugMenu();
+        	drawDebugMenu(m_mainCharacter);
         }
     }
     
-    public void drawDebugMenu() {
+    public void drawDebugMenu(Sprite s) {
         m_g2d.setPaint(Color.WHITE);
         
         // mainCharacter debug info
         
-        Point2D.Double coor = m_mainCharacter.getMapCoodinate();
+        // Translation
+        
+        Point2D.Double coor = s.getMapCoodinate();
         double xCoor = coor.x;
         double yCoor = -coor.y;
         m_g2d.drawString(String.format("Map Coodinate: (x: %04.2f px, y: %04.2f px)", xCoor, yCoor), 10, 10);
         
-        Point2D.Double vel = m_mainCharacter.getVelocity();
+        Point2D.Double vel = s.getVelocity();
         double vX = vel.getX();
         double vY = -vel.getY();
         m_g2d.drawString(String.format("Translational Velocity: (Vx: %04.2f px/t, Vy: %04.2f px/t)", vX, vY), 10, 30);
         
-        double speed = m_mainCharacter.getSpeed();
+        double speed = s.getSpeed();
         m_g2d.drawString(String.format("Translational Speed: %04.2f px/t", speed), 10, 50);
         
-        // convert the angle to degrees
-        int angle = (int) (-m_mainCharacter.getAngle() * 180.0d / Math.PI);
-        m_g2d.drawString("Angle: " + angle + " deg", 10, 70);
+        // Rotation
         
-        double rotationalVel = -Math.toDegrees(m_mainCharacter.getRotationalVel());
+        double angle = -Math.toDegrees(s.getAngle());
+        m_g2d.drawString(String.format("Angle: %04.2f deg", angle), 10, 70);
+        
+        double rotationalVel = -Math.toDegrees(s.getRotationalVel());
         m_g2d.drawString(String.format("Rotational Velocity: %04.2f deg/t", rotationalVel), 10, 90);
         
-        double rotationalSpeed = Math.toDegrees(m_mainCharacter.getRotationalSpeed());
+        double rotationalSpeed = Math.toDegrees(s.getRotationalSpeed());
         m_g2d.drawString(String.format("Rotational Speed: %04.2f deg/t", rotationalSpeed), 10, 110);
         
-        int movingDirection = m_mainCharacter.getInputMovingDirection();
+        // Input
+        
+        // Translational Input
+        
+        double inputMovingSpeed = s.getInputMovingSpeed();
+        m_g2d.drawString(String.format("Input Moving Speed: %04.2f px/t", inputMovingSpeed), 10, 130);
+        
+        int movingDirection = s.getInputMovingDirection();
         String printedMovingDirection;
         if (movingDirection == Constants.DIRECTION_FORWARDS) {
         	printedMovingDirection = "DIRECTION_FORWARDS";
@@ -133,15 +146,20 @@ public class Game extends JPanel implements ActionListener {
         else {
         	printedMovingDirection = "DIRECTION_STOP";
         }
-        m_g2d.drawString("Input Moving Direction: " + printedMovingDirection, 10, 130);
+        m_g2d.drawString("Input Moving Direction: " + printedMovingDirection, 10, 150);
         
-        boolean movingForward = m_mainCharacter.isMovingForward();
-        m_g2d.drawString("Is Moving Forward: " + movingForward, 10, 150);
+        boolean movingForward = s.isMovingForward();
+        m_g2d.drawString("Is Moving Forward: " + movingForward, 10, 170);
         
-        boolean movingBackward = m_mainCharacter.isMovingBackward();
-        m_g2d.drawString("Is Moving Forward: " + movingBackward, 10, 170);
+        boolean movingBackward = s.isMovingBackward();
+        m_g2d.drawString("Is Moving Backward: " + movingBackward, 10, 190);
         
-        int turningDirection = m_mainCharacter.getInputTurningDirection();
+        // Rotational Input
+        
+        double inputTurningSpeed = Math.toDegrees(s.getInputTurningSpeed());
+        m_g2d.drawString(String.format("Input Turning Speed: %04.2f deg/t", inputTurningSpeed), 10, 210);
+        
+        int turningDirection = s.getInputTurningDirection();
         String printedTurningDirection;
         if (turningDirection == Constants.TURNING_LEFT) {
         	printedTurningDirection = "TURNING_LEFT";
@@ -152,13 +170,13 @@ public class Game extends JPanel implements ActionListener {
         else {
         	printedTurningDirection = "TURNING_STOP";
         }
-        m_g2d.drawString("Input Turning Direction: " + printedTurningDirection, 10, 190);
+        m_g2d.drawString("Input Turning Direction: " + printedTurningDirection, 10, 230);
         
-        boolean turningLeft = m_mainCharacter.isTurningLeft();
-        m_g2d.drawString("Is Turning Left: " + turningLeft, 10, 210);
+        boolean turningLeft = s.isTurningLeft();
+        m_g2d.drawString("Is Turning Left: " + turningLeft, 10, 250);
         
-        boolean turningRight = m_mainCharacter.isTurningRight();
-        m_g2d.drawString("Is Turning Right: " + turningRight, 10, 230);
+        boolean turningRight = s.isTurningRight();
+        m_g2d.drawString("Is Turning Right: " + turningRight, 10, 270);
         
         // GameMap debug info
         
@@ -166,10 +184,10 @@ public class Game extends JPanel implements ActionListener {
         List<Projectile> projectileList = m_currentMap.getProjectileList();
         
         int entityCount = spriteList.size();
-        m_g2d.drawString("Entity Count: " + entityCount, 10, 250);
+        m_g2d.drawString("Entity Count: " + entityCount, 10, 290);
         
         int projectileCount = projectileList.size();
-        m_g2d.drawString("Projectile Count: " + projectileCount, 10, 270);
+        m_g2d.drawString("Projectile Count: " + projectileCount, 10, 310);
     }
     
     @Override

@@ -176,6 +176,10 @@ public class Sprite {
     }
     
     
+    public double getInputMovingSpeed() {
+    	return m_inputMovingSpeed;
+    }
+    
     public void setInputMovingSpeed(double speed) {
         m_inputMovingSpeed = speed;
     }
