@@ -267,11 +267,11 @@ public class Sprite {
      * @param direction the inputed direction
      */
     public void turn(int direction) {
-        if (m_inputTurningDirection == Constants.TURNING_LEFT) {
+        if (direction == Constants.TURNING_LEFT) {
         	m_turningLeft = true;
         	m_turningRight = false;
         }
-        if (m_inputTurningDirection == Constants.TURNING_RIGHT) {
+        if (direction == Constants.TURNING_RIGHT) {
         	m_turningLeft = false;
         	m_turningRight = true;
         }

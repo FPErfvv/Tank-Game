@@ -38,20 +38,18 @@ public class GameMap {
     }
     
     public void tick(Point2D.Double mainCharCoor) {
-    	//debugCounter++;
+    	debugCounter++;
         
-        /*
         if (debugCounter > 200) {
-            for (Sprite s: m_currentMap.getSpriteList()) {
-                s.turn(-s.getTurningDirection());
+            for (Sprite s : getSpriteList()) {
+                s.turn(-s.getInputTurningDirection());
             }
             debugCounter = 0;
         }
-        */
-    	
+        
     	for (Sprite s : spriteList) {
-            //s.periodic();
-        	s.moveAI(mainCharCoor);
+            s.periodic();
+        	//s.moveAI(mainCharCoor);
         }
     	
     	for(Projectile p : projectileList) {
@@ -78,17 +76,19 @@ public class GameMap {
         Sprite sprite = new Sprite("src/images/MainCowPic.png", coor, Math.toRadians(0), this);     
         sprite.setHitbox(new CowHitbox(sprite.getWidth(), sprite.getHeight()));
         sprite.setInputMovingSpeed(5);
-        //sprite.moveForward();
         sprite.setInputTurningSpeed(Math.toRadians(5));
-        //sprite.turn(Constants.TURNING_LEFT);
+        sprite.moveForward();
+        sprite.turnLeft();
+        sprite.turn(Constants.TURNING_LEFT);
         spriteList.add(sprite);
 
         Sprite g = new Sprite("src/images/Cow50Cal.png", coor, Math.toRadians(0), this);
         g.setHitbox(new CowHitbox(g.getWidth(), g.getHeight()));
         g.setInputMovingSpeed(5);
-        //g.moveForward();
         g.setInputTurningSpeed(Math.toRadians(5));
-        //g.turn(Constants.TURNING_LEFT);
+        g.moveForward();
+        g.turnLeft();
+        g.turn(Constants.TURNING_LEFT);
         spriteList.add(g);
     }
     
