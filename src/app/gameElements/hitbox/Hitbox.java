@@ -191,33 +191,6 @@ public abstract class Hitbox {
         }
     }
     
-    public void drawFacingLine(Graphics2D g2d, Point2D.Double coor, double angle, Point2D.Double scroll) {
-    	double lineLen = 100.0d; // in pixels
-    	
-    	double drawAngle = angle - Math.PI / 2.0f;
-    	
-    	double xLen = lineLen * Math.cos(drawAngle);
-    	double yLen = lineLen * Math.sin(drawAngle);
-    	
-    	int x0 = (int) (coor.x - scroll.x);
-    	int x1 = (int) (coor.x + xLen - scroll.x);
-    	int y0 = (int) (coor.y - scroll.y);
-    	int y1 = (int) (coor.y + yLen - scroll.y);
-    	
-    	g2d.setPaint(Color.BLUE);
-    	
-    	g2d.drawLine(x0, y0, x1, y1);
-    	
-    	double radius = 2.0d;
-    	
-    	int x = (int) (coor.x - radius - scroll.x);
-    	int y = (int) (coor.y - radius - scroll.y);
-    	
-    	g2d.setPaint(Color.RED);
-    	
-    	g2d.fillOval(x, y, (int) (radius * 2.0d), (int) (radius * 2.0d));
-    }
-    
     /**
      * Returns the points that form the hitbox model. Each point of the model is the x and y 
      * distance each point is from the axis of rotation if the angle of rotation is 0.

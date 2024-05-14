@@ -14,37 +14,34 @@ import app.Projectile;
 import app.SoundFx;
 import app.Utility;
 import app.gameElements.hitbox.Hitbox;
+import app.gameElements.hitbox.hitboxSubClasses.CowHitbox;
 import app.gameElements.hitbox.hitboxSubClasses.RectangleHitbox;
 import app.PlayerControls;
 
 public class MainCharacter extends Sprite {
     public boolean weaponized = true;
-    public static final Point2D.Double TRUE_COOR = new Point2D.Double(0, 0); 
-    //private Point2D.Double previousVel;
 
-    //private ArrayList<Projectile> projectileList;
     private Sprite weaponSprite;
     private SoundFx fx;
     
-    private static final double DEFAULT_MOVING_SPEED = 5;
-    private static final double DEFAULT_TURNING_SPEED = Math.toRadians(5);
+    private static final double DEFAULT_INPUT_MOVING_SPEED = 5;
+    private static final double DEFAULT_INPUT_TURNING_SPEED = Math.toRadians(5);
     
     public MainCharacter(GameMap map) {
-        super(new Point2D.Double(0, 0), "src/images/MainCharacter.png", 0, map);
+        super("src/images/MainCharacter.png", new Point2D.Double(0, 0), 0, map);
         
         Hitbox startingHitbox = new RectangleHitbox(getWidth(), getHeight());
-        startingHitbox.computeCollisionPoints(getMapCoodinate(), getAngle());
         
         setHitbox(startingHitbox);
         
-        setMovingSpeed(DEFAULT_MOVING_SPEED);
-        setInputTurningSpeed(DEFAULT_TURNING_SPEED);
+        setInputMovingSpeed(DEFAULT_INPUT_MOVING_SPEED);
+        setInputTurningSpeed(DEFAULT_INPUT_TURNING_SPEED);
         
         setMass(2);
 
-        weaponSprite = new Sprite(getMapCoodinate(), "src/images/50Cal.png", 0, map);
-        weaponSprite.setHitbox(new RectangleHitbox(weaponSprite.getWidth(), weaponSprite.getHeight()));
-        weaponSprite.getHitbox().computeCollisionPoints(weaponSprite.getMapCoodinate(), weaponSprite.getAngle());
+        weaponSprite = new Sprite("src/images/50Cal.png", getMapCoodinate(), getAngle(), map);
+        //weaponSprite.setHitbox(new RectangleHitbox(weaponSprite.getWidth(), weaponSprite.getHeight()));
+        //weaponSprite.getHitbox().computeCollisionPoints(weaponSprite.getMapCoodinate(), weaponSprite.getAngle());
         
         fx = new SoundFx();
     }
@@ -57,9 +54,12 @@ public class MainCharacter extends Sprite {
         // minimum translation vector
         Point2D.Double mtvec = new Point2D.Double(0.0d, 0.0d);
         
-        for (Sprite s : getGameMap().getSpriteList()) {
+        for (Sprite s : getCurrentMap().getSpriteList()) {
         	Hitbox thisBox = this.getHitbox();
         	Hitbox boxOther = s.getHitbox();
+        	
+        	if (boxOther == null)
+        		continue;
         	
         	// The position of target closest to player
         	Point2D.Double targetsCoor = s.getMapCoodinate();
@@ -107,15 +107,15 @@ public class MainCharacter extends Sprite {
     	
         weaponSprite.moveTo(getMapCoodinate());
         weaponSprite.setAngle(getAngle());
-        weaponSprite.getHitbox().computeCollisionPoints(getMapCoodinate(), getAngle());
+        //weaponSprite.getHitbox().computeCollisionPoints(getMapCoodinate(), getAngle());
 
         if(PlayerControls.fireTime == true && weaponized == true) {
             fx.repeat50Cal();
             if(fx.timeToRepeat >= 3) {
-            		Projectile p = new Projectile(getMapCoodinate(), getAngle(), getGameMap());
-                    p.setMovingSpeed(20);
+            		Projectile p = new Projectile(getMapCoodinate(), getAngle(), getCurrentMap());
+                    p.setInputMovingSpeed(20);
                     p.moveForward();
-                    getGameMap().addProjectile(p);
+                    getCurrentMap().addProjectile(p);
             }
             
         }

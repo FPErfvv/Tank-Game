@@ -119,6 +119,32 @@ public class Game extends JPanel implements ActionListener {
         
         int projectileCount = projectileList.size();
         m_g2d.drawString("Projectile Count: " + projectileCount, 10, 150);
+        
+        int movingDirection = m_mainCharacter.getInputMovingDirection();
+        String printedMovingDirection;
+        if (movingDirection == Constants.DIRECTION_FORWARDS) {
+        	printedMovingDirection = "DIRECTION_FORWARDS";
+        }
+        else if (movingDirection == Constants.DIRECTION_BACKWARDS) {
+        	printedMovingDirection = "DIRECTION_BACKWARDS";
+        }
+        else {
+        	printedMovingDirection = "DIRECTION_STOP";
+        }
+        m_g2d.drawString("Input Moving Direction: " + printedMovingDirection, 10, 170);
+        
+        int turningDirection = m_mainCharacter.getInputTurningDirection();
+        String printedTurningDirection;
+        if (turningDirection == Constants.TURNING_LEFT) {
+        	printedTurningDirection = "TURNING_LEFT";
+        }
+        else if (turningDirection == Constants.TURNING_RIGHT) {
+        	printedTurningDirection = "TURNING_RIGHT";
+        }
+        else {
+        	printedTurningDirection = "TURNING_STOP";
+        }
+        m_g2d.drawString("Input Turning Direction: " + printedTurningDirection, 10, 190);
     }
     
     @Override
