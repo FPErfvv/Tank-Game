@@ -112,10 +112,12 @@ public class MainCharacter extends Sprite {
         if(PlayerControls.fireTime == true && weaponized == true) {
             fx.repeat50Cal();
             if(fx.timeToRepeat >= 3) {
-            		Projectile p = new Projectile(getMapCoodinate(), getAngle(), getCurrentMap());
-                    p.setInputMovingSpeed(20);
-                    p.moveForward();
-                    getCurrentMap().addProjectile(p);
+            	Projectile p = new Projectile(getMapCoodinate(), getAngle(), getCurrentMap());
+                p.setInputMovingSpeed(20);
+                p.setInputTurningSpeed(Math.toRadians(5));
+                p.moveForward();
+                p.turnRight();
+                getCurrentMap().addProjectile(p);
             }
             
         }

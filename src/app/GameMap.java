@@ -12,6 +12,8 @@ public class GameMap {
 	private final List<Sprite> spriteList;
     private final List<Projectile> projectileList;
     
+    private int debugCounter = 0;
+    
     public GameMap() {
     	spriteList = new ArrayList<>();
     	projectileList = new ArrayList<>();
@@ -36,9 +38,20 @@ public class GameMap {
     }
     
     public void tick(Point2D.Double mainCharCoor) {
+    	//debugCounter++;
+        
+        /*
+        if (debugCounter > 200) {
+            for (Sprite s: m_currentMap.getSpriteList()) {
+                s.turn(-s.getTurningDirection());
+            }
+            debugCounter = 0;
+        }
+        */
+    	
     	for (Sprite s : spriteList) {
-            s.periodic();
-        	//s.moveAI(mainCharCoor);
+            //s.periodic();
+        	s.moveAI(mainCharCoor);
         }
     	
     	for(Projectile p : projectileList) {
