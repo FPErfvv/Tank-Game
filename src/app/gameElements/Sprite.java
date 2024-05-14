@@ -62,8 +62,6 @@ public class Sprite {
         
         m_angle = angle;
         m_rotationalVel = 0.0d;
-        
-        m_inputTurningDirection = Constants.TURNING_STOP;
     }
     
     public Image getImage() {
@@ -192,16 +190,24 @@ public class Sprite {
     	return Constants.DIRECTION_STOP;
     }
     
+    public boolean isMovingForward() {
+    	return m_movingForward;
+    }
+    
     public void moveForward() {
     	m_movingForward = true;
     }
     
-    public void moveBackward() {
-    	m_movingBackward = true;
-    }
-    
     public void stopMovingForward() {
     	m_movingForward = false;
+    }
+    
+    public boolean isMovingBackward() {
+    	return m_movingBackward;
+    }
+    
+    public void moveBackward() {
+    	m_movingBackward = true;
     }
     
     public void stopMovingBackward() {
@@ -231,16 +237,24 @@ public class Sprite {
         return m_inputTurningDirection;
     }
     
+    public boolean isTurningLeft() {
+    	return m_turningLeft;
+    }
+    
     public void turnLeft() {
     	m_turningLeft = true;
     }
     
-    public void turnRight() {
-    	m_turningRight = true;
-    }
-    
     public void stopTurningLeft() {
     	m_turningLeft = false;
+    }
+    
+    public boolean isTurningRight() {
+    	return m_turningRight;
+    }
+    
+    public void turnRight() {
+    	m_turningRight = true;
     }
     
     public void stopTurningRight() {
@@ -253,8 +267,6 @@ public class Sprite {
      * @param direction the inputed direction
      */
     public void turn(int direction) {
-        m_inputTurningDirection = direction;
-        
         if (m_inputTurningDirection == Constants.TURNING_LEFT) {
         	m_turningLeft = true;
         	m_turningRight = false;

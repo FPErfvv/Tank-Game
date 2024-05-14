@@ -91,22 +91,22 @@ public class Game extends JPanel implements ActionListener {
         
         m_g2d.setPaint(Color.WHITE);
         
-        // convert the angle to degrees
-        int angle = (int) (-m_mainCharacter.getAngle() * 180.0d / Math.PI);
-        m_g2d.drawString("Angle: " + angle + " deg", 10, 10);
-        
         Point2D.Double coor = m_mainCharacter.getMapCoodinate();
         double xCoor = coor.x;
         double yCoor = coor.y;
-        m_g2d.drawString(String.format("Map Coodinate: (x: %04.2f px, y: %04.2f px)", xCoor, yCoor), 10, 30);
+        m_g2d.drawString(String.format("Map Coodinate: (x: %04.2f px, y: %04.2f px)", xCoor, yCoor), 10, 10);
         
         Point2D.Double vel = m_mainCharacter.getVelocity();
         double vX = vel.getX();
         double vY = vel.getY();
-        m_g2d.drawString(String.format("Velocity: (v_x: %04.2f px/t, v_y: %04.2f px/t)", vX, vY), 10, 50);
+        m_g2d.drawString(String.format("Velocity: (Vx: %04.2f px/t, Vy: %04.2f px/t)", vX, vY), 10, 30);
         
         double speed = m_mainCharacter.getSpeed();
-        m_g2d.drawString(String.format("Speed: %04.2f px/t", speed), 10, 70);
+        m_g2d.drawString(String.format("Speed: %04.2f px/t", speed), 10, 50);
+        
+        // convert the angle to degrees
+        int angle = (int) (-m_mainCharacter.getAngle() * 180.0d / Math.PI);
+        m_g2d.drawString("Angle: " + angle + " deg", 10, 70);
         
         double rotationalVel = Math.toDegrees(m_mainCharacter.getRotationalVel());
         m_g2d.drawString(String.format("Rotational Velocity: %04.2f deg/t", rotationalVel), 10, 90);
@@ -133,6 +133,12 @@ public class Game extends JPanel implements ActionListener {
         }
         m_g2d.drawString("Input Moving Direction: " + printedMovingDirection, 10, 170);
         
+        boolean movingForward = m_mainCharacter.isMovingForward();
+        m_g2d.drawString("Is Moving Forward: " + movingForward, 10, 190);
+        
+        boolean movingBackward = m_mainCharacter.isMovingBackward();
+        m_g2d.drawString("Is Moving Forward: " + movingBackward, 10, 210);
+        
         int turningDirection = m_mainCharacter.getInputTurningDirection();
         String printedTurningDirection;
         if (turningDirection == Constants.TURNING_LEFT) {
@@ -144,7 +150,13 @@ public class Game extends JPanel implements ActionListener {
         else {
         	printedTurningDirection = "TURNING_STOP";
         }
-        m_g2d.drawString("Input Turning Direction: " + printedTurningDirection, 10, 190);
+        m_g2d.drawString("Input Turning Direction: " + printedTurningDirection, 10, 230);
+        
+        boolean turningLeft = m_mainCharacter.isTurningLeft();
+        m_g2d.drawString("Is Turning Left: " + turningLeft, 10, 250);
+        
+        boolean turningRight = m_mainCharacter.isTurningRight();
+        m_g2d.drawString("Is Turning Right: " + turningRight, 10, 270);
     }
     
     @Override
