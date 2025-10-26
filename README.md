@@ -16,3 +16,5 @@ Both of these Java source files have a main method.
 First run the GameServer
 
 By default, the multiplayer feature uses the computers loopback interface for testing purposes. If you want to join a server running on another computer, go to the beginning of the GameClient.java constructor and assign the member variable 'serverIPAddress' to the IP address of the computer that is hosting the server in the form of InetAddress.getByAddress(addr) where addr is a byte array of for elements { a, b, c, d } representing an IPv4 address in the form a.b.c.d
+
+To join the server, run GameClient.java
