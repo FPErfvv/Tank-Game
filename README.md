@@ -4,3 +4,15 @@ This respository contains the code for Tank Game. The task of the player is to s
 The game is still very much in development. Tank Game is created using the Java Swing graphics library instead of a prebuilt game engine. The basic game mechanics (collisions, basic physics, procedural terrain generation, etc) are being created before higher level game elements can be implemented. Seen below is a snapshot of the game at this point.
 
 ![TankGamePic](https://user-images.githubusercontent.com/55303312/198907499-476dff68-a613-4397-880b-c815f2af5c6a.PNG)
+
+# Multiplayer
+Please note that only fragments of multiplayer functionality has been implemented and has known bugs.
+
+How to start a multiplayer game:
+
+In the src/app/net, you will find GameServer.java and GameClient.java
+Both of these Java source files have a main method.
+
+First run the GameServer
+
+By default, the multiplayer feature uses the computers loopback interface for testing purposes. If you want to join a server running on another computer, go to the beginning of the GameClient.java constructor and assign the member variable 'serverIPAddress' to the IP address of the computer that is hosting the server in the form of InetAddress.getByAddress(addr) where addr is a byte array of for elements { a, b, c, d } representing an IPv4 address in the form a.b.c.d
