@@ -5,45 +5,45 @@ import java.awt.Graphics2D;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 
-import app.Constants;
-import app.Game;
-import app.GameMap;
-import app.Projectile;
-import app.SoundFx;
+import app.GameRenderer;
+import app.SoundEngine;
 import app.Utility;
+
 import app.gameElements.hitbox.Hitbox;
 import app.gameElements.hitbox.hitboxSubClasses.CowHitbox;
 import app.gameElements.hitbox.hitboxSubClasses.RectangleHitbox;
-import app.PlayerControls;
 
 public class MainCharacter extends Sprite {
-    public boolean weaponized = true;
-
-    private Sprite weaponSprite;
-    private SoundFx fx;
-    
-    private static final double DEFAULT_INPUT_MOVING_SPEED = 5;
+	private static final double DEFAULT_INPUT_MOVING_SPEED = 5;
     private static final double DEFAULT_INPUT_TURNING_SPEED = Math.toRadians(5);
     
-    public MainCharacter(GameMap map) {
-        super("src/images/MainCharacter.png", new Point2D.Double(0, 0), 0, map);
+    private boolean weaponized = true;
+    private boolean isShooting = false;
+    
+    private int shootCooldown = 3;
+    private int timeUntilShot = 0;
+
+    private Sprite weaponSprite;
+    
+    private boolean isDisguised = false;
+    private Hitbox defaultHitbox;
+    private Hitbox cowDisguiseHitbox;
+    
+    public MainCharacter() {
+        super("src/images/MainCharacter.png");
         
-        Hitbox startingHitbox = new RectangleHitbox(getWidth(), getHeight());
+        defaultHitbox = new RectangleHitbox(44.0d, 50.0d);
+        cowDisguiseHitbox = new CowHitbox(50.0d, 113.0d);
         
-        setHitbox(startingHitbox);
+        setHitbox(defaultHitbox);
         
         setInputMovingSpeed(DEFAULT_INPUT_MOVING_SPEED);
         setInputTurningSpeed(DEFAULT_INPUT_TURNING_SPEED);
         
         setMass(2);
 
-        weaponSprite = new Sprite("src/images/50Cal.png", getMapCoodinate(), getAngle(), map);
-        //weaponSprite.setHitbox(new RectangleHitbox(weaponSprite.getWidth(), weaponSprite.getHeight()));
-        //weaponSprite.getHitbox().computeCollisionPoints(weaponSprite.getMapCoodinate(), weaponSprite.getAngle());
-        
-        fx = new SoundFx();
+        weaponSprite = new Sprite("src/images/50Cal.png");
     }
 
     @Override
@@ -98,31 +98,34 @@ public class MainCharacter extends Sprite {
      * 
      * <p> It calls the {@link MainCharacter#move()} method to both turn and 
      * calculate the velocity of the MainCharacter. Then, it moves both the map  
-     * and the MainCharacter with the {@link Game#moveMap(Point2D.Double mapVel)} 
+     * and the MainCharacter with the {@link GameRenderer#moveMap(Point2D.Double mapVel)} 
      * method and the {@link MainCharacter#translate(Point2D.Double vel)} method. 
      */
     @Override
-    public void periodic() {
-    	super.periodic();
+    public void periodic(SoundEngine soundEngine) {
+    	super.periodic(soundEngine);
     	
         weaponSprite.moveTo(getMapCoodinate());
         weaponSprite.setAngle(getAngle());
-        //weaponSprite.getHitbox().computeCollisionPoints(getMapCoodinate(), getAngle());
-
-        if(PlayerControls.fireTime == true && weaponized == true) {
-            fx.repeat50Cal();
-            if(fx.timeToRepeat >= 3) {
-            	Projectile p = new Projectile(getMapCoodinate(), getAngle(), getCurrentMap());
+        
+        if(isShooting && weaponized) {
+        	if (timeUntilShot-- == 0) {
+        		Projectile p = new Projectile();
+        		p.moveTo(getMapCoodinate());
+        		p.setAngle(getAngle());
+        		p.setHitbox(new RectangleHitbox(p.getWidth(), p.getHeight()));
+        		p.setCurrentMap(getCurrentMap());
                 p.setInputMovingSpeed(20);
-                //p.setInputTurningSpeed(Math.toRadians(5));
                 p.moveForward();
+                //p.setInputTurningSpeed(Math.toRadians(5));
                 //p.turnRight();
+                
                 getCurrentMap().addProjectile(p);
-            }
-            
-        }
-        else {
-            fx.resetFireTime();
+                
+                soundEngine.playShootSoundClip();
+                
+                timeUntilShot = shootCooldown;
+        	}
         }
     }
 
@@ -134,5 +137,26 @@ public class MainCharacter extends Sprite {
     	if (weaponized) {
     		weaponSprite.draw(g2d, tr, scroll, drawHitbox);
     	}
+    }
+    
+    public void startShooting() {
+    	isShooting = true;
+    }
+    public void stopShooting() {
+    	isShooting = false;
+    }
+    
+    public void toggleDisguise() {
+    	if (isDisguised) {
+    		weaponized = true;
+    		setHitbox(defaultHitbox);
+    		setImage("src/images/MainCharacter.png");
+    	}
+    	else {
+    		weaponized = false;
+    		setHitbox(cowDisguiseHitbox);
+    		setImage("src/images/MainCowPic.png");
+    	}
+    	isDisguised = !isDisguised;
     }
 }

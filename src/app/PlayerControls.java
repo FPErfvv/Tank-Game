@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import javax.swing.Timer;
 
+import app.gameElements.GameMap;
 import app.gameElements.MainCharacter;
 import app.gameElements.hitbox.hitboxSubClasses.CowHitbox;
 import app.gameElements.hitbox.hitboxSubClasses.RectangleHitbox;
@@ -16,32 +17,51 @@ public class PlayerControls implements KeyListener, MouseListener {
 	
     private final MainCharacter m_mainCharacter;
     private final Timer m_timer;
-    private final Game m_game;
+    private final GameRenderer m_game;
     
     private final GameMap m_map;
+    
+    private boolean inputChanged = false;
 
-    public static boolean fireTime;
-
-    PlayerControls(MainCharacter mainCharacter, Timer timer, Game game, GameMap map) {
+    public PlayerControls(MainCharacter mainCharacter, Timer timer, GameRenderer game, GameMap map) {
         m_mainCharacter = Objects.requireNonNull(mainCharacter, "The m_mainCharacter may not be null");
         m_timer = Objects.requireNonNull(timer, "The timer may not be null");
         m_game = Objects.requireNonNull(game, "The game may not be null");
         
         m_map = Objects.requireNonNull(map, "The map may not be null");
     }
+    
+    public synchronized boolean inputIsChanged() {
+    	boolean result = inputChanged;
+    	inputChanged = false;
+    	
+    	return result;
+    }
+    
+    private synchronized void triggerChangeFlag() {
+    	inputChanged = true;
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_A) {
+        	if (!m_mainCharacter.isTurningLeft()) triggerChangeFlag();
+        	
         	m_mainCharacter.turnLeft();
         }
         if (e.getKeyCode() == KeyEvent.VK_D) {
+        	if (!m_mainCharacter.isTurningRight()) triggerChangeFlag();
+        	
         	m_mainCharacter.turnRight();
         }
         if (e.getKeyCode() == KeyEvent.VK_W) {
+        	if (!m_mainCharacter.isMovingForward()) triggerChangeFlag();
+        	
         	m_mainCharacter.moveForward();
         }
         if (e.getKeyCode() == KeyEvent.VK_S) {
+        	if (!m_mainCharacter.isMovingBackward()) triggerChangeFlag();
+        	
         	m_mainCharacter.moveBackward();
         }
 
@@ -57,16 +77,7 @@ public class PlayerControls implements KeyListener, MouseListener {
             m_map.addArmedCow();
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            if (m_mainCharacter.getHitbox() instanceof CowHitbox) {
-                m_mainCharacter.setImage("src/images/MainCharacter.png");
-                m_mainCharacter.setHitbox(new RectangleHitbox(m_mainCharacter.getWidth(), m_mainCharacter.getHeight()));
-                m_mainCharacter.weaponized = true;
-            }
-            else {
-                m_mainCharacter.setImage("src/images/MainCowPic.png");
-                m_mainCharacter.setHitbox(new CowHitbox(m_mainCharacter.getWidth(), m_mainCharacter.getHeight()));
-                m_mainCharacter.weaponized = false;
-            }
+            m_mainCharacter.toggleDisguise();
         }
         
         // Debug Related
@@ -85,7 +96,6 @@ public class PlayerControls implements KeyListener, MouseListener {
         	m_mainCharacter.stopTurningRight();
         }
         if (e.getKeyCode() == KeyEvent.VK_W) {
-            // TODO: instead of setting speed to zero, use this as the place to reduce velocity by the amount that was added prevously by the move method.
         	m_mainCharacter.stopMovingForward();
         }
         if (e.getKeyCode() == KeyEvent.VK_S) {
@@ -94,6 +104,8 @@ public class PlayerControls implements KeyListener, MouseListener {
         if (e.getKeyCode() == KeyEvent.VK_E) {
             m_timer.start();
         }
+        
+        triggerChangeFlag();
     }
 
     @Override
@@ -102,7 +114,7 @@ public class PlayerControls implements KeyListener, MouseListener {
     @Override
     public void mousePressed(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
-            fireTime = true;
+            m_mainCharacter.startShooting();
         }
     }
 
@@ -117,6 +129,6 @@ public class PlayerControls implements KeyListener, MouseListener {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        fireTime = false;
+        m_mainCharacter.stopShooting();
     }
 }

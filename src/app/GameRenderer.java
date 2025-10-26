@@ -1,7 +1,6 @@
 package app;
 
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 import java.util.List;
 
@@ -12,79 +11,79 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
+import app.gameElements.GameMap;
 import app.gameElements.MainCharacter;
+import app.gameElements.Projectile;
 import app.gameElements.Sprite;
 
-public class Game extends JPanel implements ActionListener {
-	//private static Game m_game;
-	
-	private int unitSize = 44;
+public class GameRenderer extends JPanel {
 	private Graphics2D m_g2d;
 	private Rectangle repaintRectangle;
 	
-	private Timer timer;
-	
-    private MainCharacter m_mainCharacter;
-    private GameMap m_currentMap;
+    private MainCharacter m_mainCharacterHandle;
+    private GameMap m_currentMapHandle;
+    
+    private MainCharacter[] otherPlayers;
+    private int otherPlayerCount = 0;
     
     private boolean showHitboxes = false;
-    
     private boolean showDebugMenu = false;
     
     private Color m_floorColor = new Color(0, 154, 23);
+    
+    private AffineTransform tr = new AffineTransform();
 
-    public Game(MainCharacter mainCharacter, GameMap map) {
+    public GameRenderer() {
         setBackground(m_floorColor);
         setVisible(true);
         //setFocusTraversalKeysEnabled(false);
         setFocusable(true);
         
         repaintRectangle = new Rectangle(0, 0, 0, 0);
-        
-        int delay = 1;
-        timer = new Timer(delay, this);
-        
-        m_mainCharacter = mainCharacter;
-        m_currentMap = map;
-        
-        //addKeyListener(new PlayerControls(mainCharacter, timer, this, map));
-        addMouseListener(new PlayerControls(mainCharacter, timer, this, map));
-        
-        timer.start();
     }
-
-    // public static Game getInstance() {
-    //     if (m_game == null) {
-    //         m_game = new Game();
-    //     }
-    //     return m_game;
-    // }
+    
+    public void setScene(MainCharacter mainCharacterHandle, GameMap mapHandle) {
+    	m_mainCharacterHandle = mainCharacterHandle;
+    	m_currentMapHandle = mapHandle;
+    }
+    
+    public void renderFrame() {
+    	revalidate();
+        repaint(repaintRectangle);
+    }
     
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         m_g2d = (Graphics2D) g;
         
-        AffineTransform tr = new AffineTransform();
+        //AffineTransform tr = new AffineTransform();
         
         // translate g2d to the center of the screen
         m_g2d.translate(getWidth() * 0.5d, getHeight() * 0.5d);
         
         // when map gets added, it will be drawn here
         
-        List<Sprite> spriteList = m_currentMap.getSpriteList();
-        List<Projectile> projectileList = m_currentMap.getProjectileList();
+        List<Sprite> spriteList = m_currentMapHandle.getSpriteList();
+        List<Projectile> projectileList = m_currentMapHandle.getProjectileList();
         
-        Point2D.Double scroll = m_mainCharacter.getMapCoodinate();
+        Point2D.Double scroll;
+        if (m_mainCharacterHandle != null)
+        	scroll = m_mainCharacterHandle.getMapCoodinate();
+        else
+        	scroll = new Point2D.Double();
         
         for (Sprite s: spriteList) {
         	s.draw(m_g2d, tr, scroll, showHitboxes);
         }
         
-        m_mainCharacter.draw(m_g2d, tr, scroll, showHitboxes);
+        if (m_mainCharacterHandle != null)
+        	m_mainCharacterHandle.draw(m_g2d, tr, scroll, showHitboxes);
+        
+        for (int i = 0; i < otherPlayerCount; i++) {
+        	otherPlayers[i].draw(m_g2d, tr, scroll, showHitboxes);
+        }
         
         for(Projectile p: projectileList) {
             p.draw(m_g2d, tr, scroll, showHitboxes);
@@ -92,8 +91,8 @@ public class Game extends JPanel implements ActionListener {
         
         m_g2d.translate(-getWidth() * 0.5d, -getHeight() * 0.5d);
         
-        if (showDebugMenu) {
-        	drawDebugMenu(m_mainCharacter);
+        if (showDebugMenu && m_mainCharacterHandle != null) {
+        	drawDebugMenu(m_mainCharacterHandle);
         }
     }
     
@@ -180,8 +179,8 @@ public class Game extends JPanel implements ActionListener {
         
         // GameMap debug info
         
-        List<Sprite> spriteList = m_currentMap.getSpriteList();
-        List<Projectile> projectileList = m_currentMap.getProjectileList();
+        List<Sprite> spriteList = m_currentMapHandle.getSpriteList();
+        List<Projectile> projectileList = m_currentMapHandle.getProjectileList();
         
         int entityCount = spriteList.size();
         m_g2d.drawString("Entity Count: " + entityCount, 10, 290);
@@ -190,26 +189,17 @@ public class Game extends JPanel implements ActionListener {
         m_g2d.drawString("Projectile Count: " + projectileCount, 10, 310);
     }
     
-    @Override
-    public void actionPerformed(ActionEvent arg0) {
-    	revalidate();
-        repaint(repaintRectangle);
-        
-        m_currentMap.tick(m_mainCharacter.getMapCoodinate());
-        m_mainCharacter.periodic();
-    }
-    
     public void setBounds(Dimension dim) {
     	setPreferredSize(dim);
         repaintRectangle.setBounds(0, 0, (int) dim.getWidth(), (int) dim.getHeight());
     }
 
     public void setMainCharacter(MainCharacter mainCharacter) {
-        m_mainCharacter = mainCharacter;
+    	m_mainCharacterHandle = mainCharacter;
     }
     
     public void setCurrentMap(GameMap map) {
-    	m_currentMap = map;
+    	m_currentMapHandle = map;
     }
     
     public void toggleHitboxes() {
@@ -220,7 +210,9 @@ public class Game extends JPanel implements ActionListener {
     	showDebugMenu = !showDebugMenu;
     }
     
-    public Timer getTimer() {
-    	return timer;
+    // networking stuff
+    public void drawPlayers(MainCharacter[] players, int playerCount) {
+    	this.otherPlayerCount = playerCount;
+    	this.otherPlayers = players;
     }
 }

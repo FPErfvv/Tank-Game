@@ -1,11 +1,12 @@
-package app;
+package app.gameElements;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import app.gameElements.Sprite;
+import app.Constants;
+import app.SoundEngine;
 import app.gameElements.hitbox.hitboxSubClasses.CowHitbox;
 
 public class GameMap {
@@ -17,8 +18,6 @@ public class GameMap {
     public GameMap() {
     	spriteList = new ArrayList<>();
     	projectileList = new ArrayList<>();
-    	
-    	addTrees();
     }
     
     public void addSprite(Sprite s) {
@@ -37,7 +36,7 @@ public class GameMap {
     	return Collections.unmodifiableList(projectileList);
     }
     
-    public void tick(Point2D.Double mainCharCoor) {
+    public void tick(Point2D.Double mainCharCoor, SoundEngine soundEngine) {
     	debugCounter++;
         
         if (debugCounter > 200) {
@@ -48,32 +47,37 @@ public class GameMap {
         }
         
     	for (Sprite s : spriteList) {
-            s.periodic();
-        	//s.moveAI(mainCharCoor);
+            //s.periodic(soundEngine);
+        	s.moveAI(mainCharCoor, soundEngine);
         }
     	
     	for(Projectile p : projectileList) {
-            p.periodic(); 
+            p.periodic(soundEngine);
         }
     }
     
     public void addTrees() {
     	for (int i = 0; i < 10; i++) {
             Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
-            //Point2D.Double coor = new Point2D.Double(100,0);
-            Sprite sprite = new Sprite("src/images/top-tree-png-1.png", coor, Math.toRadians(0), this);
-            sprite.setHitbox(new CowHitbox(sprite.getWidth(), sprite.getHeight()));
-            spriteList.add(sprite);
             
-            // Sprite g = new Sprite(coor, "src/images/Cow50Cal.png", Math.toRadians(0), this);
-            // spriteList.add(g);
+            Sprite sprite = new Sprite("src/images/top-tree-png-1.png");
+            sprite.moveTo(coor);
+            sprite.setAngle(Math.toRadians(0.0d));
+            sprite.setCurrentMap(this);
+            sprite.setHitbox(new CowHitbox(sprite.getWidth(), sprite.getHeight()));
+            
+            spriteList.add(sprite);
         }
     }
     
     public void addArmedCow() {
     	//Point2D.Double coor = new Point2D.Double((int) (Math.random() * 1000), (int) (Math.random() * 1000));
-        Point2D.Double coor = new Point2D.Double(0, 50);
-        Sprite sprite = new Sprite("src/images/MainCowPic.png", coor, Math.toRadians(0), this);     
+        Point2D.Double coor = new Point2D.Double(0.0d, 50.0d);
+        
+        Sprite sprite = new Sprite("src/images/MainCowPic.png");  
+        sprite.moveTo(coor);
+        sprite.setAngle(Math.toRadians(0.0d));
+        sprite.setCurrentMap(this);
         sprite.setHitbox(new CowHitbox(sprite.getWidth(), sprite.getHeight()));
         sprite.setInputMovingSpeed(5);
         sprite.setInputTurningSpeed(Math.toRadians(5));
@@ -82,7 +86,10 @@ public class GameMap {
         sprite.turn(Constants.TURNING_LEFT);
         spriteList.add(sprite);
 
-        Sprite g = new Sprite("src/images/Cow50Cal.png", coor, Math.toRadians(0), this);
+        Sprite g = new Sprite("src/images/Cow50Cal.png");
+        g.moveTo(coor);
+        g.setAngle(Math.toRadians(0.0d));
+        g.setCurrentMap(this);
         g.setHitbox(new CowHitbox(g.getWidth(), g.getHeight()));
         g.setInputMovingSpeed(5);
         g.setInputTurningSpeed(Math.toRadians(5));

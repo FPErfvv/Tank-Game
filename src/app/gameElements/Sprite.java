@@ -9,9 +9,8 @@ import java.awt.geom.Point2D;
 import javax.swing.ImageIcon;
 
 import app.Constants;
-import app.GameMap;
 import app.MainPanel;
-import app.Projectile;
+import app.SoundEngine;
 import app.Utility;
 import app.gameElements.hitbox.Hitbox;
 
@@ -49,18 +48,17 @@ public class Sprite {
     
     private int timeLeft = 0;
     
-    public Sprite(String imagePath, Point2D.Double coor, double angle, GameMap map) {
+    public Sprite(String imagePath) {
     	m_image = new ImageIcon(imagePath).getImage();
     	
-    	m_currentMap = map;
-    	
-    	// create a new Point2D object to avoid overwriting the passed in position
-    	m_coor = new Point2D.Double(coor.x, coor.y);
+    	m_currentMap = null;
+
+    	m_coor = new Point2D.Double(0.0d, 0.0d);
         
         m_velocity = new Point2D.Double(0.0d, 0.0d);
         m_speed = 0.0d;
         
-        m_angle = angle;
+        m_angle = 0.0d;
         m_rotationalVel = 0.0d;
     }
     
@@ -194,29 +192,13 @@ public class Sprite {
     	return Constants.DIRECTION_STOP;
     }
     
-    public boolean isMovingForward() {
-    	return m_movingForward;
-    }
+    public boolean isMovingForward() { return m_movingForward; }
+    public void moveForward() { m_movingForward = true; }
+    public void stopMovingForward() { m_movingForward = false; }
     
-    public void moveForward() {
-    	m_movingForward = true;
-    }
-    
-    public void stopMovingForward() {
-    	m_movingForward = false;
-    }
-    
-    public boolean isMovingBackward() {
-    	return m_movingBackward;
-    }
-    
-    public void moveBackward() {
-    	m_movingBackward = true;
-    }
-    
-    public void stopMovingBackward() {
-    	m_movingBackward = false;
-    }
+    public boolean isMovingBackward() { return m_movingBackward; }
+    public void moveBackward() { m_movingBackward = true; }
+    public void stopMovingBackward() { m_movingBackward = false; }
     
     
     public double getInputTurningSpeed() {
@@ -327,7 +309,7 @@ public class Sprite {
         	m_hitbox.computeCollisionPoints(m_coor, m_angle);
     }
     
-    public void moveAI(Point2D.Double playerCoor) {
+    public void moveAI(Point2D.Double playerCoor, SoundEngine soundEngine) {
     	Point2D.Double diff = new Point2D.Double(playerCoor.x - m_coor.x, playerCoor.y - m_coor.y);
     	
     	double len = Utility.getVectorMagnitude(diff);
@@ -347,10 +329,16 @@ public class Sprite {
     		stopMovingForward();
     		
     		if (timeLeft == 0) {
-        		Projectile p = new Projectile(m_coor, m_angle, m_currentMap);
+        		Projectile p = new Projectile();
+        		p.moveTo(m_coor);
+        		p.setAngle(m_angle);
+        		p.setCurrentMap(m_currentMap);
                 p.setInputMovingSpeed(20);
                 p.moveForward();
+                
                 m_currentMap.addProjectile(p);
+                
+                soundEngine.playShootSoundClip();
                 
                 timeLeft = cooldown;
         	}
@@ -392,7 +380,7 @@ public class Sprite {
      * This is called by {@link MainPanel#actionPerformed(ActionEvent arg0)} every timer cycle in the MainPanel. It creates
      * the hitbox and then calls the {@link Sprite#move()} and {@link Sprite#rotate()} methods to move and rotate the Sprite.
      */
-    public void periodic() {
+    public void periodic(SoundEngine soundEngine) {
         move();
     }
     
